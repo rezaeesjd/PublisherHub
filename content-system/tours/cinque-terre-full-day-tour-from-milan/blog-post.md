@@ -36,6 +36,6 @@ A panoramic ferry segment may be available seasonally, depending on sea and weat
 If you’re comparing booking options, you can also view this product on TripAdvisor or Viator as secondary references, but direct website booking is the recommended path for the latest operator-side details.
 
 ## Ready to book your Cinque Terre tour from Milan?
-See availability, inclusions, and current departure details, then secure your spot directly online.
+See availability, inclusions, and current departure details, then secure your spot directly with Milano Adventures online.
 
 **[Check Availability](https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82)**

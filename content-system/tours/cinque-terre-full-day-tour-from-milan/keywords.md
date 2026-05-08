@@ -10,7 +10,7 @@
 - cinque terre coach tour from milan
 - riomaggiore manarola monterosso tour from milan
 - cinque terre small group tour from milan
-- cinquet terre tour with ferry from milan
+- cinque terre tour with ferry from milan
 - book cinque terre day tour from milan
 
 ## Informational keywords
