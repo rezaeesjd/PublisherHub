@@ -1,0 +1,39 @@
+{
+  "brand": "Milano Adventures",
+  "product_reference_code": "108",
+  "canonical_tour_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & Monterosso",
+  "tour_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & Monterosso",
+  "page_title": "Cinque Terre Tour from Milan: An Easy Full-Day Escape to Riomaggiore, Manarola and Monterosso",
+  "slug": "cinque-terre-tour-from-milan",
+  "public_slug": "cinque-terre-tour-from-milan",
+  "meta_description": "Discover an easy Cinque Terre tour from Milan with guided support, scenic village stops, train access, and direct website booking through Milano Adventures.",
+  "primary_keyword": "cinque terre tour from milan",
+  "funnel_stage": "BOFU",
+  "cta_primary": "Check Availability",
+  "cta_primary_link": "{{WebsiteLink}}",
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "{{TripAdvisorLink}}",
+  "viator_link": "{{ViatorLink}}",
+  "cta_secondary_links": {
+    "tripadvisor": "{{TripAdvisorLink}}",
+    "viator": "{{ViatorLink}}"
+  },
+  "meeting_point": "Piazza IV Novembre, 20124 Milano MI, Italy",
+  "end_point": "Same as starting point",
+  "duration": "13 hours 30 minutes",
+  "group_type": "Shared",
+  "max_travelers": 22,
+  "languages": ["English", "Spanish"],
+  "not_private": true,
+  "wheelchair_accessible": false,
+  "notes": [
+    "Ferry availability is seasonal and weather dependent",
+    "Itinerary may vary in bad weather",
+    "Comfortable shoes suggested",
+    "Most travelers can participate"
+  ],
+  "publish_status": "draft",
+  "human_review_required": true,
+  "qa_status": "needs_fix",
+  "last_qa_date": "2026-05-08"
+}
