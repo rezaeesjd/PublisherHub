@@ -1,47 +1,31 @@
-# FAQ
+# FAQ — Cinque Terre Full-Day Tour from Milan
 
-## Is this a private tour?
-No. This is a shared group tour with a maximum of 22 travelers.
+## Is this tour suitable for first-time visitors to Italy?
+Yes. It is designed as a guided, structured day trip with organized transport and on-the-day coordination.
 
-## Where does the tour start and end?
-The meeting point is Piazza IV Novembre, 20124 Milano MI, Italy. The tour ends at the same point.
+## Where is the meeting point in Milan?
+At Piazza IV Novembre, in front of Hotel Gallia near Milano Centrale station.
 
-## Is hotel pickup included?
-No. Hotel pickup and drop-off are not included.
-
-## Which Cinque Terre villages are included in the itinerary?
-The product setup includes free time in Riomaggiore, Manarola, and Monterosso.
+## How early should I arrive?
+Arrive at least 15 minutes before departure.
 
 ## How long is the tour?
-The total duration is approximately 13 hours and 30 minutes.
+The listed duration is approximately 13 hours and 30 minutes.
 
-## What transport is included?
-The product setup includes travel by GT coach or minivan from Milan to Cinque Terre and a day pass for local trains through the Cinque Terre Card.
+## Is hotel pickup included?
+No. Travelers meet at the designated meeting point and return to Piazza IV Novembre.
 
-## Is the ferry ride always included?
-No. The panoramic ferry ride is seasonal and depends on sea and weather conditions. On some days, especially outside peak season, it may not operate and the itinerary may vary.
+## Which villages can be visited?
+The product description references Monterosso al Mare, Vernazza, Corniglia, Manarola, and Riomaggiore.
 
-## What is included in the tour?
-Included items listed in the product setup are:
-- expert tour leader
-- landing and facility fees
-- limoncino or limoncello tastings
-- travel by GT coach or minivan from Milan to Cinque Terre
-- free time in Riomaggiore, Manarola, and Monterosso
-- day pass for local trains through the Cinque Terre Card
-- access to Cinque Terre National Park
+## Is the ferry always included?
+The panoramic ferry ride is seasonal and weather-dependent, so it may not operate on some days.
 
-## Is this tour suitable for everyone?
-Most travelers can participate, but it is not wheelchair accessible. Comfortable shoes are suggested.
+## Is this a private tour?
+No, it is a shared tour experience.
 
-## Are infants allowed?
-Yes, but infants must sit on laps.
+## Which languages are available?
+English and Spanish are listed.
 
-## What languages are available?
-The product setup lists English and Spanish for in-person, audio, and written formats.
-
-## Where can I book?
-The preferred direct booking page is `{{WebsiteLink}}`.
-Secondary references may also be available on:
-- TripAdvisor: `{{TripAdvisorLink}}`
-- Viator: `{{ViatorLink}}`
+## What is the best way to book?
+Book directly on the official website link for primary availability and confirmation. OTA pages can be used as secondary references.

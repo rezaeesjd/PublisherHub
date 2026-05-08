@@ -1,102 +1,27 @@
 # Automation Notes
 
-## Reuse model
-This tour package can be reused as a template for other Milano Adventures products by swapping:
-- tour title
-- departure city
-- stops and route
-- duration
-- inclusions
-- restrictions
-- booking placeholders
+## Reusable weekly production model
+- Publish 1 BOFU tour landing-blog hybrid each week (like this page).
+- Publish 1 MOFU comparison/support article each week.
+- Refresh 1 existing high-intent page weekly (pricing notes, schedules, FAQs, CTA health).
 
-The overall section order should remain the same.
+## Batch workflow for scale
+- Batch similar "from Milan" day-trip products together.
+- Reuse a fixed prompt structure: source facts → brief → keyword cluster → blog post → FAQ → metadata → QA.
+- Keep section order consistent across all tour pages for easier QA and CMS loading.
 
-## Weekly or daily reuse
-### Weekly model
-- publish 1 commercial landing-blog hybrid post for one high-value tour
-- publish 1 supporting informational or comparison article linked to that tour
-- refresh 1 existing high-value page with stronger CTA, updated metadata, or internal links
+## Template consistency
+- Keep the same conversion sections: hook, value, who it’s for, expectations, pre-booking notes, CTA.
+- Keep CTA button language stable ("Check Availability") for consistent UX.
+- Preserve website-first CTA, OTA-secondary references.
 
-### Daily model
-Use daily production only when there are enough distinct tours and enough review capacity to avoid thin or repetitive content.
+## AI-assisted scaling approach
+- Use one structured extraction pass to populate `source-facts.md` before writing.
+- Auto-flag ambiguities into `meta.clarifications_needed` to prevent factual drift.
+- Reuse metadata and FAQ templates, swapping only verified tour facts.
 
-## Scalable workflow with AI
-A repeatable AI-assisted workflow can use these inputs:
-- brand name
-- product title
-- product reference code
-- departure city
-- meeting point
-- duration
-- itinerary stops
-- what makes the tour unique
-- inclusions and exclusions
-- traveler restrictions
-- booking placeholders
-
-From those fields, AI can generate:
-- brief.md
-- keywords.md
-- blog-post.md
-- faq.md
-- meta.json
-- internal-links.md
-- automation-notes.md
-
-## CMS integration idea
-Store the source product data in structured fields or a spreadsheet, then map them into reusable prompts.
-
-Useful input fields for automation:
-- `BrandName`
-- `ProductTitle`
-- `ProductReferenceCode`
-- `MeetingPoint`
-- `EndPoint`
-- `Duration`
-- `Stops`
-- `UniqueSellingPoints`
-- `Inclusions`
-- `Exclusions`
-- `Languages`
-- `Restrictions`
-- `WebsiteLink`
-- `TripAdvisorLink`
-- `ViatorLink`
-
-## Publishing placeholders
-Keep these placeholders dynamic until publish step:
-- `{{WebsiteLink}}`
-- `{{TripAdvisorLink}}`
-- `{{ViatorLink}}`
-
-This allows content generation to happen before final link injection.
-
-## Design consistency
-Keep the same page layout for every generated tour article:
-1. title and short intro
-2. main value section
-3. soft CTA
-4. FAQ or practical planning section
-5. strong CTA
-6. related links
-
-This helps both speed and consistency across the site.
-
-## Quality control
-Before publishing, a human should review:
-- factual accuracy of stops and included items
-- final booking links
-- any destination-specific wording
-- seasonal notes such as ferry availability
-- unsupported claims that may need removal
-
-## Content cluster scaling
-For this tour specifically, future supporting content can include:
-- how to visit Cinque Terre from Milan
-- Cinque Terre tour from Milan vs train alone
-- what to wear for a Cinque Terre day trip
-- is Cinque Terre worth a day trip from Milan
-- best time to visit Cinque Terre from Milan
-
-Each of those pages should link back to the main booking page using `{{WebsiteLink}}`.
+## Growth alignment
+- Supports lead generation via SEO capture for high-intent day-trip queries.
+- Supports customer acquisition with confidence-building logistics details.
+- Supports direct bookings by prioritizing website CTA placement.
+- Supports long-term growth through repeatable, auditable content operations.
