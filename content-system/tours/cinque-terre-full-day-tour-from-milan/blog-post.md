@@ -7,7 +7,7 @@ This experience is designed for travelers who want a lot in one day while keepin
 
 You get a guided structure, support during transitions, and time to enjoy postcard views, harbors, and village streets in places such as Riomaggiore, Manarola, and Monterosso.
 
-See full details and availability before booking: **[Check Availability]({{WebsiteLink}})**.
+See full details and availability before booking: **[Check Availability](https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82)**.
 
 ## Who this tour is best for
 - Travelers based in Milan with limited time who still want to experience Cinque Terre.
@@ -38,4 +38,4 @@ If you’re comparing booking options, you can also view this product on TripAdv
 ## Ready to book your Cinque Terre tour from Milan?
 See availability, inclusions, and current departure details, then secure your spot directly online.
 
-**[Check Availability]({{WebsiteLink}})**
+**[Check Availability](https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82)**

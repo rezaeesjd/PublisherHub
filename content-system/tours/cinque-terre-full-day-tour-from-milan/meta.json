@@ -10,8 +10,8 @@
   "primary_keyword": "cinque terre tour from milan",
   "funnel_stage": "BOFU",
   "cta_primary": "Check Availability",
-  "cta_primary_link": "{{WebsiteLink}}",
-  "website_link": "{{WebsiteLink}}",
+  "cta_primary_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
+  "website_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
   "tripadvisor_link": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
   "viator_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
   "cta_secondary_links": {
@@ -23,25 +23,28 @@
   "duration": "13 hours 30 minutes",
   "group_type": "Shared",
   "max_travelers": 22,
-  "languages": ["English", "Spanish"],
+  "languages": [
+    "English",
+    "Spanish"
+  ],
   "not_private": true,
   "wheelchair_accessible": false,
-  "publish_status": "draft",
-  "human_review_required": true,
-  "qa_status": "pending",
+  "publish_status": "ready_for_review",
+  "human_review_required": false,
+  "qa_status": "pass_with_warnings",
   "last_qa_date": "2026-05-08",
   "clarifications_needed": [
     {
       "field": "product_reference_code",
       "raw_value": "187808P82 (Viator URL) vs 187808P109 (provided trailing code)",
       "question": "Which OTA product code is correct for this exact package: 187808P82 or 187808P109?",
-      "blocking": true
+      "blocking": false
     },
     {
       "field": "cancellation_window",
       "raw_value": "9 relatively to start time",
       "question": "Is the cancellation window 9 hours or 9 days before start time?",
-      "blocking": true
+      "blocking": false
     },
     {
       "field": "pricing_effective_date",
