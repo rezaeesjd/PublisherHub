@@ -1,102 +1,18 @@
 # Automation Notes
 
-## Reuse model
-This tour package can be reused as a template for other Milano Adventures products by swapping:
-- tour title
-- departure city
-- stops and route
-- duration
-- inclusions
-- restrictions
-- booking placeholders
+## 3-step no-human-block workflow
+1. **Generate step (AI):** extract source facts and generate full package from available inputs.
+2. **Review step (AI):** run QA checks, validate links, fact consistency, and publish rules in a separate pass.
+3. **Publish step (AI):** if QA passes or has only non-blocking warnings, set publish-ready status and hand off for sync/live verification.
 
-The overall section order should remain the same.
+## Missing-data handling standard
+- Do not block generation when non-critical fields are missing.
+- Use any provided booking-capable link as the primary CTA if a direct website link is unavailable.
+- Keep additional OTA links as secondary references when present.
+- Only block when **zero booking/reference links** are provided.
+- For missing non-link facts (e.g., incomplete exclusions, incomplete policy wording), skip unsupported claims and generate around confirmed facts.
 
-## Weekly or daily reuse
-### Weekly model
-- publish 1 commercial landing-blog hybrid post for one high-value tour
-- publish 1 supporting informational or comparison article linked to that tour
-- refresh 1 existing high-value page with stronger CTA, updated metadata, or internal links
-
-### Daily model
-Use daily production only when there are enough distinct tours and enough review capacity to avoid thin or repetitive content.
-
-## Scalable workflow with AI
-A repeatable AI-assisted workflow can use these inputs:
-- brand name
-- product title
-- product reference code
-- departure city
-- meeting point
-- duration
-- itinerary stops
-- what makes the tour unique
-- inclusions and exclusions
-- traveler restrictions
-- booking placeholders
-
-From those fields, AI can generate:
-- brief.md
-- keywords.md
-- blog-post.md
-- faq.md
-- meta.json
-- internal-links.md
-- automation-notes.md
-
-## CMS integration idea
-Store the source product data in structured fields or a spreadsheet, then map them into reusable prompts.
-
-Useful input fields for automation:
-- `BrandName`
-- `ProductTitle`
-- `ProductReferenceCode`
-- `MeetingPoint`
-- `EndPoint`
-- `Duration`
-- `Stops`
-- `UniqueSellingPoints`
-- `Inclusions`
-- `Exclusions`
-- `Languages`
-- `Restrictions`
-- `WebsiteLink`
-- `TripAdvisorLink`
-- `ViatorLink`
-
-## Publishing placeholders
-Keep these placeholders dynamic until publish step:
-- `{{WebsiteLink}}`
-- `{{TripAdvisorLink}}`
-- `{{ViatorLink}}`
-
-This allows content generation to happen before final link injection.
-
-## Design consistency
-Keep the same page layout for every generated tour article:
-1. title and short intro
-2. main value section
-3. soft CTA
-4. FAQ or practical planning section
-5. strong CTA
-6. related links
-
-This helps both speed and consistency across the site.
-
-## Quality control
-Before publishing, a human should review:
-- factual accuracy of stops and included items
-- final booking links
-- any destination-specific wording
-- seasonal notes such as ferry availability
-- unsupported claims that may need removal
-
-## Content cluster scaling
-For this tour specifically, future supporting content can include:
-- how to visit Cinque Terre from Milan
-- Cinque Terre tour from Milan vs train alone
-- what to wear for a Cinque Terre day trip
-- is Cinque Terre worth a day trip from Milan
-- best time to visit Cinque Terre from Milan
-
-Each of those pages should link back to the main booking page using `{{WebsiteLink}}`.
+## Reusable QA policy
+- Mark unclear but non-critical fields as warnings, not failures.
+- Fail only on hard blockers: no booking/reference link at all, invalid JSON, or fabricated claims.
+- Keep structure stable so batch generation and QA can run across multiple tours automatically.

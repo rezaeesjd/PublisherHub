@@ -1,40 +1,17 @@
 # Internal Linking Suggestions
 
-## Main conversion target
-- **Main tour page / booking page** → `{{WebsiteLink}}`
-  - Why it matters: this is the primary conversion destination and should receive links from supporting blog content, FAQ content, and comparison content.
+## Core internal links
+1. **Milan Day Trips Hub** → `{{MilanDayTripsHubLink}}`
+   - Why: Captures broader demand and funnels users from category-level browsing into this specific BOFU offer.
 
-## Suggested supporting internal links
-- **Milan day trips hub page** → `/milan-day-trips/`
-  - Why it matters: helps cluster this product with other bookable excursions and supports category-level SEO.
+2. **Cinque Terre from Milan Comparison Guide** (Suggested future page) → `{{ComparisonPostLink}}`
+   - Why: Supports MOFU travelers comparing guided vs independent travel options.
 
-- **Destination planning guide** → `/how-to-visit-cinque-terre-from-milan/`
-  - Why it matters: captures informational traffic and should link readers toward the main tour page.
+3. **What to Pack for Coastal Day Trips in Italy** (Suggested future page) → `{{RelatedGuideLink}}`
+   - Why: Supports TOFU traffic and introduces this tour naturally through practical planning content.
 
-- **Comparison article** → `/cinque-terre-tour-from-milan-vs-train-alone/`
-  - Why it matters: helps MOFU users decide between guided travel and self-planning.
+4. **Booking Help / Contact Page** → `{{ContactPageLink}}`
+   - Why: Reduces conversion friction for travelers with pre-booking questions.
 
-- **Packing or preparation article** → `/what-to-wear-for-a-cinque-terre-day-trip/`
-  - Why it matters: supports practical search intent and can push readers back to the commercial booking page.
-
-- **General FAQ or contact page** → `/contact/`
-  - Why it matters: supports users who still need reassurance before booking.
-
-## Recommended internal link flow
-1. Informational blog post about visiting Cinque Terre from Milan
-2. Comparison post about guided tour vs independent travel
-3. Main tour page using `{{WebsiteLink}}`
-4. FAQ or contact page if additional reassurance is needed
-
-## Anchor text suggestions
-- Cinque Terre tour from Milan
-- Cinque Terre day trip from Milan
-- guided Cinque Terre tour
-- check availability
-- plan your Cinque Terre day trip
-
-## Placement guidance
-- Add one internal link to the main booking page near the top of the post
-- Add one soft CTA link mid-content
-- Add one stronger CTA link near the end
-- Include related articles underneath the main content when possible
+## Funnel flow
+Informational guide → Comparison guide → Cinque Terre tour page/post → Booking/contact page.
