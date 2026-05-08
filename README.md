@@ -1,5 +1,15 @@
 # WebPublisherSystem
 
+**WebPublisherSystem** is the deployed name of the platform. The source of this codebase lives in the `rezaeesjd/PublisherHub` repository, which mirrors the deploy layout without the `WebPublisherSystem/` prefix.
+
+| Concept | Repository path | Deploy path |
+| --- | --- | --- |
+| Platform code | `platform/` | `/WebPublisherSystem/platform/` |
+| Tours content | `content-system/tours/` | `/WebPublisherSystem/content-system/tours/` |
+| Public blog | `blog/` | `/WebPublisherSystem/blog/` |
+
+When docs reference `/WebPublisherSystem/...`, treat that as the deploy path. When working in source, drop the prefix.
+
 **WebPublisherSystem** is an **Automated SEO & Social Content Marketing Platform** for travel, tours, and local experience businesses.
 
 The ultimate business goal is **lead generation, customer acquisition, direct bookings, and growth** through content marketing automation.
@@ -54,8 +64,10 @@ WebPublisherSystem/
       .gitkeep
   content-system/            # AI/Codex content instructions and generated tour content
     AGENTS.md
+    meta.schema.json         # JSON Schema for tour meta.json files
     tours/
       cinque-terre-full-day-tour-from-milan/
+        source-facts.md
         brief.md
         keywords.md
         blog-post.md
@@ -63,6 +75,9 @@ WebPublisherSystem/
         meta.json
         internal-links.md
         automation-notes.md
+        qa-report.md
+        CHANGELOG.md          # recommended; one bullet per refresh
+        images/               # optional; hero + gallery assets
   settings/                  # reserved for future reusable setting definitions
     .gitkeep
   publishers/                # reserved for future publisher/sync modules

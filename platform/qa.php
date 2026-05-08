@@ -4,10 +4,13 @@
  * package. Works both as a web view (admin-only) and as a CLI script.
  *
  * Web:  GET /platform/qa.php
- * CLI:  php platform/qa.php       (exit 0 = pass, 1 = warnings, 2 = failures)
+ * CLI:  php platform/qa.php             (exit 0 = pass, 1 = warnings, 2 = failures)
+ *       php platform/qa.php --stamp     (also update last_qa_date + qa_status in meta.json)
  */
 
 require_once __DIR__ . '/qa-rules.php';
+
+$cliStamp = PHP_SAPI === 'cli' && in_array('--stamp', $argv ?? [], true);
 
 $toursRoot = realpath(__DIR__ . '/../content-system/tours');
 
@@ -26,6 +29,12 @@ if ($toursRoot === false) {
 
 $reports = wps_qa_run_all($toursRoot);
 
+if ($cliStamp) {
+    foreach ($reports as $report) {
+        wps_qa_stamp_meta($toursRoot . '/' . $report['tour'], $report);
+    }
+}
+
 $totals = ['pass' => 0, 'warning' => 0, 'fail' => 0];
 foreach ($reports as $r) {
     $key = $r['overall'] === 'pass' ? 'pass' : ($r['overall'] === 'warning' ? 'warning' : 'fail');
@@ -42,6 +51,9 @@ if (PHP_SAPI === 'cli') {
         }
     }
     echo "\nTotals: pass={$totals['pass']} warning={$totals['warning']} fail={$totals['fail']}\n";
+    if ($cliStamp) {
+        echo "Stamped last_qa_date and qa_status in each tour meta.json.\n";
+    }
 
     if ($totals['fail'] > 0) {
         exit(2);
