@@ -58,8 +58,19 @@ Expected result:
 3. produce or update `qa-report.md`
 4. clearly state which parts are complete and which parts still require server sync or live verification
 
+### `WPS:CLARIFY`
+Use this when the supplied product input contains ambiguous values that materially affect public copy or `meta.json` (for example a number with no unit, a conflict between two product codes, or a label whose meaning is unclear).
+
+Expected behavior:
+- do **not** write public copy yet
+- list each ambiguous field, its raw value, and a one-sentence question
+- store the same list inside `meta.clarifications_needed` so QA can detect unresolved items (see `meta.schema.json`)
+- ask the user to resolve them before falling back to `WPS:GENERATE_CONTENT`
+
+`WPS:CLARIFY` should also fire **automatically inside `WPS:GENERATE_CONTENT`** when the agent detects ambiguities. Resolve them first, then continue generating. If the user cannot resolve them in time, leave the entries in `meta.clarifications_needed` so the QA runner blocks publish.
+
 ### No command prefix
-If the prompt contains tour information but no command prefix, default to `WPS:GENERATE_CONTENT`.
+If the prompt contains tour information but no command prefix, default to `WPS:GENERATE_CONTENT`. If ambiguous values are detected during that run, escalate to `WPS:CLARIFY` before producing public copy.
 
 If the prompt asks only for strategy, template edits, system changes, QA, or workflow improvement, do not create a tour folder unless explicitly requested.
 
@@ -120,13 +131,20 @@ Prefer the website link as the main CTA. TripAdvisor and Viator may be used only
 ---
 
 ## Working model
-- The main system folder is `/WebPublisherSystem/`.
-- This instruction file lives in `/WebPublisherSystem/content-system/`.
-- Generated tour assets must live inside `/WebPublisherSystem/content-system/tours/`.
-- Reusable templates may live inside `/WebPublisherSystem/templates/`.
-- Platform code lives inside `/WebPublisherSystem/platform/`.
-- Local runtime settings and per-post edits live inside `/WebPublisherSystem/platform/data/`.
-- If a needed folder does not exist, create it.
+The platform is named **WebPublisherSystem** when deployed (uploaded to web hosting at `/WebPublisherSystem/`). The source of this codebase lives in the `rezaeesjd/PublisherHub` repository, which mirrors the same internal layout without the `WebPublisherSystem/` prefix.
+
+| Concept | Repository path (source) | Deploy path (web host) |
+| --- | --- | --- |
+| Platform code | `platform/` | `/WebPublisherSystem/platform/` |
+| Generated tours | `content-system/tours/` | `/WebPublisherSystem/content-system/tours/` |
+| Agent rules | `content-system/AGENTS.md` | `/WebPublisherSystem/content-system/AGENTS.md` |
+| Meta schema | `content-system/meta.schema.json` | `/WebPublisherSystem/content-system/meta.schema.json` |
+| Public blog | `blog/` | `/WebPublisherSystem/blog/` |
+| Runtime data | `platform/data/` | `/WebPublisherSystem/platform/data/` |
+
+When this file or another rule mentions a path beginning with `/WebPublisherSystem/`, treat it as the deploy path. When working in source, drop that prefix.
+
+If a needed folder does not exist, create it.
 
 ---
 
@@ -167,6 +185,12 @@ Each generated tour package must include these files:
 9. `qa-report.md`
 
 A generation task is incomplete if any of these files are missing.
+
+### Recommended (not required) files
+- `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`), what changed, who/what triggered it. Makes refresh diffs auditable.
+- `images/` folder — store hero and gallery assets here. Reference the hero from `meta.hero_image` (relative path, e.g. `images/hero.jpg`) and any others in `meta.image_gallery`.
+
+The QA runner (`platform/qa.php`) raises a warning when these are missing or when `meta.hero_image` is unset but an `images/` folder exists.
 
 ---
 
@@ -542,9 +566,10 @@ Must contain only public-facing article content and follow the public article ru
 Must include practical pre-booking questions and answers that help reduce hesitation.
 
 ### `meta.json`
-Must include structured fields for:
+The full schema lives at `content-system/meta.schema.json` and is the source of truth for required fields, enums, and patterns. The QA runner (`platform/qa-rules.php`) validates every `meta.json` against it.
+
+Required fields (see schema for full list):
 - brand
-- product_reference_code
 - canonical_tour_title
 - page_title
 - slug
@@ -553,13 +578,11 @@ Must include structured fields for:
 - primary_keyword
 - funnel_stage
 - cta_primary
+- cta_primary_link
 - website_link
-- tripadvisor_link
-- viator_link
 - publish_status
 - human_review_required
 - qa_status
-- last_qa_date
 
 Use real URLs when provided. Use placeholders only when links are missing.
 
@@ -570,6 +593,8 @@ Default after generation:
 "human_review_required": true,
 "qa_status": "pending"
 ```
+
+When `WPS:CLARIFY` finds ambiguities, populate `clarifications_needed` (see schema). Every entry there is treated as a `fail` finding by the QA runner unless it is explicitly marked `"blocking": false`, in which case it is a `warn`.
 
 ### `internal-links.md`
 Must suggest internal links by page type and explain why each suggested link matters. Use placeholders or “Suggested future page” labels when final URLs are not provided.
@@ -678,6 +703,52 @@ When generating automation notes, include guidance on:
 - refreshing high-value pages regularly instead of publishing only new pages
 - preserving human review before publishing factual business details
 - expanding the blog-first system later into landing pages and social media content once the blog workflow is proven
+
+---
+
+## Image and photo gallery rules
+Image assets are optional in this phase but should follow a fixed convention so future automation can wire them up without re-organizing folders.
+
+Convention:
+- store images inside `<tour-folder>/images/`
+- reference one hero image at `meta.hero_image` (e.g. `images/hero.jpg`) — relative to the tour folder, or a full HTTPS URL
+- reference any additional gallery images at `meta.image_gallery` as an array of relative paths or URLs
+- raw photo links from suppliers (e.g. Google Drive folders) belong only in `source-facts.md` under "URLs and booking links" or a similar internal section, not in public copy
+
+The QA runner warns when an `images/` folder exists but `meta.hero_image` is unset, or when `meta.hero_image` points to a file that is not on disk.
+
+If no usable image asset exists, omit `meta.hero_image` entirely rather than pointing it at a placeholder.
+
+---
+
+## Clarification protocol (`WPS:CLARIFY`)
+When the supplied product input contains a value whose meaning is ambiguous and that value affects public copy or `meta.json`, do not guess. Run the clarification protocol instead.
+
+Examples of ambiguous values worth flagging:
+- a number with no unit (`9` for cancellation — hours? days?)
+- a count with no label (`15` — minimum to operate? minimum booking notice?)
+- conflicting product reference codes (e.g. `187808P109` provided by user vs `187808P82` in a Viator URL)
+- a date with no role (`May 1, 2026` — pricing valid from? listing publish date?)
+- a brand or supplier name that conflicts with the active system brand
+
+Behavior:
+1. Ask the user one focused question per ambiguous value before generating public copy. Use the smallest set of questions that unblocks generation.
+2. Record each unresolved item as an entry in `meta.clarifications_needed`:
+   ```json
+   "clarifications_needed": [
+     {
+       "field": "cancellation_window_hours",
+       "raw_value": "9, Relatively to Start Time",
+       "question": "Is the 9 cancellation window in hours or days?",
+       "blocking": true
+     }
+   ]
+   ```
+3. Default `blocking` to `true`. Use `false` only when the ambiguity does not block publish (it will then surface as a QA `warn`, not `fail`).
+4. After the user resolves an item, remove it from `clarifications_needed` and update the relevant typed field (e.g. set `cancellation_window_hours: 24`).
+5. Never silently choose one interpretation. Either resolve the clarification or record it as pending.
+
+The QA runner blocks publish (`fail`) on every pending blocking clarification.
 
 ---
 
