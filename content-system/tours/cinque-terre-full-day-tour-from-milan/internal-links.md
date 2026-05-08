@@ -4,12 +4,6 @@
 - **Main tour page / booking page** → `{{WebsiteLink}}`
   - Why it matters: this is the primary conversion destination and should receive links from supporting blog content, FAQ content, and comparison content.
 
-## Verified external trust references (secondary only)
-- **TripAdvisor listing** → https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html
-  - Why it matters: provides third-party trust signal. Use only after the primary website CTA, not above it.
-- **Viator listing** → https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82
-  - Why it matters: provides marketplace visibility for travelers comparing booking channels. Use only after the primary website CTA.
-
 ## Suggested supporting internal links
 - **Milan day trips hub page** → `/milan-day-trips/`
   - Why it matters: helps cluster this product with other bookable excursions and supports category-level SEO.

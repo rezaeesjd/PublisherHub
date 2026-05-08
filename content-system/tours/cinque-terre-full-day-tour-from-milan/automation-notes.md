@@ -65,14 +65,12 @@ Useful input fields for automation:
 - `ViatorLink`
 
 ## Publishing placeholders
-Keep `{{WebsiteLink}}` dynamic until the website booking URL is provided. Once the real URL exists, the platform can replace it via `platform/post-overrides.php` or by updating `meta.json` directly.
+Keep these placeholders dynamic until publish step:
+- `{{WebsiteLink}}`
+- `{{TripAdvisorLink}}`
+- `{{ViatorLink}}`
 
-For this tour, the TripAdvisor and Viator links are already verified and stored as full URLs in `meta.json` and `internal-links.md`. The `{{TripAdvisorLink}}` and `{{ViatorLink}}` placeholders are no longer needed for this product.
-
-## Link state for this tour (snapshot)
-- Website booking URL: still placeholder `{{WebsiteLink}}` — needs human input before publish
-- TripAdvisor URL: verified
-- Viator URL: verified
+This allows content generation to happen before final link injection.
 
 ## Design consistency
 Keep the same page layout for every generated tour article:

@@ -11,7 +11,7 @@
 - cinque terre small group tour from milan
 - riomaggiore manarola monterosso tour from milan
 - cinque terre bus and train tour from milan
-- cinque terre tour from milan with cinque terre card
+- best cinque terre tour from milan
 - day trip to cinque terre from milan with guide
 - cinque terre national park tour from milan
 
@@ -27,7 +27,6 @@
 - guided cinque terre day trip vs self guided from milan
 - coach or minivan cinque terre tour from milan
 - best day trip from milan to cinque terre or lake como
-- cinque terre tour from milan monday wednesday saturday departures
 
 ## Title variations
 ### Direct booking angle
@@ -46,12 +45,7 @@
 - Best Time to Book a Cinque Terre Day Trip from Milan
 - Spring and Summer Cinque Terre Tour from Milan: What to Expect
 
-### Value or experience angle
-- Cinque Terre Day Trip from Milan: Three Villages, One Guided Day
-- Three Cinque Terre Villages in One Day from Milan with Train Access Included
-
 ## Notes on intent
 - Primary focus should remain on booking-intent phrases around "cinque terre tour from milan" and "cinque terre day trip from milan"
 - Informational content should support the commercial page and feed internal links toward direct booking
 - Comparison keywords are useful for MOFU content that helps travelers choose guided travel over self-planning
-- Departure-day terms (Monday, Wednesday, Saturday) are useful in long-tail planning content but should not be over-used in the main commercial post
