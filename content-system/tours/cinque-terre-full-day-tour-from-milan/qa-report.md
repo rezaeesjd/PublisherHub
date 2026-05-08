@@ -1,35 +1,73 @@
 # QA Report — Cinque Terre Full-Day Tour from Milan
 
 ## File checklist
-- [x] All 9 required files exist
-- [x] Folder naming valid (kebab-case)
+- [x] source-facts.md
+- [x] brief.md
+- [x] keywords.md
+- [x] blog-post.md
+- [x] faq.md
+- [x] meta.json
+- [x] internal-links.md
+- [x] automation-notes.md
+- [x] qa-report.md
 
-## Process checklist (AI-only)
-- [x] Generate step completed
-- [x] Review step completed in separate QA pass
-- [x] Publish-prep step ready (no human-gating requirement)
+## Metadata checklist
+- [x] `meta.json` is valid JSON
+- [x] Required meta fields present
+- [x] `public_slug` format valid
+- [x] `publish_status` is honest for current state (`needs_fix`)
+- [x] `human_review_required` = true
+- [x] `last_qa_date` present
 
-## Link handling checks
-- [x] At least one booking/reference link exists
-- [x] Primary CTA uses available link when website link is missing
-- [x] Secondary OTA links retained when available
-- [x] Not blocked for missing optional links
+## Source-fact checklist
+- [x] Tour identity captured
+- [x] Brand rule applied (Milano Adventures as public brand)
+- [x] Logistics, itinerary, inclusions/exclusions captured
+- [x] Missing inputs listed
+- [x] Human-review facts listed
 
-## Source-facts and content checks
-- [x] No invented ratings/review counts
-- [x] No fabricated logistics claims
-- [x] Unsupported/missing details omitted from hard claims
+## Public article cleanliness checklist
+- [x] H1 exists
+- [x] No admin/SEO labels in public article body
+- [x] Public-facing structure present (hook/value/who/expectations/CTA/booking notes)
 
-## Metadata checks
-- [x] `meta.json` valid
-- [x] Required fields present
-- [x] `human_review_required` disabled for AI-only workflow
-- [x] Ambiguities retained as warnings (non-blocking)
+## Link handling checklist
+- [x] Viator and TripAdvisor real links preserved
+- [x] Website placeholder used because direct website URL not provided
+- [x] Placeholder usage flagged as blocking issue
+- [x] OTA links are secondary, not primary CTA
 
-## Warnings (non-blocking)
-1. Product code conflict appears in source (`187808P82` vs `187808P109`).
-2. Cancellation value `9` lacks explicit unit.
-3. Meaning of date `May 1, 2026` remains unclear.
+## Conversion checklist
+- [x] Soft CTA included
+- [x] Strong CTA near end included
+- [x] Booking-confidence facts included
+- [x] “Who this tour is best for” included
+- [x] “What to know before booking” included
+
+## Review/social proof checklist
+- [x] No invented review/rating claims
+- [x] No exaggerated social proof statements
+- [x] Social-proof section omitted because structured rating/review metrics were not provided
+
+## Source-facts-only checklist
+- [x] No invented pricing/duration/meeting-point facts
+- [x] Ambiguous fields captured in clarifications
+
+## Publish readiness status
+- Not ready for publish workflow completion.
+- Package is structurally upgraded and reviewable, but blocking clarifications remain.
+
+## Issues found
+1. Product code conflict: `187808P82` vs `187808P109`.
+2. Cancellation window unit unresolved for value `9`.
+3. Direct website booking URL missing; `{{WebsiteLink}}` placeholder still in use.
+
+## Recommended fixes
+- Confirm canonical product code and update `product_reference_code`.
+- Confirm cancellation unit and store typed field.
+- Provide final website booking URL and replace `{{WebsiteLink}}` across files.
 
 ## Final status
-- **ready_for_review** (AI-generated and AI-reviewed; ready for publish workflow step).
+- `publish_status`: **needs_fix**
+- `qa_status`: **needs_fix**
+- Not published; live verification has not been performed.

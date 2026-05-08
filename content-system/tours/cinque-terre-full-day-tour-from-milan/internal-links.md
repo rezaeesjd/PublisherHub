@@ -1,17 +1,17 @@
 # Internal Linking Suggestions
 
-## Core internal links
-1. **Milan Day Trips Hub** → `{{MilanDayTripsHubLink}}`
-   - Why: Captures broader demand and funnels users from category-level browsing into this specific BOFU offer.
+- Main tour hub page: `{{MilanDayTripsHubLink}}`
+  - Why: moves BOFU readers to broader Milan day-trip options and internal conversion path.
 
-2. **Cinque Terre from Milan Comparison Guide** (Suggested future page) → `{{ComparisonPostLink}}`
-   - Why: Supports MOFU travelers comparing guided vs independent travel options.
+- Cinque Terre planning guide: `{{CinqueTerrePlanningGuideLink}}` (Suggested future page)
+  - Why: supports TOFU visitors who need prep information before booking.
 
-3. **What to Pack for Coastal Day Trips in Italy** (Suggested future page) → `{{RelatedGuideLink}}`
-   - Why: Supports TOFU traffic and introduces this tour naturally through practical planning content.
+- Comparison article: `{{CinqueTerreGuidedVsDIYLink}}` (Suggested future page)
+  - Why: helps uncertain users decide between guided vs self-guided choices.
 
-4. **Booking Help / Contact Page** → `{{ContactPageLink}}`
-   - Why: Reduces conversion friction for travelers with pre-booking questions.
+- Booking/contact page: `{{ContactPageLink}}`
+  - Why: captures final objections and supports direct booking completion.
 
-## Funnel flow
-Informational guide → Comparison guide → Cinque Terre tour page/post → Booking/contact page.
+- External booking references (secondary only):
+  - Viator: https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82
+  - TripAdvisor: https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html

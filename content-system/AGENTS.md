@@ -777,3 +777,91 @@ A `WPS:PUBLISH_BLOG` task is complete only when:
 - the post is not called “published” unless the live archive and single post URL work
 
 If live verification is not possible, the correct final status is `needs_live_verification`, not `published`.
+
+
+---
+
+## Additional command router rules (system-level)
+These command meanings are strict and should be treated as source-of-truth behavior.
+
+### `WPS:PROCESS_QA`
+Use this to perform process/result analysis only.
+
+Required behavior:
+- do not modify files
+- do not generate or rewrite package content
+- produce a structured QA/process report with findings and recommendations
+
+### `WPS:FIX_PACKAGE`
+Use this to repair one existing tour package under `content-system/tours/<tour-folder>/`.
+
+Required behavior:
+- do not create a duplicate tour folder
+- do not treat this as system redesign
+- update package files only as needed for compliance
+- maintain honest publish status and QA findings
+
+### `WPS:IMPROVE_SYSTEM_WORKFLOW`
+Use this for system-level improvements only.
+
+Required behavior:
+- improve instructions, workflow docs, templates, and checklists
+- do not modify tour packages under `content-system/tours/`
+- do not claim package publish success from this command
+
+### `WPS:LIVE_VERIFY`
+Use this only to verify live front-end behavior.
+
+Required behavior:
+- check blog archive visibility
+- check single post URL render
+- verify CTA links render
+- do not generate or rewrite content
+- update/report status only based on actual live checks
+
+---
+
+## Strict generation vs publish boundary
+Content package generation and publish verification are separate gates.
+
+### Generation gate (`WPS:GENERATE_CONTENT`)
+Generation is complete when package files are created and QA artifact exists. It does **not** mean live publish.
+
+### Publish gate (`WPS:PUBLISH_BLOG` or `WPS:LIVE_VERIFY`)
+A post can be called **published** only if:
+1. package passes QA,
+2. content is synced/deployed,
+3. archive page visibly lists the post,
+4. single post URL opens correctly,
+5. CTA links render correctly.
+
+Never call a post published before all live checks are verified.
+
+---
+
+## Source-facts precondition (hard rule)
+Before writing `blog-post.md`, the agent must first create/update `source-facts.md`.
+If this precondition is not met, generation is incomplete.
+
+---
+
+## Required package QA artifact (hard rule)
+Every generated package must include `qa-report.md` with all required checks. Missing `qa-report.md` is an automatic failure.
+
+---
+
+## Publish statuses (allowed set)
+Workflow policy allows only:
+- `draft`
+- `ready_for_review`
+- `needs_fix`
+- `ready_for_sync`
+- `needs_live_verification`
+- `published`
+
+Status mapping:
+- after generation: `draft` or `ready_for_review`
+- QA failures: `needs_fix`
+- approved but not synced: `ready_for_sync`
+- live checks unavailable/unverified: `needs_live_verification`
+- live verified archive + single post: `published`

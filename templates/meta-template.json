@@ -1,0 +1,20 @@
+{
+  "brand": "Milano Adventures",
+  "product_reference_code": "",
+  "canonical_tour_title": "",
+  "page_title": "",
+  "slug": "",
+  "public_slug": "",
+  "meta_description": "",
+  "primary_keyword": "",
+  "funnel_stage": "BOFU",
+  "cta_primary": "Check Availability",
+  "cta_primary_link": "{{WebsiteLink}}",
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "{{TripAdvisorLink}}",
+  "viator_link": "{{ViatorLink}}",
+  "publish_status": "draft",
+  "human_review_required": true,
+  "qa_status": "pending",
+  "last_qa_date": null
+}

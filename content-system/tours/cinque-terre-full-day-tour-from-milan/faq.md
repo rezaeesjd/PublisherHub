@@ -1,31 +1,25 @@
 # FAQ — Cinque Terre Full-Day Tour from Milan
 
-## Is this tour suitable for first-time visitors to Italy?
-Yes. It is designed as a guided, structured day trip with organized transport and on-the-day coordination.
+## Where is the meeting point?
+At Piazza IV Novembre, 20124 Milano, in front of Hotel Gallia at the designated bus stop.
 
-## Where is the meeting point in Milan?
-At Piazza IV Novembre, in front of Hotel Gallia near Milano Centrale station.
-
-## How early should I arrive?
-Arrive at least 15 minutes before departure.
+## What time should I arrive?
+Arrive about 15 minutes before the 07:00 departure.
 
 ## How long is the tour?
-The listed duration is approximately 13 hours and 30 minutes.
+Approximately 13 hours and 30 minutes.
 
 ## Is hotel pickup included?
-No. Travelers meet at the designated meeting point and return to Piazza IV Novembre.
-
-## Which villages can be visited?
-The product description references Monterosso al Mare, Vernazza, Corniglia, Manarola, and Riomaggiore.
-
-## Is the ferry always included?
-The panoramic ferry ride is seasonal and weather-dependent, so it may not operate on some days.
+No. Travelers meet the team directly at the meeting point.
 
 ## Is this a private tour?
-No, it is a shared tour experience.
+No, this is a shared tour with a maximum of 22 travelers.
+
+## Which villages are included?
+The source description references Riomaggiore, Manarola, Monterosso, Vernazza, and Corniglia.
+
+## Is the ferry always included?
+The ferry is seasonal and depends on sea/weather conditions.
 
 ## Which languages are available?
-English and Spanish are listed.
-
-## What is the best way to book?
-Book directly on the official website link for primary availability and confirmation. OTA pages can be used as secondary references.
+English and Spanish are listed in the source data.

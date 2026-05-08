@@ -1,33 +1,41 @@
-# Keyword Cluster
+# Keywords and SEO Planning
 
 ## Primary keyword
-- cinque terre tour from milan
+- cinque terre full-day tour from milan
 
-## Long-tail booking-intent keywords
-- full day cinque terre tour from milan
-- guided cinque terre day trip from milan
-- milan to cinque terre tour with train tickets
-- cinque terre coach tour from milan
-- riomaggiore manarola monterosso tour from milan
-- cinque terre small group tour from milan
-- cinque terre tour with ferry from milan
-- book cinque terre day tour from milan
+## Long-tail booking-intent keywords (5–10)
+- book cinque terre day trip from milan
+- guided cinque terre tour from milan
+- cinque terre tour from milan with train tickets
+- riomaggiore manarola monterosso day tour from milan
+- cinque terre one day guided tour price
+- milan to cinque terre organized day trip
+- cinque terre coach and rail day tour from milan
 
-## Informational keywords
+## Informational keywords (3–5)
 - how to visit cinque terre from milan in one day
-- cinque terre villages explained for first timers
-- best time for a cinque terre day trip from milan
-- what to wear for cinque terre walking tour
+- what to expect on a cinque terre guided tour
+- best time for cinque terre ferry connections
+- cinque terre villages for first-time visitors
 
-## Comparison keywords
-- cinque terre tour from milan vs by train
-- guided cinque terre tour vs self guided itinerary
-- cinque terre day trip from milan or la spezia base
+## Comparison keywords (2–5)
+- cinque terre guided tour vs self-guided train trip
+- cinque terre from milan vs from la spezia
+- coach tour vs independent cinque terre day route
 
-## Title variations
-- Cinque Terre Tour from Milan: Easy Full-Day Visit to Riomaggiore, Manarola & Monterosso
-- Guided Cinque Terre Day Trip from Milan with Train Connections
-- Milan to Cinque Terre Full-Day Tour: Stress-Free Coastal Villages Experience
-- Cinque Terre in One Day from Milan: What to Expect Before You Book
-- Cinque Terre Tour from Milan with Seasonal Ferry Option and Expert Guide
-- Riomaggiore, Manarola & Monterosso Day Tour from Milan
+## Title variations (4–8)
+- Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & Monterosso
+- Guided Cinque Terre Day Trip from Milan with Easy Logistics
+- Milan to Cinque Terre in One Day: What to Expect Before You Book
+- Stress-Free Cinque Terre Tour from Milan with Rail Connections
+- Book a Cinque Terre Day Tour from Milan: Practical Pre-Booking Guide
+
+## Suggested page title
+Cinque Terre Full-Day Tour from Milan: Guided Coastal Day Trip
+
+## Suggested meta description
+Book a guided Cinque Terre full-day tour from Milan with clear meeting logistics, multi-village routing support, and practical pre-booking details.
+
+## Suggested slug/public slug
+- slug: cinque-terre-full-day-tour-from-milan
+- public_slug: cinque-terre-full-day-tour-from-milan
