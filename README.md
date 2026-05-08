@@ -136,3 +136,16 @@ Next phase can add:
 - landing page generation
 - social media content generation
 - multi-channel publisher modules
+
+
+## Workflow commands
+WebPublisherSystem supports explicit command-driven workflows:
+- `WPS:GENERATE_CONTENT` → create/update package files only (not published)
+- `WPS:PUBLISH_BLOG` → validate package + publish readiness checks
+- `WPS:GENERATE_AND_PUBLISH` → run generation then publish checks sequentially
+- `WPS:PROCESS_QA` → process QA report only (no file edits)
+- `WPS:FIX_PACKAGE` → repair one existing package
+- `WPS:IMPROVE_SYSTEM_WORKFLOW` → update system docs/templates/checklists only
+- `WPS:LIVE_VERIFY` → live archive + single-post verification only
+
+Generation and publishing are separate. A post is not "published" until live archive and single-post verification is complete.
