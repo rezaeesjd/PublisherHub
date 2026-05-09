@@ -186,6 +186,27 @@ Each generated tour package must include these files:
 
 A generation task is incomplete if any of these files are missing.
 
+
+
+### Clarify-mode required files
+When blocking clarifications are open, generation must still keep a uniform package structure for automation.
+
+In clarify mode, all 9 required files must exist, but 5 files may be deferred stubs:
+- `brief.md`
+- `keywords.md`
+- `faq.md`
+- `internal-links.md`
+- `automation-notes.md`
+
+Stub format:
+
+```md
+# Deferred (Clarification Required)
+This file is intentionally deferred until blocking clarifications are resolved.
+```
+
+This resolves the hard-gate rule (do not generate dependent final content) while preserving machine-readable package completeness.
+
 ### Recommended (not required) files
 - `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`), what changed, who/what triggered it. Makes refresh diffs auditable.
 - `images/` folder — store hero and gallery assets here. Reference the hero from `meta.hero_image` (relative path, e.g. `images/hero.jpg`) and any others in `meta.image_gallery`.
@@ -1057,6 +1078,11 @@ Required provenance rows:
 
 ### Machine-checkable phase markers
 `meta.json` should include and maintain:
+- `canonical_tour_title`
+- `product_reference_code`
+- `channel_product_codes`
+- `website_link`
+- `cta_primary_link`
 - `generation_phase_completed`
 - `clarify_phase_required`
 - `clarify_phase_completed`
@@ -1069,6 +1095,9 @@ Required provenance rows:
 - `publish_status`
 - `public_copy_state`
 - `intake_questions_resolved`
+- `clarification_questions_presented`
+- `clarification_questions_presented_at`
+- `clarification_mode_selected`
 - `last_qa_date`
 
 Enforcement:

@@ -7,11 +7,13 @@
 3. Source facts are extracted to `source-facts.md`.
 4. Provenance matrix is created and normalized.
 5. Conflict + missing-input detection runs (the clarify gate).
-6. **If any blocking clarification exists:** the agent presents the questions to the user via `AskUserQuestion` and stops before public copy. The user picks one of:
+6. **If any blocking clarification exists:** the agent presents the questions to the user via `AskUserQuestion` and stops before final public copy. The user picks one of:
    - **Resolve** — answer in chat → blockers removed → continue to step 7.
    - **Holding notice** — agent writes a minimal holding-notice `blog-post.md`, sets `public_copy_state: holding_notice`, and stops.
    - **Provisional mode** — explicit user authorization → agent generates a draft, sets `public_copy_state: provisional`, and adds `provisional_mode: true`.
-7. Generate the remaining package files (`brief.md`, `keywords.md`, `blog-post.md` (final or holding notice), `faq.md`, `internal-links.md`, `automation-notes.md`, `meta.json`).
+7. Generate package files according to mode:
+   - **Final mode (no blockers):** generate all 9 required files with full content.
+   - **Clarify mode (blocking clarifications open):** generate `source-facts.md`, `meta.json`, `qa-report.md`, `blog-post.md` (holding notice), and create blocked-state stubs for `brief.md`, `keywords.md`, `faq.md`, `internal-links.md`, `automation-notes.md` with a one-line deferred marker.
 8. Generate/update `qa-report.md` and run the QA checklist.
 9. Open or update the PR. PR description must mirror `qa-report.md` blockers and warnings.
 10. Human review resolves any open clarifications and any QA findings.
@@ -24,6 +26,7 @@
 
 - `meta.clarifications_needed` non-empty with any `"blocking": true` entry → final `blog-post.md` is **forbidden** unless the user explicitly authorizes provisional mode in chat. Implicit precedent (e.g., other tour folders) is **not** authorization.
 - The agent must invoke `AskUserQuestion` (or end the chat with a clearly labeled question batch) before generating any public copy.
+- `meta.json` must include `clarification_questions_presented: true/false`, `clarification_questions_presented_at` (YYYY-MM-DD), and `clarification_mode_selected` (`resolve`, `holding_notice`, `provisional`, `unknown`).
 - Allowed states under the hard gate: **resolve**, **holding notice**, or **explicit provisional mode**. Default if the user does not pick: **holding notice**.
 - Missing website booking URL → `conversion_blockers[]` entry + blocking clarification unless explicitly waived.
 - Missing OTA URLs → warnings, not blockers.
@@ -74,3 +77,24 @@
 - Never overwrite a real provided URL with a placeholder token.
 - Keep product code separation explicit: `product_reference_code` is primary, `channel_product_codes` holds channel IDs (e.g., Viator/TripAdvisor).
 - If two product codes conflict and mapping is unclear, mark `conflicted` in provenance and block final copy.
+
+## Clarify-mode minimum package contract (machine-checkable)
+
+When blockers are open, a package is considered structurally complete only if the following files exist and are non-empty:
+
+- `source-facts.md`
+- `meta.json`
+- `qa-report.md`
+- `blog-post.md` (holding notice)
+- `brief.md` (deferred stub)
+- `keywords.md` (deferred stub)
+- `faq.md` (deferred stub)
+- `internal-links.md` (deferred stub)
+- `automation-notes.md` (deferred stub)
+
+Deferred stub format must be exactly one heading plus one line:
+
+```md
+# Deferred (Clarification Required)
+This file is intentionally deferred until blocking clarifications are resolved.
+```
