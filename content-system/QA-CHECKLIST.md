@@ -1,10 +1,15 @@
 # QA Checklist (Package + Publish Readiness + Process QA)
 
+This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. Items marked **[machine]** are intended to be enforced by the runner; items marked **[manual]** are reviewer judgment. The agent should not hand-mark **[machine]** items as passing — attach the runner output instead.
+
+---
+
 ## Tour Identity Confirmation (required first section)
+
 - [ ] requested command
 - [ ] actual package folder
 - [ ] canonical tour title
-- [ ] product/reference code
+- [ ] product/reference code (and any channel codes if conflicted)
 - [ ] active brand
 - [ ] website URL status
 - [ ] TripAdvisor URL status
@@ -13,46 +18,93 @@
 - [ ] report scope: generation / publishing / live verification
 
 ## Clarify Gate Enforcement
-- [ ] conflict and missing-input detection completed before copy
-- [ ] `clarifications_needed` evaluated
-- [ ] blocking issues stop public copy unless provisional mode explicitly approved
-- [ ] missing website URL treated as conversion blocker unless waived
 
-## File and structure
-- [ ] Correct single tour folder used
-- [ ] All 9 required files exist
-- [ ] `source-facts.md` exists and was created before copy
-- [ ] `qa-report.md` exists
+- [ ] **[machine]** conflict and missing-input detection completed before any public copy was written
+- [ ] **[machine]** `meta.clarifications_needed` populated (or empty if none detected)
+- [ ] **[machine]** if any `clarifications_needed[*].blocking == true`, then `qa_status == "needs_clarification"` and `public_copy_state` is `holding_notice` or `provisional`
+- [ ] **[machine]** intake_questions_resolved is `true` only when no blocking clarifications remain (or provisional mode was explicitly approved)
+- [ ] **[machine]** missing website URL surfaces as a `conversion_blockers` entry
+- [ ] **[manual]** intake questions were presented to the user via `AskUserQuestion` (or a clearly labeled question batch) before public copy generation
 
-## Metadata and phase markers
-- [ ] `meta.json` valid JSON
-- [ ] required fields exist
-- [ ] phase markers exist
-- [ ] allowed `publish_status` used
-- [ ] allowed `qa_status` used
+## File and Structure
 
-## Link handling
-- [ ] Real provided website URL preserved
-- [ ] Website link is primary CTA when provided
-- [ ] OTA links are secondary only
-- [ ] placeholders only for missing links
-- [ ] website placeholder flagged as blocker
-- [ ] missing OTA links flagged as warnings
+- [ ] **[machine]** correct single tour folder used (no duplicate slug)
+- [ ] **[machine]** all 9 required files exist
+- [ ] **[machine]** `source-facts.md` exists and is non-empty
+- [ ] **[machine]** `qa-report.md` exists and is non-empty
 
-## Source-facts provenance
-- [ ] provenance matrix present
-- [ ] statuses use allowed set
-- [ ] cancellation policy captured
-- [ ] review rating/count/text source captured
-- [ ] missing critical inputs listed
-- [ ] conflicts detected listed
+## Metadata and Phase Markers
 
-## Public content cleanliness
-- [ ] One real Markdown H1
-- [ ] No admin labels in `blog-post.md`
-- [ ] Public-facing sections only
+- [ ] **[machine]** `meta.json` valid JSON
+- [ ] **[machine]** required schema fields present
+- [ ] **[machine]** `publish_status` ∈ allowed enum
+- [ ] **[machine]** `qa_status` ∈ `{pending, passing, warning, needs_fix, needs_clarification}`
+- [ ] **[machine]** `public_copy_state` ∈ `{not_started, holding_notice, provisional, final}`
+- [ ] **[machine]** phase markers present: `generation_phase_completed`, `clarify_phase_required`, `clarify_phase_completed`, `publish_phase_completed`, `live_verification_completed`, `intake_questions_resolved`
+- [ ] **[machine]** `publish_status != "published"` while `live_verification_completed == false`
 
-## PROCESS_QA behavior constraints
+## Link Handling
+
+- [ ] **[machine]** if a real website booking URL is provided, `website_link` and `cta_primary_link` use it (not `{{WebsiteLink}}`)
+- [ ] **[machine]** missing website URL recorded as `conversion_blockers[]` entry
+- [ ] **[machine]** if real TripAdvisor / Viator URLs are provided, they are used in `meta.json`
+- [ ] **[machine]** placeholders (`{{WebsiteLink}}`, `{{TripAdvisorLink}}`, `{{ViatorLink}}`) only appear where the corresponding source field is missing
+- [ ] **[machine]** `blog-post.md` does not contain a malformed `{{...}}` token
+
+## Source-Facts Provenance
+
+- [ ] **[machine]** provenance matrix table present in `source-facts.md`
+- [ ] **[machine]** all rows use allowed `Status` values
+- [ ] **[manual]** every assertive sentence in `blog-post.md` traces to a row in the provenance matrix (provenance-to-claim binding)
+- [ ] **[manual]** marketing-flavored facts (UNESCO, "iconic", "world-famous", etc.) appear in the matrix before they appear in public copy
+- [ ] **[machine]** cancellation policy row present
+- [ ] **[machine]** review rating/count/text source rows present
+- [ ] **[machine]** "missing critical inputs" and "conflicts detected" rows present
+
+## Public Content Cleanliness
+
+- [ ] **[machine]** exactly one Markdown H1 in `blog-post.md`
+- [ ] **[machine]** no admin/SEO labels in `blog-post.md` (`Page Title`, `URL Slug`, `Meta Description`, `Primary Keyword`, `Funnel Stage`, `Internal Linking Suggestions`, `CTA Primary Link`, `QA Notes`, `Source Facts`)
+- [ ] **[machine]** active brand (`Milano Adventures` by default) appears at least once in `blog-post.md`
+- [ ] **[machine]** length: holding-notice mode → ≤150 words; final mode → 500–900 words (warning outside that range)
+- [ ] **[manual]** raw supplier/operator name does not leak into public copy
+
+## Conversion Checklist (final mode only)
+
+- [ ] **[machine]** website URL used as primary CTA when provided
+- [ ] **[machine]** missing website URL classified as conversion blocker unless waived
+- [ ] **[machine]** OTA links used as secondary trust/reference only (appear after the primary CTA in `blog-post.md`)
+- [ ] **[machine]** at least one CTA in the first half of the post; one strong CTA at the end
+- [ ] **[manual]** "Who this tour is best for" section present
+- [ ] **[manual]** "What to know before booking" section present
+
+## Conversion Checklist (holding-notice mode)
+
+- [ ] **[machine]** `blog-post.md` does not contain any specific facts dependent on unresolved blocking clarifications (no pricing, no cancellation window, no departure days, no specific durations, no specific itinerary order)
+- [ ] **[machine]** OTA fallback links are real URLs only; placeholder OTA tokens are forbidden inside the holding notice
+
+## Review / Social Proof Checklist
+
+- [ ] **[manual]** no invented review counts or ratings
+- [ ] **[machine]** if review claims appear in `blog-post.md`, the source row exists in the provenance matrix
+- [ ] **[manual]** single reviews are not phrased as broad market proof
+
+## Front-End Renderer Readiness
+
+- [ ] **[machine]** `slug` and `public_slug` match the regex `^[a-z0-9][a-z0-9-]*[a-z0-9]$`
+- [ ] **[manual]** `blog-post.md` renders cleanly in the public template (no broken Markdown)
+- [ ] **[machine]** `faq.md` exists and is parseable as a Q&A list
+
+## Publish Path Status
+
+- [ ] generation complete?
+- [ ] clarify required?
+- [ ] clarify complete?
+- [ ] publish phase complete?
+- [ ] live verification complete?
+
+## PROCESS_QA Behavior Constraints
+
 - [ ] no file modifications
 - [ ] no content rewriting
 - [ ] no PR creation unless requested
@@ -61,9 +113,28 @@
 - [ ] issues classified by type
 
 ## Issue Categories (PROCESS_QA)
+
 - [ ] System instruction gap
 - [ ] Workflow enforcement gap
 - [ ] User input gap
 - [ ] Generated package issue
+- [ ] QA/reporting gap
 - [ ] Front-end rendering risk
 - [ ] Publish verification gap
+- [ ] Goal/conversion gap
+
+## Issues Found
+
+1.
+
+## Recommended Fixes
+
+1.
+
+## Final Status
+
+- publish_status:
+- qa_status:
+- public_copy_state:
+- intake_questions_resolved:
+- blocker summary:

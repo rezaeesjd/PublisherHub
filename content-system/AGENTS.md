@@ -67,7 +67,7 @@ Expected behavior:
 - store the same list inside `meta.clarifications_needed` so QA can detect unresolved items (see `meta.schema.json`)
 - ask the user to resolve them before falling back to `WPS:GENERATE_CONTENT`
 
-`WPS:CLARIFY` should also fire **automatically inside `WPS:GENERATE_CONTENT`** when the agent detects ambiguities. Resolve them first, then continue generating. If the user cannot resolve them in time, leave the entries in `meta.clarifications_needed` so the QA runner blocks publish.
+`WPS:CLARIFY` is **automatic** inside `WPS:GENERATE_CONTENT` when the agent detects blocking ambiguities. The agent must follow the Intake Questions Protocol in the Enforcement Addendum (below): present the questions to the user via `AskUserQuestion` before generating any public copy, and stop generation until the user resolves the blockers, picks holding-notice mode, or explicitly approves provisional mode. Implicit precedent is never approval.
 
 ### No command prefix
 If the prompt contains tour information but no command prefix, default to `WPS:GENERATE_CONTENT`. If ambiguous values are detected during that run, escalate to `WPS:CLARIFY` before producing public copy.
@@ -410,12 +410,17 @@ Each `blog-post.md` should use this public-facing order:
 Internal links and SEO metadata should not be displayed inside the public article body unless they are written as natural traveler-facing links.
 
 ### Length and style rules
-- Target length for the main post: approximately 500 to 900 words unless the user requests otherwise.
+- Target length for a final main post: approximately 500 to 900 words unless the user requests otherwise.
+- A holding-notice `blog-post.md` is short (≤150 words) and uses the structure in `templates/holding-notice-template.md`.
 - The hook paragraph should be short, emotionally clear, and conversion-aware.
 - The hook should also be suitable for reuse as a short summary or meta-style introduction.
 - The content should be easy to scan, with relatively short paragraphs and subheadings.
 - The post should feel like a blog and landing page hybrid.
 - Avoid long generic destination history unless directly useful for booking decisions.
+
+### Brand-mention rule
+- The active system brand (`Milano Adventures` by default) must appear at least once in `blog-post.md`, written naturally — typically in the hook paragraph or the strong-CTA block.
+- This applies to both final and holding-notice modes. The QA runner emits `brand-missing` when the brand name is absent.
 
 ---
 
@@ -586,12 +591,24 @@ Required fields (see schema for full list):
 
 Use real URLs when provided. Use placeholders only when links are missing.
 
-Default after generation:
+Default after a clean generation (no blocking clarifications):
 
 ```json
 "publish_status": "draft",
 "human_review_required": true,
-"qa_status": "pending"
+"qa_status": "pending",
+"public_copy_state": "final",
+"intake_questions_resolved": true
+```
+
+Default after generation when the hard clarify gate is active:
+
+```json
+"publish_status": "draft",
+"human_review_required": true,
+"qa_status": "needs_clarification",
+"public_copy_state": "holding_notice",
+"intake_questions_resolved": false
 ```
 
 When `WPS:CLARIFY` finds ambiguities, populate `clarifications_needed` (see schema). Every entry there is treated as a `fail` finding by the QA runner unless it is explicitly marked `"blocking": false`, in which case it is a `warn`.
@@ -869,12 +886,31 @@ Status mapping:
 
 ## Enforcement Addendum (Hard Gates)
 
-These rules are mandatory and override any softer guidance.
+These rules are mandatory and override any softer guidance. They are intended to be enforced by both the agent and the QA runner (`platform/qa-rules.php`). When agent behavior and runner behavior disagree, the **runner wins**.
 
 ### Hard clarify gate
-If `meta.clarifications_needed` is non-empty, **public copy generation is blocked** unless the user explicitly approves provisional mode.
 
-Blocking clarification issue types:
+If `meta.clarifications_needed` contains any entry with `"blocking": true`, **public copy generation is blocked**.
+
+There are exactly three lawful states under the hard gate:
+
+1. **Resolve** — the user answers the blocking questions in the same session, the entries are removed from `clarifications_needed`, and generation proceeds normally.
+2. **Holding notice** — the agent writes a minimal `blog-post.md` holding notice (see "Holding-notice mode" below), sets `public_copy_state: "holding_notice"`, and stops. Final public copy is regenerated on a later `WPS:GENERATE_CONTENT` run after the user resolves the blockers.
+3. **Provisional mode** — the user **explicitly** authorizes provisional generation in chat (e.g., "go ahead in provisional mode"). The agent then sets `public_copy_state: "provisional"`, generates a draft article, and adds `provisional_mode: true` to `meta.json`. Provisional output is never `ready_for_review`.
+
+The agent must **not** unilaterally choose option 3. Implicit precedent (e.g., "another tour folder did this") is **not** explicit approval. If the user has not chosen, the default is option 2 (holding notice).
+
+#### Intake questions protocol
+
+When blocking issues exist and the user has not yet answered them, the agent must:
+
+1. Create/update `source-facts.md`, `meta.json`, and `qa-report.md`.
+2. Present the blocking questions to the user using `AskUserQuestion` (or the closest available equivalent), batched into **at most four focused questions**. Each question must reference the field name and raw value so the user can answer without re-reading the source.
+3. Wait for a reply before generating any further content beyond those three files. Do not proceed to `blog-post.md`, `faq.md`, `keywords.md`, `brief.md`, `internal-links.md`, or `automation-notes.md` until the user has either answered or chosen option 2 / option 3.
+4. If `AskUserQuestion` is unavailable, end the chat reply with a clearly labeled **"Blocking clarifications — please answer to continue"** section listing the same questions, and stop generation.
+
+#### Blocking clarification issue types
+
 - conflicting product code
 - conflicting tour title
 - conflicting itinerary scope
@@ -886,15 +922,82 @@ Blocking clarification issue types:
 - unclear active brand
 - unclear review/rating source
 - conflicting OTA/source data
+- unresolved unit on a typed numeric field (e.g., cancellation window with no unit)
 
-When blocking issues exist:
+#### When blocking issues exist
+
 1. create/update `source-facts.md`
 2. create/update `meta.json`
 3. create/update `qa-report.md`
-4. do **not** generate final `blog-post.md`
+4. do **not** generate final `blog-post.md`, and do **not** populate `faq.md`, `keywords.md`, `brief.md`, `internal-links.md`, or `automation-notes.md` with content that depends on the unresolved fields
 5. do **not** mark package `ready_for_review`
 6. set `qa_status` to `needs_clarification`
-7. keep `publish_status` as `draft` or `needs_fix`
+7. set `public_copy_state` to `holding_notice` (or `provisional` only if explicitly approved)
+8. keep `publish_status` as `draft` or `needs_fix`
+9. ask the user using `AskUserQuestion` per the intake questions protocol above
+
+### Standard intake questions (collect upfront when possible)
+
+Before processing tour data, prefer to collect these fields explicitly. Whenever any of them is missing, blocking, or ambiguous in the supplied data, treat it as a blocking clarification.
+
+- Active system brand (default: Milano Adventures)
+- Direct website booking URL (conversion blocker if missing)
+- Primary product/reference code, plus any channel-specific codes (Viator, TripAdvisor, GetYourGuide, etc.)
+- Cancellation window — number **and** unit (hours / days)
+- Hotel pickup status (yes / no / optional add-on) when source data shows both a meeting point and a pickup feature
+- Wheelchair accessibility (yes / no / not applicable)
+- Languages (live guide / audio / written) and whether they are confirmed for every departure
+- Review/rating data: rating, count, and source — or explicit "no review data available"
+
+Tours that arrive with all of these fields can usually generate end-to-end without a clarification round.
+
+### Provenance-to-claim binding
+
+Every assertive sentence in `blog-post.md` (and in `faq.md`, `internal-links.md`, and `keywords.md` where applicable) must trace to a row in the provenance matrix in `source-facts.md`.
+
+Practical rules:
+
+- Marketing-flavored "obvious" facts (e.g., "UNESCO World Heritage Site", "iconic", "world-famous", "scenic", "world-class cuisine") count as claims and must first be added as a row in the provenance matrix with status `confirmed` and a real source — usually the supplier-provided product description.
+- If a fact comes from the supplier description, capture it as `confirmed (User input — product description)` in the matrix before referencing it.
+- Inferred facts (e.g., "end point same as starting point" derived from address equality) must be marked `inferred`, not `confirmed`.
+- Removing a claim is always preferable to inventing a source for it.
+
+### Brand-mention requirement
+
+`blog-post.md` must mention the active system brand (default `Milano Adventures`) at least once in natural prose. The QA runner emits `brand-missing` when the brand name is absent. Holding-notice mode also satisfies this requirement when the brand appears in the holding paragraph.
+
+### Holding-notice mode
+
+When the hard gate is active, `blog-post.md` becomes a **holding notice** rather than a final article. The holding notice:
+
+- has one Markdown H1 with the canonical tour title (or a near-equivalent)
+- is short (≤150 words)
+- mentions the active brand once
+- contains no pricing, no cancellation window, no departure days, no specific durations, no specific itinerary order, no specific meeting-point operational details, and no claims that depend on unresolved clarifications
+- may include OTA fallback links (TripAdvisor, Viator) when those URLs are real
+- contains no admin/SEO labels (the public-cleanliness rules still apply)
+
+A canonical example lives in `templates/holding-notice-template.md`. Use it directly.
+
+### Provenance fail = generation incomplete
+
+If any claim in `blog-post.md` cannot be traced to a row in `source-facts.md`, the generation is **incomplete**. Either remove the claim or add the supporting row. Do not ship.
+
+### Exemplar compliance
+
+Tour folders inside `content-system/tours/` are reference structures, not blanket permission to bypass current rules. If an older tour folder predates a current rule (for example, it ships with `{{WebsiteLink}}` and a full `blog-post.md`), it must contain an `EXEMPLAR_NOTES.md` file at its root that says, in plain language, which current rules it does not satisfy and that it is not a model. Agents must not cite an unmarked tour as precedent for bypassing a hard gate.
+
+### qa_status enum (machine-checked)
+
+Allowed values for `qa_status`:
+
+- `pending` — generation in progress; no QA verdict yet
+- `passing` — QA passes
+- `warning` — non-blocking issues exist
+- `needs_fix` — blocking issues exist that are not clarification-shaped
+- `needs_clarification` — hard clarify gate is active; user must resolve blocking clarifications
+
+These match `meta.schema.json` exactly. Do not invent values.
 
 ### WPS:GENERATE_CONTENT pre-copy gate (ordered)
 Before writing `blog-post.md`, run this order:
@@ -964,6 +1067,8 @@ Required provenance rows:
 - `conversion_blockers`
 - `qa_status`
 - `publish_status`
+- `public_copy_state`
+- `intake_questions_resolved`
 - `last_qa_date`
 
 Enforcement:

@@ -99,7 +99,11 @@
     "ticket_format": { "type": "array", "items": { "type": "string" } },
     "tickets_per_booking": { "type": "integer", "minimum": 1 },
     "entry_method": { "type": "string" },
-    "cancellation_window_hours": { "type": "integer", "minimum": 0 },
+    "cancellation_window_hours": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "description": "Cancellation window in hours. Null when the source-supplied unit is unresolved (raw value preserved in cancellation_window_raw and a clarification is open)."
+    },
     "cancellation_window_raw": { "type": "string" },
     "categories": { "type": "array", "items": { "type": "string" } },
     "land_transport": { "type": "array", "items": { "type": "string" } },
@@ -126,7 +130,16 @@
       ]
     },
     "human_review_required": { "type": "boolean" },
-    "qa_status": { "type": "string", "enum": ["pending", "passing", "warning", "needs_fix"] },
+    "qa_status": { "type": "string", "enum": ["pending", "passing", "warning", "needs_fix", "needs_clarification"] },
+    "public_copy_state": {
+      "type": "string",
+      "enum": ["not_started", "holding_notice", "provisional", "final"],
+      "description": "Tracks whether the public-facing blog-post.md is a holding notice (hard clarify gate active), a provisionally-approved draft, or final ready-for-review copy."
+    },
+    "intake_questions_resolved": {
+      "type": "boolean",
+      "description": "True when the upfront WPS:CLARIFY intake questions have been answered by the user (or explicitly waived via provisional mode)."
+    },
     "last_qa_date": { "type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
     "clarifications_needed": {
       "type": "array",
