@@ -73,7 +73,7 @@ Present and complete in source-facts.md. All required rows populated.
 
 - [x] No admin/SEO labels visible ("Page Title", "URL Slug", "Meta Description", "Primary Keyword", "Funnel Stage", "Internal Linking Suggestions" — all absent)
 - [x] Single H1 at top of file
-- [x] Brand referenced is Milano Adventures
+- [x] Brand "Milano Adventures" referenced naturally in blog-post.md (hook paragraph)
 - [x] No raw supplier name leaks in public copy
 - [x] No invented facts — all claims traceable to source-facts.md
 - [x] No invented reviews, ratings, or testimonials

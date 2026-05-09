@@ -51,6 +51,7 @@ These are the structured product facts used to generate this content package. Pu
 - **Departure:** 07:00 from Piazza IV Novembre, in front of Hotel Gallia bus stop, Milan
 - **Travel to Cinque Terre:** Air-conditioned GT coach — approximately 150 minutes stated for departure leg
 - **Villages visited:** Monterosso al Mare, Vernazza, Corniglia, Manarola, Riomaggiore (all five)
+- **Destination status (from product description):** Cinque Terre is a UNESCO World Heritage Site, located along the South Liguria coast near La Spezia
 - **Inter-village transport:** Train tickets included; seasonal ferry also included (see note)
 - **Return:** By GT coach to Piazza IV Novembre, Milan
 
@@ -154,6 +155,7 @@ _Not provided._ Public copy must not claim any rating, review count, or testimon
 | Meeting point | Piazza IV Novembre, in front of Hotel Gallia bus stop | User input | confirmed | Fuchsia shirts; arrive 15 min early |
 | End point | Piazza IV Novembre (same as start) | User input | confirmed | |
 | Itinerary stops | Monterosso al Mare, Vernazza, Corniglia, Manarola, Riomaggiore | User input (description) | confirmed | All five villages; order/durations not specified |
+| Destination status | UNESCO World Heritage Site, South Liguria coast near La Spezia | User input (product description) | confirmed | Mentioned in supplier-provided description |
 | Itinerary durations | 150 min travel leg from Milan; others not specified | User input (partial) | needs_human_review | Only departure leg timed |
 | Inclusions | GT coach, train tickets, ferry (seasonal), expert guide | User input | confirmed | Ferry is conditional on sea/weather |
 | Exclusions | Meals, personal expenses | inferred | inferred | Not explicitly listed in source |

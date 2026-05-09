@@ -1,6 +1,6 @@
 # Cinque Terre Full-Day Tour from Milan: All Five Villages in One Day
 
-There's nothing quite like rounding the corner of a Ligurian hillside and watching the pastel-painted cliffside villages of Cinque Terre stack up against the sea below. This guided full-day tour takes you from Milan all the way to all five villages — Monterosso al Mare, Vernazza, Corniglia, Manarola, and Riomaggiore — with roundtrip coach transport, train tickets, and a seasonal panoramic ferry ride all included.
+There's nothing quite like rounding the corner of a Ligurian hillside and watching the pastel-painted cliffside villages of Cinque Terre stack up against the sea below. This guided full-day tour from Milano Adventures takes you from Milan all the way to all five villages — Monterosso al Mare, Vernazza, Corniglia, Manarola, and Riomaggiore — with roundtrip coach transport, train tickets, and a seasonal panoramic ferry ride all included.
 
 ## Why this tour is worth a full day
 
