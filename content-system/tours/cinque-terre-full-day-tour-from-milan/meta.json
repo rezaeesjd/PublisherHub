@@ -1,0 +1,109 @@
+{
+  "brand": "Milano Adventures",
+  "product_reference_code": "187808P109",
+  "secondary_product_codes": {
+    "viator": "187808P82"
+  },
+  "canonical_tour_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & All Five Villages",
+  "tour_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & All Five Villages",
+  "page_title": "Cinque Terre Full-Day Tour from Milan | All 5 Villages by Coach, Train & Ferry",
+  "slug": "cinque-terre-full-day-tour-from-milan",
+  "public_slug": "cinque-terre-full-day-tour-from-milan",
+  "meta_description": "Discover all five Cinque Terre villages from Milan in one full day. Guided tour by coach, train & seasonal ferry with bilingual guide included. Book direct — Mon, Wed & Sat departures.",
+  "primary_keyword": "Cinque Terre day tour from Milan",
+  "funnel_stage": "BOFU",
+  "cta_primary": "Check Availability",
+  "cta_primary_link": "{{WebsiteLink}}",
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
+  "viator_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
+  "cta_secondary_links": {
+    "tripadvisor": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
+    "viator": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82"
+  },
+  "meeting_point": "Piazza IV Novembre, 20124 Milano MI, Italy — in front of Hotel Gallia bus stop",
+  "meeting_point_details": "Look for guides in fuchsia shirts. Arrive 15 minutes before the tour starts.",
+  "end_point": "Piazza IV Novembre, 20124 Milano MI, Italy (same as meeting point)",
+  "duration": "13 hours 30 minutes",
+  "start_time": "07:00",
+  "departure_days": ["Mon", "Wed", "Sat"],
+  "group_type": "Shared",
+  "max_travelers": 22,
+  "min_travelers_to_operate": 15,
+  "difficulty": "Easy",
+  "languages": ["English", "Spanish"],
+  "language_formats": ["Live guide commentary"],
+  "guide": "Expert tour leader",
+  "round_trip": true,
+  "not_private": true,
+  "hotel_pickup_dropoff": false,
+  "infant_policy": "Infants (ages 0–3) join free",
+  "age_bands": {
+    "adult": "12-99",
+    "child": "4-11",
+    "infant": "0-3"
+  },
+  "currency": "EUR",
+  "pricing_model": "per_person",
+  "pricing": {
+    "adult": 275,
+    "child": 157,
+    "infant": 0
+  },
+  "pricing_valid_from": "2026-05-01",
+  "confirmation": "instant",
+  "ticket_format": ["Paper ticket", "Mobile ticket"],
+  "tickets_per_booking": 1,
+  "entry_method": "Direct entry — no separate queue",
+  "cancellation_window_raw": "9, Relatively to Start Time",
+  "categories": ["Tour", "History & Culture", "Culture", "Travel", "Shore Excursion", "Sightseeing"],
+  "land_transport": ["Bus/Coach", "Minibus", "Train/Rail"],
+  "notes": [
+    "Panoramic ferry ride is seasonal and subject to sea and weather conditions. May not operate outside peak season.",
+    "Guides wear fuchsia shirts. Arrive 15 minutes before departure.",
+    "Minimum 15 travelers required to operate the tour."
+  ],
+  "publish_status": "draft",
+  "human_review_required": true,
+  "qa_status": "needs_fix",
+  "last_qa_date": "2026-05-09",
+  "generation_phase_completed": true,
+  "clarify_phase_required": true,
+  "clarify_phase_completed": false,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "blocking_issues": [
+    "Missing website booking URL — {{WebsiteLink}} is a placeholder (conversion blocker)",
+    "Conflicting product codes: 187808P109 (user-provided) vs 187808P82 (Viator URL) — human must confirm primary",
+    "Cancellation window unit ambiguous: 9 hours or 9 days relative to start time"
+  ],
+  "conversion_blockers": [
+    "Website booking URL not provided — {{WebsiteLink}} must be replaced with real URL before publish"
+  ],
+  "clarifications_needed": [
+    {
+      "field": "website_link",
+      "raw_value": "Not provided",
+      "question": "What is the direct website booking URL for this tour? This is required as the primary CTA before publishing.",
+      "blocking": true
+    },
+    {
+      "field": "cancellation_window_hours",
+      "raw_value": "9, Relatively to Start Time",
+      "question": "Is the cancellation window 9 hours or 9 days relative to the tour start time?",
+      "blocking": true
+    },
+    {
+      "field": "product_reference_code",
+      "raw_value": "187808P109 (user input) vs 187808P82 (Viator URL)",
+      "question": "Which is the primary product reference code — 187808P109 (user-provided) or 187808P82 (in the Viator URL)? Are these the same product with different channel IDs, or different products?",
+      "blocking": true
+    },
+    {
+      "field": "hotel_pickup_dropoff",
+      "raw_value": "Meeting type: No, we meet all travelers at a meeting point; but hotel pickup also listed",
+      "question": "Is hotel pickup and drop-off included in this tour or not? The source data shows a meeting point but also lists hotel pickup as a feature.",
+      "blocking": false
+    }
+  ]
+}
