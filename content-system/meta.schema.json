@@ -26,6 +26,9 @@
     "live_verification_completed",
     "public_copy_state",
     "intake_questions_resolved",
+    "clarification_questions_presented",
+    "clarification_questions_presented_at",
+    "clarification_mode_selected",
     "clarifications_needed",
     "blocking_issues",
     "conversion_blockers",
@@ -156,6 +159,20 @@
     "intake_questions_resolved": {
       "type": "boolean",
       "description": "True when the upfront WPS:CLARIFY intake questions have been answered by the user (or explicitly waived via provisional mode)."
+    },
+    "clarification_questions_presented": {
+      "type": "boolean",
+      "description": "True when blocking clarification questions were explicitly presented to the user in chat or AskUserQuestion."
+    },
+    "clarification_questions_presented_at": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Date clarification questions were presented to the user."
+    },
+    "clarification_mode_selected": {
+      "type": "string",
+      "enum": ["resolve", "holding_notice", "provisional", "unknown"],
+      "description": "Clarify-gate path selected for this generation run."
     },
     "last_qa_date": { "type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
     "clarifications_needed": {

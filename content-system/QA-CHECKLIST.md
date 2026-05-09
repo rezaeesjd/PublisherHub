@@ -25,11 +25,13 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] **[machine]** intake_questions_resolved is `true` only when no blocking clarifications remain (or provisional mode was explicitly approved)
 - [ ] **[machine]** missing website URL surfaces as a `conversion_blockers` entry
 - [ ] **[manual]** intake questions were presented to the user via `AskUserQuestion` (or a clearly labeled question batch) before public copy generation
+- [ ] **[machine]** `clarification_questions_presented == true` when any blocking clarification exists
 
 ## File and Structure
 
 - [ ] **[machine]** correct single tour folder used (no duplicate slug)
 - [ ] **[machine]** all 9 required files exist
+- [ ] **[machine]** if `qa_status == needs_clarification`, blocked-state stub files exist for `brief.md`, `keywords.md`, `faq.md`, `internal-links.md`, `automation-notes.md`
 - [ ] **[machine]** `source-facts.md` exists and is non-empty
 - [ ] **[machine]** `qa-report.md` exists and is non-empty
 
@@ -37,10 +39,12 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 
 - [ ] **[machine]** `meta.json` valid JSON
 - [ ] **[machine]** required schema fields present
+- [ ] **[machine]** no deprecated/alias key substitution for required fields (`product_code`, `channel_codes`, `website_url` are invalid substitutes)
 - [ ] **[machine]** `publish_status` ∈ allowed enum
 - [ ] **[machine]** `qa_status` ∈ `{pending, passing, warning, needs_fix, needs_clarification}`
 - [ ] **[machine]** `public_copy_state` ∈ `{not_started, holding_notice, provisional, final}`
 - [ ] **[machine]** phase markers present: `generation_phase_completed`, `clarify_phase_required`, `clarify_phase_completed`, `publish_phase_completed`, `live_verification_completed`, `intake_questions_resolved`
+- [ ] **[machine]** clarify interaction markers present: `clarification_questions_presented`, `clarification_questions_presented_at`, `clarification_mode_selected`
 - [ ] **[machine]** `publish_status != "published"` while `live_verification_completed == false`
 
 ## Link Handling

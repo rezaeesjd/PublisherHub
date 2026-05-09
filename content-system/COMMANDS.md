@@ -53,7 +53,7 @@
 
 ## WPS:GENERATION_PROCESS_QA
 
-- **Artifact requirement:** Write/update `content-system/generation-process-qa-report.md` as the canonical report used by `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`.
+- **Artifact requirement:** Prefer writing/updating `content-system/generation-process-qa-report.md` as the canonical report used by `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`. If the user explicitly requests a no-file-change review, return the full report in chat and do not write files.
 
 - **Purpose:** Review the full process from raw input → generated content package (no publishing).
 - **Should do:** Inspect raw input, command, AGENTS.md/templates/workflow, generated package, PR diff. Produce the structured report defined in `AGENTS.md`'s PROCESS_QA section.
@@ -65,6 +65,12 @@
 
 - **Purpose:** Apply system improvements identified by the most recent `WPS:GENERATION_PROCESS_QA` report.
 - **Should do:** Modify `AGENTS.md`, `COMMANDS.md`, `WORKFLOW.md`, `QA-CHECKLIST.md`, `templates/`, `structures/`, and schema files only.
+- **Should do (required):**
+  - enforce clarify-mode minimum package contract
+  - align template keys with `meta.schema.json`
+  - improve conversion-blocker enforcement for missing website URL
+  - standardize product code split (`product_reference_code` vs `channel_product_codes`)
+  - add machine-checkable clarify interaction markers
 - **Must not do:** Modify content under `content-system/tours/` (except adding non-content example files such as `EXEMPLAR_NOTES.md` when explicitly recommended by the QA report).
 - **Allowed file changes:** system/workflow/template/schema/documentation files.
 - **Final expected status:** Clearer enforceable workflow for future runs.
