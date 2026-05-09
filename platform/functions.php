@@ -22,7 +22,7 @@ function wps_default_settings(): array
         'archive_description' => 'Helpful travel guides, tour ideas, and booking-focused articles from Milano Adventures.',
         'archive_base_url' => 'blog',
         'github_owner' => 'rezaeesjd',
-        'github_repo' => 'WebSage-Solutions',
+        'github_repo' => 'PublisherHub',
         'github_branch' => 'main',
         'github_content_path' => 'WebPublisherSystem/content-system/tours',
         'website_link' => '{{WebsiteLink}}',
