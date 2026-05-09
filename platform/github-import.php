@@ -424,7 +424,7 @@ if (!empty($connections)): ?>
         <label>
             Branch override <span class="muted" style="font-weight:400;">(optional)</span>
             <input type="text" name="branch" placeholder="main" autocomplete="off" spellcheck="false">
-            <small>Auto-detected from URL. Override only if needed.</small>
+            <small>Auto-detected from URL. Required override for branches containing <code>/</code> (e.g. <code>feature/my-branch</code>), as those cannot be reliably parsed from a tree URL.</small>
         </label>
 
         <label>

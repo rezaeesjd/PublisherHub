@@ -214,8 +214,14 @@ function ghimport_parse_github_url(string $input): array
         return $result;
     }
 
+    // Decode percent-encoded segments before storing so they are not
+    // double-encoded when rawurlencode() is applied later on API calls.
+    // e.g. browser-copied "my%20folder" → stored as "my folder" → API "my%20folder" ✓
     $segments = array_values(
-        array_filter(explode('/', trim($parsed['path'] ?? '', '/')), fn($s) => $s !== '')
+        array_filter(
+            array_map('urldecode', explode('/', trim($parsed['path'] ?? '', '/'))),
+            fn($s) => $s !== ''
+        )
     );
 
     if (count($segments) < 2) {
@@ -227,6 +233,11 @@ function ghimport_parse_github_url(string $input): array
     $result['repo']  = preg_replace('/\.git$/', '', $segments[1]);
 
     // /tree/{branch}[/{path...}]
+    // Note: GitHub branch names may contain "/" (e.g. "feature/my-branch"), but
+    // the URL structure is identical to owner/repo/tree/{branch}/{path}, making
+    // it impossible to distinguish branch from path without an API call. The
+    // parser treats segment[3] as the branch and the rest as content_path. For
+    // slash-containing branch names, users should set the branch override field.
     if (isset($segments[2]) && $segments[2] === 'tree' && isset($segments[3])) {
         $result['branch'] = $segments[3];
         if (count($segments) > 4) {
