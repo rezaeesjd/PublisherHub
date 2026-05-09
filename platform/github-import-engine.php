@@ -141,6 +141,35 @@ function ghimport_update_connection(array &$connections, array $updated): void
     }
 }
 
+
+function ghimport_update_connection_status(string $id, string $status): bool
+{
+    if ($id === '') {
+        return false;
+    }
+
+    $connections = ghimport_load_connections();
+    $found = false;
+
+    foreach ($connections as &$conn) {
+        if (($conn['id'] ?? '') !== $id) {
+            continue;
+        }
+
+        $conn['last_sync_status'] = $status;
+        $conn['last_synced_at'] = gmdate('c');
+        $found = true;
+        break;
+    }
+    unset($conn);
+
+    if (!$found) {
+        return false;
+    }
+
+    return ghimport_save_connections($connections);
+}
+
 function ghimport_delete_connection(array &$connections, string $id): void
 {
     $connections = array_values(array_filter($connections, fn($c) => ($c['id'] ?? '') !== $id));
@@ -470,6 +499,108 @@ function ghimport_write_local(string $localRoot, string $relativePath, string $c
  *
  * Returns null when the file is outside $contentPath.
  */
+
+
+function ghimport_collect_local_files(string $localRoot): array
+{
+    $files = [];
+    if (!is_dir($localRoot)) {
+        return $files;
+    }
+
+    $root = realpath($localRoot);
+    if ($root === false) {
+        return $files;
+    }
+
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::LEAVES_ONLY
+    );
+
+    $rootPrefix = rtrim(str_replace('\\', '/', $root), '/') . '/';
+
+    foreach ($iterator as $fileInfo) {
+        if (!$fileInfo->isFile()) {
+            continue;
+        }
+
+        $absolute = str_replace('\\', '/', $fileInfo->getPathname());
+        if (!str_starts_with($absolute, $rootPrefix)) {
+            continue;
+        }
+
+        $relative = substr($absolute, strlen($rootPrefix));
+        if ($relative === '' || ghimport_is_protected($relative)) {
+            continue;
+        }
+
+        $files[$relative] = true;
+    }
+
+    return $files;
+}
+
+
+function ghimport_connection_target_prefix(array $conn): string
+{
+    $contentPath = trim(str_replace('\\', '/', $conn['content_path'] ?? ''), '/');
+    $localPath = trim(str_replace('\\', '/', $conn['local_path'] ?? ''), '/');
+    return $localPath !== '' ? $localPath : $contentPath;
+}
+
+function ghimport_connection_has_shared_target(array $conn): bool
+{
+    $connId = (string) ($conn['id'] ?? '');
+    $targetPrefix = ghimport_connection_target_prefix($conn);
+
+    foreach (ghimport_load_connections() as $other) {
+        if (!($other['enabled'] ?? true)) {
+            continue;
+        }
+        if ((string) ($other['id'] ?? '') === $connId) {
+            continue;
+        }
+        if (ghimport_connection_target_prefix($other) === $targetPrefix) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function ghimport_prune_deleted_files(string $localRoot, array $syncedPaths, array &$results, string $scopePrefix = ''): void
+{
+    $localFiles = ghimport_collect_local_files($localRoot);
+    if (empty($localFiles)) {
+        return;
+    }
+
+    foreach ($localFiles as $relativePath => $_) {
+        if ($scopePrefix !== '') {
+            $scope = rtrim($scopePrefix, '/') . '/';
+            if ($relativePath !== $scopePrefix && !str_starts_with($relativePath, $scope)) {
+                continue;
+            }
+        }
+
+        if (isset($syncedPaths[$relativePath])) {
+            continue;
+        }
+
+        $targetPath = rtrim($localRoot, '/\\') . '/' . $relativePath;
+        if (!is_file($targetPath)) {
+            continue;
+        }
+
+        if (@unlink($targetPath)) {
+            $results[] = ['status' => 'deleted', 'path' => $relativePath, 'message' => 'Removed because it no longer exists in GitHub source.'];
+        } else {
+            $results[] = ['status' => 'error', 'path' => $relativePath, 'message' => 'Failed to remove stale local file.'];
+        }
+    }
+}
+
 function ghimport_map_path(string $repoFilePath, string $contentPath, string $localPath): ?string
 {
     $repoFilePath = trim(str_replace('\\', '/', $repoFilePath), '/');
@@ -678,6 +809,32 @@ function ghimport_sync_connection(array $conn, string $localRoot = GHIMPORT_LOCA
         ghimport_sync_via_api($conn, $localRoot, $results);
     }
 
+    $syncedPaths = [];
+    foreach ($results as $item) {
+        if (in_array($item['status'], ['created', 'updated', 'unchanged'], true)) {
+            $syncedPaths[$item['path']] = true;
+        }
+    }
+
+    $hasErrors = false;
+    foreach ($results as $item) {
+        if (($item['status'] ?? '') === 'error') {
+            $hasErrors = true;
+            break;
+        }
+    }
+
+    $shouldPrune = !array_key_exists('prune_deleted', $conn) || (bool) $conn['prune_deleted'];
+    if ($shouldPrune && !$hasErrors) {
+        if (ghimport_connection_has_shared_target($conn)) {
+            $results[] = ['status' => 'skipped', 'path' => 'prune', 'message' => 'Prune skipped because another enabled connection shares this target path.'];
+        } else {
+            ghimport_prune_deleted_files($localRoot, $syncedPaths, $results, ghimport_connection_target_prefix($conn));
+        }
+    } elseif ($shouldPrune && $hasErrors) {
+        $results[] = ['status' => 'skipped', 'path' => 'prune', 'message' => 'Prune skipped because sync reported errors.'];
+    }
+
     return $results;
 }
 
@@ -689,7 +846,7 @@ function ghimport_sync_connection(array $conn, string $localRoot = GHIMPORT_LOCA
  */
 function ghimport_results_summary(array $results): array
 {
-    $counts = ['created' => 0, 'updated' => 0, 'unchanged' => 0, 'skipped' => 0, 'error' => 0];
+    $counts = ['created' => 0, 'updated' => 0, 'unchanged' => 0, 'deleted' => 0, 'skipped' => 0, 'error' => 0];
 
     foreach ($results as $r) {
         $s = $r['status'] ?? 'error';

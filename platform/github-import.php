@@ -256,6 +256,12 @@ if (!empty($syncResults)): ?>
             <strong>Unchanged</strong>
             <span><?php echo $summary['unchanged']; ?> file(s)</span>
         </div>
+        <?php if ($summary['deleted'] > 0): ?>
+        <div class="status-card">
+            <strong>Deleted</strong>
+            <span><?php echo $summary['deleted']; ?> file(s)</span>
+        </div>
+        <?php endif; ?>
         <div class="status-card">
             <strong>Errors</strong>
             <span><?php echo $summary['error']; ?> error(s)</span>
