@@ -13,6 +13,7 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    wps_csrf_validate_or_die();
     $connections = array_values(array_filter(
         ghimport_load_connections(),
         fn($conn) => (bool) ($conn['enabled'] ?? true)
@@ -59,6 +60,7 @@ wps_render_header('System Sync');
     <?php endif; ?>
 
     <form method="post" class="actions">
+        <?php echo wps_csrf_field(); ?>
         <button type="submit">Sync from Active GitHub Connection(s)</button>
         <a class="button-secondary" href="settings.php">Back to Settings</a>
         <a class="button-secondary" href="github-import.php">Manage GitHub Import</a>

@@ -141,6 +141,35 @@ function ghimport_update_connection(array &$connections, array $updated): void
     }
 }
 
+
+function ghimport_update_connection_status(string $id, string $status): bool
+{
+    if ($id === '') {
+        return false;
+    }
+
+    $connections = ghimport_load_connections();
+    $found = false;
+
+    foreach ($connections as &$conn) {
+        if (($conn['id'] ?? '') !== $id) {
+            continue;
+        }
+
+        $conn['last_sync_status'] = $status;
+        $conn['last_synced_at'] = gmdate('c');
+        $found = true;
+        break;
+    }
+    unset($conn);
+
+    if (!$found) {
+        return false;
+    }
+
+    return ghimport_save_connections($connections);
+}
+
 function ghimport_delete_connection(array &$connections, string $id): void
 {
     $connections = array_values(array_filter($connections, fn($c) => ($c['id'] ?? '') !== $id));
