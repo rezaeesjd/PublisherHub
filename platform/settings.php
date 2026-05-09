@@ -49,7 +49,7 @@ wps_render_header('Settings');
 
 <section class="panel">
     <h2>Operations</h2>
-    <p>Sync from GitHub, back up local edits, or run the QA gate that checks every tour package against the publish-readiness rules.</p>
+    <p>System Sync and GitHub Import work together here. Sync uses active GitHub Import connection(s), refreshes repository files, preserves protected runtime data like <code>platform/data/</code>, and removes stale files deleted from connected repositories. You can also back up local edits and run QA.</p>
     <div class="actions">
         <a class="button-secondary" href="system-sync.php">System Sync</a>
         <a class="button-secondary" href="backup.php">Download Backup</a>
