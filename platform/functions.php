@@ -36,18 +36,25 @@ function wps_load_settings(): array
 {
     wps_ensure_data_dir();
 
+    $settings = wps_default_settings();
+
     if (!file_exists(WPS_SETTINGS_FILE)) {
-        return wps_default_settings();
+        wps_ensure_archive_alias($settings);
+        return $settings;
     }
 
     $json = file_get_contents(WPS_SETTINGS_FILE);
     $data = json_decode($json, true);
 
     if (!is_array($data)) {
-        return wps_default_settings();
+        wps_ensure_archive_alias($settings);
+        return $settings;
     }
 
-    return array_merge(wps_default_settings(), $data);
+    $settings = array_merge($settings, $data);
+    wps_ensure_archive_alias($settings);
+
+    return $settings;
 }
 
 function wps_save_settings(array $settings): bool
