@@ -114,7 +114,7 @@ The system is prefilled for this public repository:
 
 ```text
 Owner: rezaeesjd
-Repo: WebSage-Solutions
+Repo: PublisherHub
 Branch: main
 Content path: WebPublisherSystem/content-system/tours
 ```
