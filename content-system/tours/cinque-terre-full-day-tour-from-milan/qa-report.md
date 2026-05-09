@@ -1,7 +1,7 @@
 # QA Report: Cinque Terre Full-Day Tour from Milan
 
-Last run: 2026-05-09 (WPS:GENERATE_CONTENT initial generation)
-Overall status: **needs_fix** — Package is structurally complete but has three blocking clarifications and a placeholder website URL that must be resolved before publish.
+Last run: 2026-05-09 (WPS:GENERATE_CONTENT — hard clarify gate triggered)
+Overall status: **needs_fix** — Hard clarify gate is active. `blog-post.md` is a holding notice only (per AGENTS.md). Full public copy will be regenerated once blocking clarifications are resolved.
 
 ---
 
@@ -71,15 +71,17 @@ Present and complete in source-facts.md. All required rows populated.
 
 ## Public article cleanliness checklist (blog-post.md)
 
-- [x] No admin/SEO labels visible ("Page Title", "URL Slug", "Meta Description", "Primary Keyword", "Funnel Stage", "Internal Linking Suggestions" — all absent)
+`blog-post.md` is currently a **holding notice** because the hard clarify gate is active. Full public copy is intentionally not generated. The following checks apply to the holding notice and will be re-run against the final public article once blocking clarifications are resolved.
+
+- [x] No admin/SEO labels visible
 - [x] Single H1 at top of file
-- [x] Brand "Milano Adventures" referenced naturally in blog-post.md (hook paragraph)
-- [x] No raw supplier name leaks in public copy
-- [x] No invented facts — all claims traceable to source-facts.md
+- [x] Brand "Milano Adventures" referenced
+- [x] No raw supplier name leaks
+- [x] No factual claims dependent on unresolved clarifications (no pricing, cancellation window, departure days, durations, or itinerary specifics in holding notice)
 - [x] No invented reviews, ratings, or testimonials
-- [x] Ferry seasonality condition accurately represented in public copy
-- [x] CTA present in first half of post (soft CTA after "What to expect")
-- [x] Strong CTA block present at end of post
+- [ ] Ferry seasonality, full inclusions, and CTAs — deferred to final public copy after clarifications resolved
+- [ ] Soft CTA in first half — deferred to final public copy
+- [ ] Strong CTA at end — deferred to final public copy
 
 ---
 
@@ -95,13 +97,15 @@ Present and complete in source-facts.md. All required rows populated.
 
 ## Conversion checklist
 
-- [x] Primary CTA present and points to website link ({{WebsiteLink}})
-- [x] Soft CTA present after "What to expect" section
-- [x] Strong CTA block at end of blog-post.md
-- [x] Secondary trust signals (TripAdvisor, Viator) appear after primary CTA, not before
-- [x] "Who this tour is best for" section present
-- [x] "What to know before booking" section present
-- [x] Booking confidence details present (duration, meeting point, group size, inclusions, pricing, languages, departure days, difficulty)
+Conversion structure is **deferred**. Hard clarify gate is active and `blog-post.md` is a holding notice only. The conversion checklist will be re-run once blocking clarifications are resolved and the final public article is generated.
+
+- [ ] Primary CTA pointing to real website link — deferred (website URL not provided)
+- [ ] Soft CTA in first half — deferred
+- [ ] Strong CTA block at end — deferred
+- [ ] Secondary trust signals (TripAdvisor, Viator) after primary CTA — links present in holding notice
+- [ ] "Who this tour is best for" section — deferred
+- [ ] "What to know before booking" section — deferred
+- [ ] Booking confidence details — deferred
 
 ---
 
@@ -115,9 +119,9 @@ Present and complete in source-facts.md. All required rows populated.
 
 ## Source-facts-only checklist
 
-- [x] All claims in blog-post.md traceable to source-facts.md
-- [x] No invented pricing, durations, inclusions, meeting points, or policies
-- [x] Cancellation window not stated as a specific number in public copy (users directed to check at booking — appropriate given unit ambiguity)
+- [x] All claims in current holding-notice blog-post.md are traceable to source-facts.md (only brand identity, village list, and OTA links present)
+- [x] No invented pricing, durations, inclusions, meeting points, or policies in holding notice
+- [x] No cancellation window stated in holding notice (avoids the unit-ambiguity issue entirely)
 
 ---
 
@@ -126,9 +130,16 @@ Present and complete in source-facts.md. All required rows populated.
 - **publish_status:** `draft`
 - **qa_status:** `needs_fix`
 - **human_review_required:** true
+- **public_copy_state:** `blocked_pending_clarifications`
+- **generation_phase_completed:** false (hard clarify gate active — final blog-post.md not generated)
+- **clarify_phase_required:** true
 - **clarify_phase_completed:** false
 - **publish_phase_completed:** false
 - **live_verification_completed:** false
+
+### Hard clarify gate
+
+Per `content-system/AGENTS.md` (Enforcement Addendum — Hard clarify gate), final `blog-post.md` is **not** generated when blocking clarifications exist. The current `blog-post.md` is a minimal holding notice only. Once the three blocking clarifications below are resolved, run `WPS:GENERATE_CONTENT` again to generate the final public article.
 
 ---
 
@@ -167,4 +178,4 @@ Present and complete in source-facts.md. All required rows populated.
 
 ## Final status
 
-**Not publish-ready.** Three blocking issues must be resolved before this package can be marked `ready_for_review` or progressed toward publish. The package is structurally complete and internally clean — all content is source-based, no facts are invented, and the conversion structure follows platform standards.
+**Not publish-ready. Hard clarify gate active.** `blog-post.md` is a holding notice only; final public copy will be generated after the three blocking clarifications are resolved. The supporting package files (source-facts.md, brief.md, keywords.md, faq.md, internal-links.md, automation-notes.md) are complete and ready to inform the final public copy regeneration.
