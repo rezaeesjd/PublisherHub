@@ -321,7 +321,7 @@ function wps_render_header(string $title): void
                     <a class="<?php echo $settingsIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_settings_url()); ?>" <?php echo $settingsIsActive ? 'aria-current="page"' : ''; ?>>Settings</a>
                 <?php endif; ?>
                 <?php if ($signedIn): ?>
-                    <a href="<?php echo wps_h($logoutUrl); ?>">Sign out</a>
+                    <a class="nav-signout" href="<?php echo wps_h($logoutUrl); ?>">Sign out</a>
                 <?php endif; ?>
             </nav>
         </div>
@@ -332,11 +332,13 @@ function wps_render_header(string $title): void
 
 function wps_render_footer(): void
 {
+    $settings = wps_load_settings();
+    $year = date('Y');
     ?>
     </main>
     <footer class="site-footer">
         <div class="container">
-            <p>WebPublisherSystem. Local blog publishing enabled. Use System Sync only when you want to update files from GitHub.</p>
+            <p><?php echo wps_h($settings['site_name']); ?> &middot; PublisherHub &middot; <?php echo wps_h($year); ?></p>
         </div>
     </footer>
     </body>
