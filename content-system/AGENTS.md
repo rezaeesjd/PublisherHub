@@ -865,3 +865,138 @@ Status mapping:
 - approved but not synced: `ready_for_sync`
 - live checks unavailable/unverified: `needs_live_verification`
 - live verified archive + single post: `published`
+
+
+## Enforcement Addendum (Hard Gates)
+
+These rules are mandatory and override any softer guidance.
+
+### Hard clarify gate
+If `meta.clarifications_needed` is non-empty, **public copy generation is blocked** unless the user explicitly approves provisional mode.
+
+Blocking clarification issue types:
+- conflicting product code
+- conflicting tour title
+- conflicting itinerary scope
+- conflicting duration/timing
+- conflicting meeting point
+- conflicting inclusions/exclusions
+- missing website booking URL
+- missing primary CTA link
+- unclear active brand
+- unclear review/rating source
+- conflicting OTA/source data
+
+When blocking issues exist:
+1. create/update `source-facts.md`
+2. create/update `meta.json`
+3. create/update `qa-report.md`
+4. do **not** generate final `blog-post.md`
+5. do **not** mark package `ready_for_review`
+6. set `qa_status` to `needs_clarification`
+7. keep `publish_status` as `draft` or `needs_fix`
+
+### WPS:GENERATE_CONTENT pre-copy gate (ordered)
+Before writing `blog-post.md`, run this order:
+1. extract source facts
+2. run conflict + missing-input detection
+3. determine whether `WPS:CLARIFY` is required
+4. stop before public copy when blocking clarifications exist
+5. continue only if no blockers exist or the user explicitly approves provisional generation mode
+
+### Website link and CTA enforcement
+- If real website booking URL is provided, store it in `source-facts.md` and `meta.json`, and use it as primary CTA in `blog-post.md`.
+- Do not replace a real provided website URL with `{{WebsiteLink}}`.
+- If website booking URL is missing, `{{WebsiteLink}}` is allowed only as placeholder and is a **conversion blocker** unless user explicitly waives placeholder mode.
+- Missing TripAdvisor/Viator URLs are warnings (non-blocking), but real provided OTA links must be preserved.
+
+### Source-facts provenance matrix requirement
+Every generated `source-facts.md` must include this table:
+
+| Field | Raw value | Source | Status | Notes |
+|---|---|---|---|---|
+
+Allowed `Status` values:
+- `confirmed`
+- `missing`
+- `conflicted`
+- `inferred`
+- `needs_human_review`
+- `not_applicable`
+
+Required provenance rows:
+- active system brand
+- raw supplier/operator name
+- canonical tour title
+- product/reference code
+- website booking URL
+- TripAdvisor URL
+- Viator URL
+- price
+- duration
+- start time
+- meeting point
+- end point
+- itinerary stops
+- itinerary durations
+- inclusions
+- exclusions
+- languages
+- accessibility
+- traveler cap / group size
+- cancellation policy
+- seasonal/weather notes
+- review rating
+- review count
+- review text/source
+- missing critical inputs
+- conflicts detected
+
+### Machine-checkable phase markers
+`meta.json` should include and maintain:
+- `generation_phase_completed`
+- `clarify_phase_required`
+- `clarify_phase_completed`
+- `publish_phase_completed`
+- `live_verification_completed`
+- `clarifications_needed`
+- `blocking_issues`
+- `conversion_blockers`
+- `qa_status`
+- `publish_status`
+- `last_qa_date`
+
+Enforcement:
+- `generation_phase_completed` can be true only after required package files exist.
+- `clarify_phase_required` must be true if blocking ambiguity exists.
+- `clarify_phase_completed` must be false until user resolves blockers or approves provisional mode.
+- `publish_phase_completed` must be false unless `WPS:PUBLISH_BLOG` completed.
+- `live_verification_completed` must be false unless `WPS:LIVE_VERIFY` completed.
+- `publish_status` must never be `published` unless `live_verification_completed` is true.
+
+### WPS:PROCESS_QA minimum protocol
+`WPS:PROCESS_QA` must:
+- not modify files
+- not rewrite content
+- not create a PR unless explicitly requested
+- separate generation readiness from publish readiness
+- separate missing user input from generation mistake
+- classify issues by type:
+  - System instruction gap
+  - Workflow enforcement gap
+  - User input gap
+  - Generated package issue
+  - Front-end rendering risk
+  - Publish verification gap
+
+Every PROCESS_QA report must begin with `## Tour Identity Confirmation` and include:
+- requested command
+- actual package folder
+- canonical tour title
+- product/reference code
+- active brand
+- website URL status
+- TripAdvisor URL status
+- Viator URL status
+- package created/updated date (if known)
+- whether the report covers generation, publishing, or live verification

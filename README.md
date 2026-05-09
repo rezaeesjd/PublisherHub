@@ -141,6 +141,7 @@ Next phase can add:
 ## Workflow commands
 WebPublisherSystem supports explicit command-driven workflows:
 - `WPS:GENERATE_CONTENT` → create/update package files only (not published)
+- `WPS:CLARIFY` → blocking ambiguity resolution before public copy
 - `WPS:PUBLISH_BLOG` → validate package + publish readiness checks
 - `WPS:GENERATE_AND_PUBLISH` → run generation then publish checks sequentially
 - `WPS:PROCESS_QA` → process QA report only (no file edits)

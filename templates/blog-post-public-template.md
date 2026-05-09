@@ -1,31 +1,54 @@
 # {{Public H1 Tour Title}}
 
-{{Short hook paragraph}}
+{{Hook paragraph}}
 
-## Why choose this tour
-{{Main value section}}
+## Main Value
+{{Main value section focused on traveler outcomes and booking confidence}}
 
-[{{Soft CTA Text}}]({{WebsiteLink}})
-
-## Who this tour is best for
+## Who This Tour Is Best For
 - 
 
-## What to expect
-{{Booking-confidence section based on source facts only}}
+## What to Expect
+{{Operational expectations based on source facts only}}
 
-## What to know before booking
+## Check Availability
+{{Soft CTA sentence with primary website booking link}}
+
+## What to Know Before Booking
 - Duration:
 - Meeting point:
 - End point:
 - Group size:
 - Languages:
-- Inclusions/Exclusions:
+- Inclusions / Exclusions:
+- Cancellation policy:
+- Seasonal/weather notes:
 
-## Ready to book?
-{{Strong CTA copy}}
+## Traveler Feedback (Optional)
+{{Only include when review rating/count/text source is provided}}
 
-**Primary booking:** [Check Availability]({{WebsiteLink}})
+## Ready to Book?
+{{Strong CTA sentence}}
 
-Secondary references (optional):
+[**Check Availability**]({{WebsiteLink}})
+
+Optional secondary trust references:
 - [TripAdvisor]({{TripAdvisorLink}})
 - [Viator]({{ViatorLink}})
+
+---
+
+Forbidden visible labels in `blog-post.md`:
+- Page Title
+- URL Slug
+- Meta Description
+- Primary Keyword
+- Funnel Stage
+- Internal Linking Suggestions
+- CTA Primary Link
+- QA Notes
+- Source Facts
+
+H1 format must be real Markdown:
+- ✅ `# Example Tour Title`
+- ❌ `H1: Example Tour Title`
