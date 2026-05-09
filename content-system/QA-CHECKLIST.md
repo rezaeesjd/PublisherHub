@@ -1,4 +1,22 @@
-# QA Checklist (Package + Publish Readiness)
+# QA Checklist (Package + Publish Readiness + Process QA)
+
+## Tour Identity Confirmation (required first section)
+- [ ] requested command
+- [ ] actual package folder
+- [ ] canonical tour title
+- [ ] product/reference code
+- [ ] active brand
+- [ ] website URL status
+- [ ] TripAdvisor URL status
+- [ ] Viator URL status
+- [ ] package created/updated date (if known)
+- [ ] report scope: generation / publishing / live verification
+
+## Clarify Gate Enforcement
+- [ ] conflict and missing-input detection completed before copy
+- [ ] `clarifications_needed` evaluated
+- [ ] blocking issues stop public copy unless provisional mode explicitly approved
+- [ ] missing website URL treated as conversion blocker unless waived
 
 ## File and structure
 - [ ] Correct single tour folder used
@@ -6,36 +24,46 @@
 - [ ] `source-facts.md` exists and was created before copy
 - [ ] `qa-report.md` exists
 
-## Metadata
+## Metadata and phase markers
 - [ ] `meta.json` valid JSON
 - [ ] required fields exist
-- [ ] slug/public_slug valid
+- [ ] phase markers exist
 - [ ] allowed `publish_status` used
+- [ ] allowed `qa_status` used
 
 ## Link handling
-- [ ] Real provided links preserved
-- [ ] Website link is primary CTA
-- [ ] TripAdvisor/Viator are secondary only
-- [ ] Placeholders only for missing links
-- [ ] Placeholder usage explicitly flagged
+- [ ] Real provided website URL preserved
+- [ ] Website link is primary CTA when provided
+- [ ] OTA links are secondary only
+- [ ] placeholders only for missing links
+- [ ] website placeholder flagged as blocker
+- [ ] missing OTA links flagged as warnings
+
+## Source-facts provenance
+- [ ] provenance matrix present
+- [ ] statuses use allowed set
+- [ ] cancellation policy captured
+- [ ] review rating/count/text source captured
+- [ ] missing critical inputs listed
+- [ ] conflicts detected listed
 
 ## Public content cleanliness
 - [ ] One real Markdown H1
 - [ ] No admin labels in `blog-post.md`
 - [ ] Public-facing sections only
 
-## Source-facts integrity
-- [ ] No invented facts
-- [ ] Missing inputs listed
-- [ ] Ambiguities listed for human review
-- [ ] Brand rule respected (Milano Adventures public brand)
+## PROCESS_QA behavior constraints
+- [ ] no file modifications
+- [ ] no content rewriting
+- [ ] no PR creation unless requested
+- [ ] generation readiness separated from publish readiness
+- [ ] missing user input separated from generation mistakes
+- [ ] issues classified by type
 
-## Review/social proof
-- [ ] No invented ratings/review counts
-- [ ] No exaggerated social proof claims
-- [ ] If review data omitted, QA notes whether intentional
-
-## Publish integrity
-- [ ] Do not call published without live verification
-- [ ] Archive visibility verified (if possible)
-- [ ] Single post URL verified (if possible)
+## Issue Categories (PROCESS_QA)
+- [ ] System instruction gap
+- [ ] Workflow enforcement gap
+- [ ] User input gap
+- [ ] Generated package issue
+- [ ] Front-end rendering risk
+- [ ] Publish verification gap
