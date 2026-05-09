@@ -67,3 +67,10 @@
 - Tour folders inside `content-system/tours/` are reference structures, not blanket permission to bypass current rules.
 - A tour folder that predates a current rule must contain `EXEMPLAR_NOTES.md` at its root listing the rules it does not satisfy and stating that it is not a model.
 - Agents must not cite an unmarked tour folder as precedent for bypassing a hard gate.
+
+## Link + product-code provenance guards
+
+- Website URL is a conversion-critical input. If missing, keep `{{WebsiteLink}}`, append `conversion_blockers[]`, and force hard clarify gate.
+- Never overwrite a real provided URL with a placeholder token.
+- Keep product code separation explicit: `product_reference_code` is primary, `channel_product_codes` holds channel IDs (e.g., Viator/TripAdvisor).
+- If two product codes conflict and mapping is unclear, mark `conflicted` in provenance and block final copy.

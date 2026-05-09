@@ -138,3 +138,12 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - public_copy_state:
 - intake_questions_resolved:
 - blocker summary:
+
+
+## End-user Readiness (Lead-Gen Outcome)
+
+- [ ] **[manual]** opening paragraph communicates clear traveler outcome (not generic destination filler)
+- [ ] **[manual]** primary CTA is explicit, low-friction, and placed before long explanatory sections
+- [ ] **[manual]** objection-handling present (timing, transport, exertion level, cancellation confidence)
+- [ ] **[manual]** OTA links positioned as trust/backup references, not the primary action
+- [ ] **[manual]** copy supports direct booking intent and customer acquisition goals

@@ -53,6 +53,8 @@
 
 ## WPS:GENERATION_PROCESS_QA
 
+- **Artifact requirement:** Write/update `content-system/generation-process-qa-report.md` as the canonical report used by `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`.
+
 - **Purpose:** Review the full process from raw input → generated content package (no publishing).
 - **Should do:** Inspect raw input, command, AGENTS.md/templates/workflow, generated package, PR diff. Produce the structured report defined in `AGENTS.md`'s PROCESS_QA section.
 - **Must not do:** Modify any file. Rewrite the package. Create commits.
