@@ -512,7 +512,35 @@ function ghimport_collect_local_files(string $localRoot): array
     return $files;
 }
 
-function ghimport_prune_deleted_files(string $localRoot, array $syncedPaths, array &$results): void
+
+function ghimport_connection_target_prefix(array $conn): string
+{
+    $contentPath = trim(str_replace('\\', '/', $conn['content_path'] ?? ''), '/');
+    $localPath = trim(str_replace('\\', '/', $conn['local_path'] ?? ''), '/');
+    return $localPath !== '' ? $localPath : $contentPath;
+}
+
+function ghimport_connection_has_shared_target(array $conn): bool
+{
+    $connId = (string) ($conn['id'] ?? '');
+    $targetPrefix = ghimport_connection_target_prefix($conn);
+
+    foreach (ghimport_load_connections() as $other) {
+        if (!($other['enabled'] ?? true)) {
+            continue;
+        }
+        if ((string) ($other['id'] ?? '') === $connId) {
+            continue;
+        }
+        if (ghimport_connection_target_prefix($other) === $targetPrefix) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function ghimport_prune_deleted_files(string $localRoot, array $syncedPaths, array &$results, string $scopePrefix = ''): void
 {
     $localFiles = ghimport_collect_local_files($localRoot);
     if (empty($localFiles)) {
@@ -520,6 +548,13 @@ function ghimport_prune_deleted_files(string $localRoot, array $syncedPaths, arr
     }
 
     foreach ($localFiles as $relativePath => $_) {
+        if ($scopePrefix !== '') {
+            $scope = rtrim($scopePrefix, '/') . '/';
+            if ($relativePath !== $scopePrefix && !str_starts_with($relativePath, $scope)) {
+                continue;
+            }
+        }
+
         if (isset($syncedPaths[$relativePath])) {
             continue;
         }
@@ -752,9 +787,23 @@ function ghimport_sync_connection(array $conn, string $localRoot = GHIMPORT_LOCA
         }
     }
 
+    $hasErrors = false;
+    foreach ($results as $item) {
+        if (($item['status'] ?? '') === 'error') {
+            $hasErrors = true;
+            break;
+        }
+    }
+
     $shouldPrune = !array_key_exists('prune_deleted', $conn) || (bool) $conn['prune_deleted'];
-    if ($shouldPrune) {
-        ghimport_prune_deleted_files($localRoot, $syncedPaths, $results);
+    if ($shouldPrune && !$hasErrors) {
+        if (ghimport_connection_has_shared_target($conn)) {
+            $results[] = ['status' => 'skipped', 'path' => 'prune', 'message' => 'Prune skipped because another enabled connection shares this target path.'];
+        } else {
+            ghimport_prune_deleted_files($localRoot, $syncedPaths, $results, ghimport_connection_target_prefix($conn));
+        }
+    } elseif ($shouldPrune && $hasErrors) {
+        $results[] = ['status' => 'skipped', 'path' => 'prune', 'message' => 'Prune skipped because sync reported errors.'];
     }
 
     return $results;
