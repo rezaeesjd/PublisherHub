@@ -462,6 +462,147 @@ button:active { transform: translateY(0); box-shadow: none; }
 }
 .site-footer p { margin: 0; color: var(--muted); font-size: 13px; }
 
+/* ─── GitHub Import Addon ────────────────────────────── */
+
+.ghimport-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+.badge-ok       { background: var(--success-bg);  color: var(--success-text); border: 1px solid var(--success-border); }
+.badge-error    { background: var(--error-bg);    color: var(--error-text);   border: 1px solid var(--error-border); }
+.badge-warning  { background: #fef9c3;            color: #854d0e;             border: 1px solid #fde68a; }
+.badge-neutral  { background: #f0f4f9;            color: var(--muted);        border: 1px solid var(--border); }
+.badge-disabled { background: #f4f4f5;            color: #71717a;             border: 1px solid #e4e4e7; }
+
+.ghimport-conn-list { display: grid; gap: 16px; }
+
+.ghimport-conn-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    background: #fff;
+    transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+}
+.ghimport-conn-card:hover { border-color: #c0cfdf; box-shadow: var(--shadow-sm); }
+.ghimport-conn-card.conn-disabled { opacity: 0.6; background: #f8fafd; }
+
+.ghimport-conn-header { margin-bottom: 14px; }
+
+.ghimport-conn-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.ghimport-conn-title h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+
+.ghimport-conn-meta {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 6px 16px;
+    margin: 0 0 18px;
+    font-size: 14px;
+}
+.ghimport-conn-meta dt {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+}
+.ghimport-conn-meta dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+
+.ghimport-conn-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    border-top: 1px solid #f0f4f9;
+}
+.ghimport-conn-actions button,
+.ghimport-conn-actions .button-secondary { font-size: 13px; padding: 8px 14px; }
+
+.btn-danger { color: var(--error-text) !important; background: var(--error-bg) !important; border-color: var(--error-border) !important; }
+.btn-danger:hover { background: #fee2e2 !important; }
+
+.ghimport-summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.ghimport-result-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+
+.ghimport-result-item {
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 0 12px;
+    align-items: baseline;
+    font-size: 13px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    background: #f8fafd;
+}
+.ghimport-result-item.ghimport-status-created   { background: var(--success-bg); }
+.ghimport-result-item.ghimport-status-updated   { background: #eff6ff; }
+.ghimport-result-item.ghimport-status-error     { background: var(--error-bg); }
+.ghimport-result-item.ghimport-status-unchanged { background: #f8fafd; }
+.ghimport-result-item.ghimport-status-skipped   { background: #fafafa; }
+
+.ghimport-result-status {
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    white-space: nowrap;
+}
+.ghimport-status-created  .ghimport-result-status { color: var(--success-text); }
+.ghimport-status-updated  .ghimport-result-status { color: var(--brand); }
+.ghimport-status-error    .ghimport-result-status { color: var(--error-text); }
+
+.ghimport-result-path {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    color: var(--text);
+    overflow-wrap: anywhere;
+    grid-column: 2;
+}
+.ghimport-result-msg { grid-column: 2; color: var(--muted); font-size: 12px; }
+
+.ghimport-item-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.ghimport-item-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0f4f9;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 5px 10px;
+    font-size: 13px;
+}
+.ghimport-type-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+}
+.type-dir  { background: #dbeafe; color: #1e40af; }
+.type-file { background: #dcfce7; color: #166534; }
+
 /* ─── Responsive ─────────────────────────────────────── */
 
 @media (max-width: 760px) {
@@ -515,4 +656,12 @@ button:active { transform: translateY(0); box-shadow: none; }
 
     .auth-panel { margin-top: 16px; }
     .post-card:hover { transform: none; }
+
+    .ghimport-conn-meta { grid-template-columns: 1fr; }
+    .ghimport-conn-meta dt { padding-top: 8px; }
+    .ghimport-summary-grid { grid-template-columns: 1fr 1fr; }
+    .ghimport-result-item { grid-template-columns: 70px minmax(0, 1fr); }
+    .ghimport-conn-actions { flex-direction: column; }
+    .ghimport-conn-actions button,
+    .ghimport-conn-actions .button-secondary { width: 100%; justify-content: center; }
 }

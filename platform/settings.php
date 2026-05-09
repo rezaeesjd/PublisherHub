@@ -58,6 +58,60 @@ wps_render_header('Settings');
     <p class="muted">Signed in as <strong><?php echo wps_h(wps_current_admin_email()); ?></strong>. <a href="logout.php">Sign out</a>.</p>
 </section>
 
+<?php
+// GitHub Import addon — show a summary card if the engine is available.
+$ghimportEngineAvailable = file_exists(__DIR__ . '/github-import-engine.php');
+if ($ghimportEngineAvailable) {
+    if (!function_exists('ghimport_load_connections')) {
+        require_once __DIR__ . '/github-import-engine.php';
+    }
+    $ghConnections   = ghimport_load_connections();
+    $ghEnabledCount  = count(array_filter($ghConnections, fn($c) => $c['enabled'] ?? true));
+    $ghTotalCount    = count($ghConnections);
+    $ghLastSynced    = null;
+    foreach ($ghConnections as $c) {
+        if (!empty($c['last_synced_at'])) {
+            if ($ghLastSynced === null || $c['last_synced_at'] > $ghLastSynced) {
+                $ghLastSynced = $c['last_synced_at'];
+            }
+        }
+    }
+}
+?>
+
+<?php if ($ghimportEngineAvailable): ?>
+<section class="panel">
+    <h2>GitHub Import</h2>
+    <p>Import and sync content from one or more GitHub repositories. Each connection has its own branch, path, and optional access token.</p>
+
+    <div class="status-grid" style="margin:16px 0;">
+        <div class="status-card">
+            <strong>Connections</strong>
+            <span>
+                <?php echo $ghTotalCount; ?> configured
+                <?php if ($ghTotalCount > 0): ?>
+                    &middot; <?php echo $ghEnabledCount; ?> enabled
+                <?php endif; ?>
+            </span>
+        </div>
+        <div class="status-card">
+            <strong>Last Sync</strong>
+            <span>
+                <?php if ($ghLastSynced): ?>
+                    <?php echo wps_h(date('Y-m-d H:i', strtotime($ghLastSynced))); ?> UTC
+                <?php else: ?>
+                    Never
+                <?php endif; ?>
+            </span>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a class="button-secondary" href="github-import.php">Manage GitHub Import</a>
+    </div>
+</section>
+<?php endif; ?>
+
 <section class="panel">
     <h2>Configuration</h2>
     <form method="post" class="form grid-form">
