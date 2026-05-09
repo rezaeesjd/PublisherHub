@@ -18,7 +18,19 @@
     "website_link",
     "publish_status",
     "human_review_required",
-    "qa_status"
+    "qa_status",
+    "generation_phase_completed",
+    "clarify_phase_required",
+    "clarify_phase_completed",
+    "publish_phase_completed",
+    "live_verification_completed",
+    "public_copy_state",
+    "intake_questions_resolved",
+    "clarifications_needed",
+    "blocking_issues",
+    "conversion_blockers",
+    "product_reference_code",
+    "channel_product_codes"
   ],
   "additionalProperties": true,
   "properties": {
@@ -28,8 +40,15 @@
       "description": "Active brand used in all public copy."
     },
     "product_reference_code": { "type": ["string", "number"] },
+    "channel_product_codes": {
+      "type": "object",
+      "description": "Channel-specific IDs keyed by channel name (e.g., viator, tripadvisor).",
+      "additionalProperties": { "type": ["string", "number"] }
+    },
     "secondary_product_codes": {
       "type": "object",
+      "deprecated": true,
+      "description": "Deprecated alias for channel_product_codes; keep for backward compatibility.",
       "additionalProperties": { "type": ["string", "number"] }
     },
     "canonical_tour_title": { "type": "string", "minLength": 1 },
@@ -124,9 +143,7 @@
         "needs_fix",
         "ready_for_sync",
         "needs_live_verification",
-        "published",
-        "approved",
-        "archived"
+        "published"
       ]
     },
     "human_review_required": { "type": "boolean" },

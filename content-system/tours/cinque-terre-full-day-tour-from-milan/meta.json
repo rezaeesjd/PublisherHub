@@ -26,13 +26,22 @@
   "end_point": "Piazza IV Novembre, 20124 Milano MI, Italy (same as meeting point)",
   "duration": "13 hours 30 minutes",
   "start_time": "07:00",
-  "departure_days": ["Mon", "Wed", "Sat"],
+  "departure_days": [
+    "Mon",
+    "Wed",
+    "Sat"
+  ],
   "group_type": "Shared",
   "max_travelers": 22,
   "min_travelers_to_operate": 15,
   "difficulty": "Easy",
-  "languages": ["English", "Spanish"],
-  "language_formats": ["Live guide commentary"],
+  "languages": [
+    "English",
+    "Spanish"
+  ],
+  "language_formats": [
+    "Live guide commentary"
+  ],
   "guide": "Expert tour leader",
   "round_trip": true,
   "not_private": true,
@@ -52,12 +61,26 @@
   },
   "pricing_valid_from": "2026-05-01",
   "confirmation": "instant",
-  "ticket_format": ["Paper ticket", "Mobile ticket"],
+  "ticket_format": [
+    "Paper ticket",
+    "Mobile ticket"
+  ],
   "tickets_per_booking": 1,
   "entry_method": "Direct entry — no separate queue",
   "cancellation_window_raw": "9, Relatively to Start Time",
-  "categories": ["Tour", "History & Culture", "Culture", "Travel", "Shore Excursion", "Sightseeing"],
-  "land_transport": ["Bus/Coach", "Minibus", "Train/Rail"],
+  "categories": [
+    "Tour",
+    "History & Culture",
+    "Culture",
+    "Travel",
+    "Shore Excursion",
+    "Sightseeing"
+  ],
+  "land_transport": [
+    "Bus/Coach",
+    "Minibus",
+    "Train/Rail"
+  ],
   "notes": [
     "Panoramic ferry ride is seasonal and subject to sea and weather conditions. May not operate outside peak season.",
     "Guides wear fuchsia shirts. Arrive 15 minutes before departure.",
@@ -65,10 +88,10 @@
   ],
   "publish_status": "draft",
   "human_review_required": true,
-  "qa_status": "needs_fix",
+  "qa_status": "needs_clarification",
   "last_qa_date": "2026-05-09",
-  "public_copy_state": "blocked_pending_clarifications",
-  "generation_phase_completed": false,
+  "public_copy_state": "holding_notice",
+  "generation_phase_completed": true,
   "clarify_phase_required": true,
   "clarify_phase_completed": false,
   "publish_phase_completed": false,

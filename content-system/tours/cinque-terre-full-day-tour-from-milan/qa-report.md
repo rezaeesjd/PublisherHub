@@ -1,7 +1,7 @@
 # QA Report: Cinque Terre Full-Day Tour from Milan
 
 Last run: 2026-05-09 (WPS:GENERATE_CONTENT — hard clarify gate triggered)
-Overall status: **needs_fix** — Hard clarify gate is active. `blog-post.md` is a holding notice only (per AGENTS.md). Full public copy will be regenerated once blocking clarifications are resolved.
+Overall status: **needs_clarification** — Hard clarify gate is active. `blog-post.md` is a holding notice only (per AGENTS.md). Full public copy will be regenerated once blocking clarifications are resolved.
 
 ---
 
@@ -39,7 +39,7 @@ Overall status: **needs_fix** — Hard clarify gate is active. `blog-post.md` is
 - [x] viator_link — real URL provided and stored
 - [x] publish_status — draft
 - [x] human_review_required — true
-- [x] qa_status — needs_fix
+- [x] qa_status — needs_clarification
 - [x] clarifications_needed — populated (3 blocking, 1 warning)
 - [x] generation_phase_completed — true
 - [x] clarify_phase_required — true
@@ -128,10 +128,10 @@ Conversion structure is **deferred**. Hard clarify gate is active and `blog-post
 ## Publish readiness
 
 - **publish_status:** `draft`
-- **qa_status:** `needs_fix`
+- **qa_status:** `needs_clarification`
 - **human_review_required:** true
-- **public_copy_state:** `blocked_pending_clarifications`
-- **generation_phase_completed:** false (hard clarify gate active — final blog-post.md not generated)
+- **public_copy_state:** `holding_notice`
+- **generation_phase_completed:** true (required package files exist; final public copy remains blocked by clarifications)
 - **clarify_phase_required:** true
 - **clarify_phase_completed:** false
 - **publish_phase_completed:** false
