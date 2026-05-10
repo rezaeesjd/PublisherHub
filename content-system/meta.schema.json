@@ -57,6 +57,20 @@
       "additionalProperties": { "type": ["string", "number"] }
     },
     "canonical_tour_title": { "type": "string", "minLength": 1 },
+    "variant_of": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$",
+      "description": "Base package slug when this package is a content variant of an existing tour. Set per the multi-variant rule in AGENTS.md."
+    },
+    "variant_index": {
+      "type": "integer",
+      "minimum": 2,
+      "description": "Position of this variant in the per-tour cluster. The base package is implicitly index 1; the first explicit variant is 2."
+    },
+    "variant_angle": {
+      "type": "string",
+      "description": "Short human label describing how this variant differs from siblings (e.g., 'BOFU day-trip / five-villages keyword variant')."
+    },
     "canonical_title_status": {
       "type": "string",
       "enum": ["confirmed", "unconfirmed"],

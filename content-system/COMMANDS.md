@@ -2,10 +2,11 @@
 
 ## WPS:GENERATE_CONTENT
 
-- **Purpose:** Generate or update one tour content package.
+- **Purpose:** Generate one tour content package. The system is a multi-content publisher: each tour is expected to grow a cluster of variant packages over time.
 - **Should do:** Extract source facts first, build provenance matrix, run clarify gate, **invoke `WPS:CLARIFY` automatically** if blocking ambiguities are detected, generate remaining files only when allowed.
-- **Must not do:** Claim published/live verification; bypass blocking clarification gate; generate final `blog-post.md` while blocking clarifications remain (unless the user has explicitly approved provisional mode in chat).
-- **Allowed file changes:** package folder files plus templates/checklists if explicitly requested.
+- **Must do (multi-variant rule):** Before writing any file, check whether a base package for this canonical tour title already exists at `content-system/tours/<base-slug>/`. If that package is finalized (see `AGENTS.md` "Multi-variant rule (hard rule)") **do not overwrite** it — create a new variant package at `content-system/tours/<base-slug>-v<N>/` with `variant_of`, `variant_index`, and a unique `public_slug` set in `meta.json`.
+- **Must not do:** Claim published/live verification; bypass blocking clarification gate; generate final `blog-post.md` while blocking clarifications remain (unless the user has explicitly approved provisional mode in chat); overwrite a finalized base package (route to `WPS:FIX_PACKAGE` if an in-place rewrite is genuinely intended).
+- **Allowed file changes:** package folder files (base or new variant) plus templates/checklists if explicitly requested.
 - **Final expected status (no blockers):** `publish_status: draft`, `qa_status: pending`, `public_copy_state: final`, `intake_questions_resolved: true`.
 - **Final expected status (blockers, holding-notice mode):** `publish_status: draft`, `qa_status: needs_clarification`, `public_copy_state: holding_notice`, `intake_questions_resolved: false`.
 - **Optional flag:** `--provisional` — user-authorized only. Skips the must-ask-first gate, sets `public_copy_state: provisional` and `provisional_mode: true`. Never default behavior.

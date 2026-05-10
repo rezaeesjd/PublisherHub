@@ -102,6 +102,13 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] **[manual]** `blog-post.md` renders cleanly in the public template (no broken Markdown)
 - [ ] **[machine]** `faq.md` exists and is parseable as a Q&A list
 
+## Multi-Variant Compliance
+
+- [ ] **[machine]** if a base package for the same canonical tour title already exists and is finalized, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
+- [ ] **[machine]** when `variant_index` is set, `variant_of` references an existing package slug
+- [ ] **[machine]** when `variant_of` is set, `public_slug` does not collide with the base or any sibling variant's `public_slug`
+- [ ] **[manual]** variant package differs from siblings only on `page_title`, `public_slug`, `primary_keyword`, hook, section ordering, FAQ angle, and CTA copy — pricing, duration, departures, transport, languages, and meeting points remain identical across the cluster
+
 ## Publish Path Status
 
 - [ ] generation complete?

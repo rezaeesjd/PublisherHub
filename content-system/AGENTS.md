@@ -156,7 +156,7 @@ If the user asks only for strategy, templates, QA, or system setup, provide or u
 ---
 
 ## Tour folder creation rule
-Create one folder inside `/WebPublisherSystem/content-system/tours/` for each tour title.
+Create one folder inside `/WebPublisherSystem/content-system/tours/` for each **content package**. A "package" is one variant of one tour, not one tour. The system is intended to host **multiple content variants per tour** for SEO and conversion testing.
 
 Folder name format:
 - lowercase
@@ -168,6 +168,43 @@ Example:
 `Cinque Terre Full-Day Tour from Milan` → `/WebPublisherSystem/content-system/tours/cinque-terre-full-day-tour-from-milan/`
 
 The folder name is a stable source/content identifier. The public URL slug may later be edited separately in the platform without renaming the folder.
+
+### Multi-variant rule (hard rule)
+The system is a **multi-content publisher**: each tour is expected to grow a cluster of content variants over time (BOFU landing, day-trip BOFU, comparison MOFU, informational TOFU, seasonal/FAQ, etc.).
+
+When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package has any of the following true:
+
+- `meta.json.public_copy_state == "final"`
+- `meta.json.publish_status` ∈ `{"ready_for_review", "ready_for_sync", "needs_live_verification", "published"}`
+- `meta.json.generation_phase_completed == true`
+
+…the agent **must not overwrite** the existing package files. Instead, the agent must create a **new variant package** in a sibling folder using the slug pattern:
+
+```
+<base-slug>-v<N>
+```
+
+…where `<N>` is the smallest positive integer such that the resulting folder does not already exist (the base package itself is implicitly `v1`; the first explicit variant is therefore `-v2`).
+
+The new variant package must:
+
+1. Use the same `canonical_tour_title` as the base package.
+2. Use a `slug` equal to the new folder name.
+3. Use a `public_slug` that does not collide with any other package's `public_slug` (uniqueness is enforced by `platform/post-overrides.php::wps_public_slug_in_use`). Prefer a keyword-meaningful public slug (e.g., `cinque-terre-day-trip-from-milan-five-villages`), not the mechanical `-v<N>` suffix.
+4. Set the variant linkage fields in `meta.json`:
+   - `variant_of`: base package slug (string)
+   - `variant_index`: integer ≥ 2
+   - `variant_angle`: short human label (e.g., `"BOFU day-trip / five-villages keyword variant"`)
+5. Differ from the base package only on `page_title`, `public_slug`, `primary_keyword`, hook paragraph, section ordering, FAQ angle, and CTA copy phrasing. Pricing, duration, departures, transport, languages, meeting points, and other source facts must remain identical across variants and must continue to trace to the same `source-facts.md` provenance rows.
+6. Include its own `source-facts.md` (with a "Variant context" section that names the base package), `qa-report.md`, and the rest of the 9 required files. A variant package is not allowed to share files with the base package by reference.
+
+Counter-cases:
+
+- If the base package is unfinished (`public_copy_state` ∈ `{"not_started", "holding_notice", "provisional"}` and `generation_phase_completed == false`), the request continues to update the existing package — do **not** create a `-v2` of an unfinished package.
+- If the user explicitly requests an in-place rewrite of an existing finalized package, route to `WPS:FIX_PACKAGE` instead.
+- The `-v<N>` mechanism applies to every tour, not just Cinque Terre.
+
+The QA runner and the agent both treat overwriting a finalized base package without explicit `WPS:FIX_PACKAGE` routing as a hard failure.
 
 ---
 
