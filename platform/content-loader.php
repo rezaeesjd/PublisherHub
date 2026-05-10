@@ -111,6 +111,9 @@ function wps_get_posts(array $settings): array
             'funnel_stage' => $meta['funnel_stage'] ?? '',
             'product_reference_code' => $meta['product_reference_code'] ?? '',
             'brand' => $meta['brand'] ?? ($settings['site_name'] ?? ''),
+            'publish_status' => (string) ($meta['publish_status'] ?? 'draft'),
+            'qa_status' => (string) ($meta['qa_status'] ?? 'pending'),
+            'public_copy_state' => (string) ($meta['public_copy_state'] ?? 'not_started'),
             'meta' => $meta,
         ];
     }
@@ -118,6 +121,30 @@ function wps_get_posts(array $settings): array
     usort($posts, fn($a, $b) => strcmp($a['title'], $b['title']));
 
     return ['ok' => true, 'error' => '', 'posts' => $posts];
+}
+
+function wps_human_workflow_status(array $post): array
+{
+    $publish = (string) ($post['publish_status'] ?? 'draft');
+    $qa = (string) ($post['qa_status'] ?? 'pending');
+
+    if ($publish === 'published') {
+        return ['label' => 'Published', 'tone' => 'success'];
+    }
+
+    if ($qa === 'needs_clarification') {
+        return ['label' => 'Blocked', 'tone' => 'danger'];
+    }
+
+    if ($qa === 'needs_fix' || $publish === 'needs_fix') {
+        return ['label' => 'Revision Required', 'tone' => 'danger'];
+    }
+
+    if (in_array($publish, ['ready_for_review', 'ready_for_sync', 'needs_live_verification'], true)) {
+        return ['label' => 'Needs Review', 'tone' => 'warning'];
+    }
+
+    return ['label' => 'Draft', 'tone' => 'muted'];
 }
 
 function wps_find_post_by_slug(array $settings, string $slug): array

@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $admin = wps_auth_load();
         $valid = $admin
+            && wps_is_allowed_admin_email((string) $admin['email'])
             && hash_equals(strtolower((string) $admin['email']), strtolower($email))
             && password_verify($password, (string) $admin['password_hash']);
 

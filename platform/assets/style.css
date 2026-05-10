@@ -408,6 +408,70 @@ button:active { transform: translateY(0); box-shadow: none; }
 
 .muted-panel { background: #f8fafd; border-color: #e5ecf4; }
 
+.table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+.workflow-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.workflow-table th,
+.workflow-table td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid #edf2f8;
+    vertical-align: top;
+}
+
+.workflow-table th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: #f8fafd;
+}
+
+.qa-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+}
+
+.qa-pill-success,
+.qa-pill-pass {
+    color: var(--success-text);
+    background: var(--success-bg);
+    border-color: var(--success-border);
+}
+
+.qa-pill-warning {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.qa-pill-danger,
+.qa-pill-fail {
+    color: var(--error-text);
+    background: var(--error-bg);
+    border-color: var(--error-border);
+}
+
+.qa-pill-muted {
+    color: #334155;
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
 /* ─── Post meta badges ───────────────────────────────── */
 
 .post-meta {
