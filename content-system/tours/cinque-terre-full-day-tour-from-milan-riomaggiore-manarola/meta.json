@@ -1,0 +1,79 @@
+{
+  "canonical_tour_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & …",
+  "product_reference_code": "187808P109",
+  "channel_product_codes": {
+    "viator": "187808P82",
+    "intake_reference": "187808P109"
+  },
+  "website_link": "{{WebsiteLink}}",
+  "cta_primary_link": "{{WebsiteLink}}",
+  "generation_phase_completed": false,
+  "clarify_phase_required": true,
+  "clarify_phase_completed": false,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "clarifications_needed": [
+    {
+      "field": "canonical_tour_title",
+      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & …",
+      "question": "Please provide the full official tour title (the current value appears truncated).",
+      "blocking": true
+    },
+    {
+      "field": "product_reference_code",
+      "raw_value": "187808P109 vs 187808P82",
+      "question": "Which code is the canonical internal product reference, and which code is channel-specific?",
+      "blocking": true
+    },
+    {
+      "field": "website_link",
+      "raw_value": "missing",
+      "question": "What is the direct website booking URL to use as the primary CTA?",
+      "blocking": true
+    },
+    {
+      "field": "cancellation_window",
+      "raw_value": "9, Relatively to Start Time",
+      "question": "Is the cancellation window 9 hours or 9 days before start time?",
+      "blocking": true
+    },
+    {
+      "field": "policy_value_15",
+      "raw_value": "15",
+      "question": "What does the value 15 represent (minimum notice, minimum participants, or another rule)?",
+      "blocking": true
+    },
+    {
+      "field": "itinerary_scope",
+      "raw_value": "Title mentions Riomaggiore/Manarola while description mentions all five Cinque Terre towns",
+      "question": "Should public copy describe a 2-town focus or all five villages on this product?",
+      "blocking": true
+    },
+    {
+      "field": "wheelchair_accessibility",
+      "raw_value": "not supplied",
+      "question": "What is the wheelchair accessibility status (yes/no/not applicable)?",
+      "blocking": true
+    }
+  ],
+  "blocking_issues": [
+    "Missing primary website CTA URL",
+    "Conflicting product/reference code",
+    "Unresolved cancellation policy unit",
+    "Unclear itinerary scope",
+    "Truncated canonical title",
+    "Missing accessibility confirmation"
+  ],
+  "conversion_blockers": [
+    "Missing website booking URL"
+  ],
+  "qa_status": "needs_clarification",
+  "publish_status": "draft",
+  "public_copy_state": "holding_notice",
+  "intake_questions_resolved": false,
+  "clarification_questions_presented": true,
+  "clarification_questions_presented_at": "2026-05-10",
+  "clarification_mode_selected": "holding_notice",
+  "last_qa_date": "2026-05-10",
+  "human_review_required": true
+}
