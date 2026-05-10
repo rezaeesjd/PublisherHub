@@ -10,6 +10,7 @@
 require_once __DIR__ . '/functions.php';
 
 const WPS_AUTH_FILE = WPS_DATA_DIR . '/auth.json';
+const WPS_SINGLE_ADMIN_EMAIL = 'bardiaa.rz@gmail.com';
 const WPS_AUTH_FAILED_LOGIN_LIMIT = 8;
 const WPS_AUTH_FAILED_LOGIN_WINDOW_SECONDS = 600;
 
@@ -78,6 +79,12 @@ function wps_login(string $email): void
         'email' => $email,
         'logged_in_at' => time(),
     ];
+}
+
+function wps_is_allowed_admin_email(string $email): bool
+{
+    $normalized = strtolower(trim($email));
+    return $normalized !== '' && hash_equals(WPS_SINGLE_ADMIN_EMAIL, $normalized);
 }
 
 function wps_logout(): void
