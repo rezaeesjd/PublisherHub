@@ -192,6 +192,20 @@ foreach ($connections as $connection) {
     }
 }
 
+$latestEnabledConnectionId = null;
+$latestEnabledConnectionSync = null;
+foreach ($connections as $connection) {
+    if (!(bool) ($connection['enabled'] ?? true)) {
+        continue;
+    }
+
+    $syncAt = $connection['last_synced_at'] ?? null;
+    if ($syncAt && ($latestEnabledConnectionSync === null || $syncAt > $latestEnabledConnectionSync)) {
+        $latestEnabledConnectionSync = $syncAt;
+        $latestEnabledConnectionId = $connection['id'] ?? null;
+    }
+}
+
 wps_render_header('GitHub Import');
 ?>
 
@@ -211,31 +225,6 @@ wps_render_header('GitHub Import');
     <?php endif; ?>
 </section>
 
-<section class="panel">
-    <h2>GitHub Import</h2>
-    <p>Import and sync content from one or more GitHub repositories. Each connection has its own branch, path, and optional access token.</p>
-    <div class="status-grid" style="margin:16px 0;">
-        <div class="status-card">
-            <strong>Connections</strong>
-            <span>
-                <?php echo $totalConnections; ?> configured
-                <?php if ($totalConnections > 0): ?>
-                    &middot; <?php echo $enabledConnections; ?> enabled
-                <?php endif; ?>
-            </span>
-        </div>
-        <div class="status-card">
-            <strong>Last Sync</strong>
-            <span>
-                <?php if ($lastSyncedAt): ?>
-                    <?php echo wps_h(date('Y-m-d H:i', strtotime($lastSyncedAt))); ?> UTC
-                <?php else: ?>
-                    Never
-                <?php endif; ?>
-            </span>
-        </div>
-    </div>
-</section>
 
 <?php if ($error): ?>
     <div class="alert alert-error"><?php echo wps_h($error); ?></div>
@@ -334,6 +323,9 @@ if (!empty($connections)): ?>
             <div class="ghimport-conn-header">
                 <div class="ghimport-conn-title">
                     <h3><?php echo wps_h($label); ?></h3>
+                    <?php if ($enabled && $latestEnabledConnectionId !== null && $connId === $latestEnabledConnectionId): ?>
+                        <span class="ghimport-badge badge-ok">Active sync connection</span>
+                    <?php endif; ?>
                     <span class="ghimport-badge <?php echo $badgeClass; ?>"><?php echo wps_h($badgeText); ?></span>
                 </div>
             </div>
@@ -368,6 +360,9 @@ if (!empty($connections)): ?>
                 <dd>
                     <?php if ($lastSync): ?>
                         <?php echo wps_h(date('Y-m-d H:i', strtotime($lastSync))); ?> UTC
+                        <?php if ($enabled && $latestEnabledConnectionId !== null && $connId === $latestEnabledConnectionId): ?>
+                            &nbsp;&middot;&nbsp;<strong>latest active sync</strong>
+                        <?php endif; ?>
                         <?php if ($conn['last_sync_count'] > 0 || $conn['last_sync_errors'] > 0): ?>
                             &nbsp;&middot;&nbsp;
                             <?php echo (int) $conn['last_sync_count']; ?> written,
