@@ -26,6 +26,7 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] **[machine]** missing website URL surfaces as a `conversion_blockers` entry
 - [ ] **[manual]** intake questions were presented to the user via `AskUserQuestion` (or a clearly labeled question batch) before public copy generation
 - [ ] **[machine]** `clarification_questions_presented == true` when any blocking clarification exists
+- [ ] **[machine]** `can_generate_public_copy == false` when any blocking clarification exists and provisional mode is not explicitly authorized
 
 ## File and Structure
 
@@ -138,6 +139,12 @@ For every issue, include:
 - Owner: Agent / User input / System maintainer
 - Next action: one concrete action sentence
 - Blocking?: yes/no
+- Root cause class: instruction gap / enforcement gap / user-input gap / schema gap
+
+## Template & Provenance Traceability
+
+- [ ] **[manual]** `automation-notes.md` records template file names used in this run
+- [ ] **[manual]** clarification question batch is copied verbatim in QA report or linked reference
 
 ## Recommended Fixes
 

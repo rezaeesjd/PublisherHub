@@ -61,6 +61,7 @@
 - Questions presented? (yes/no):
 - Presented at (YYYY-MM-DD):
 - Mode selected: resolve / holding_notice / provisional / unknown
+- Clarify pass: Pass A (clarify-only) / Pass B (resume)
 
 | Field | Raw value | Question presented to user |
 |---|---|---|
@@ -126,8 +127,17 @@ Use this issue format for each item:
 - Severity:
 - Owner:
 - Blocking?:
+- Root cause class:
 - Evidence:
 - Recommended action:
+
+## Template Traceability
+
+- Templates used:
+  - source-facts template path:
+  - holding-notice or public-blog template path:
+  - deferred stub template path:
+  - qa-report template path:
 
 ## Recommended Fixes
 
