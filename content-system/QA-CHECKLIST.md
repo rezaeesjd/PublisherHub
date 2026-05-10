@@ -165,6 +165,7 @@ For every issue, include:
 ## Template & Provenance Traceability
 
 - [ ] **[manual]** `automation-notes.md` records template file names used in this run
+- [ ] **[machine]** `meta.json.clarify_decisions[]` exists when any ambiguity was detected
 - [ ] **[manual]** clarification question batch is copied verbatim in QA report or linked reference
 
 ## Recommended Fixes
