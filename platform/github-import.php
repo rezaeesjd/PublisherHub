@@ -193,11 +193,6 @@ wps_render_header('GitHub Import');
 
     <?php if (!empty($connections) || !empty($syncResults)): ?>
     <div class="actions" style="margin-top:20px;">
-        <form method="post" style="display:contents;">
-            <?php echo wps_csrf_field(); ?>
-            <input type="hidden" name="action" value="sync_all">
-            <button type="submit">Sync All Enabled</button>
-        </form>
         <a class="button-secondary" href="settings.php">Back to Settings</a>
     </div>
     <?php else: ?>
