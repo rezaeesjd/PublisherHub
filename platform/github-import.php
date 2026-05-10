@@ -183,6 +183,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+$enabledConnections = count(array_filter($connections, fn($c) => $c['enabled'] ?? true));
+$totalConnections = count($connections);
+$lastSyncedAt = null;
+foreach ($connections as $connection) {
+    if (!empty($connection['last_synced_at']) && ($lastSyncedAt === null || $connection['last_synced_at'] > $lastSyncedAt)) {
+        $lastSyncedAt = $connection['last_synced_at'];
+    }
+}
+
 wps_render_header('GitHub Import');
 ?>
 
@@ -200,6 +209,32 @@ wps_render_header('GitHub Import');
         <a class="button-secondary" href="settings.php">Back to Settings</a>
     </div>
     <?php endif; ?>
+</section>
+
+<section class="panel">
+    <h2>GitHub Import</h2>
+    <p>Import and sync content from one or more GitHub repositories. Each connection has its own branch, path, and optional access token.</p>
+    <div class="status-grid" style="margin:16px 0;">
+        <div class="status-card">
+            <strong>Connections</strong>
+            <span>
+                <?php echo $totalConnections; ?> configured
+                <?php if ($totalConnections > 0): ?>
+                    &middot; <?php echo $enabledConnections; ?> enabled
+                <?php endif; ?>
+            </span>
+        </div>
+        <div class="status-card">
+            <strong>Last Sync</strong>
+            <span>
+                <?php if ($lastSyncedAt): ?>
+                    <?php echo wps_h(date('Y-m-d H:i', strtotime($lastSyncedAt))); ?> UTC
+                <?php else: ?>
+                    Never
+                <?php endif; ?>
+            </span>
+        </div>
+    </div>
 </section>
 
 <?php if ($error): ?>
