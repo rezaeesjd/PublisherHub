@@ -79,7 +79,8 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 ## Conversion Checklist (final mode only)
 
 - [ ] **[machine]** website URL used as primary CTA when provided
-- [ ] **[machine]** missing website URL classified as conversion blocker unless waived
+- [ ] **[machine]** missing website URL when at least one OTA URL exists is recorded as a `meta.json.warnings[]` entry — **not** a `conversion_blockers[]` entry — and the highest-priority OTA URL is used as `cta_primary_link`
+- [ ] **[machine]** missing website URL **and** no OTA URL of any channel is recorded as a `conversion_blockers[]` entry and a `clarifications_needed[*].blocking=true` entry
 - [ ] **[machine]** OTA links used as secondary trust/reference only (appear after the primary CTA in `blog-post.md`)
 - [ ] **[machine]** at least one CTA in the first half of the post; one strong CTA at the end
 - [ ] **[manual]** "Who this tour is best for" section present
@@ -104,10 +105,22 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 
 ## Multi-Variant Compliance
 
-- [ ] **[machine]** if a base package for the same canonical tour title already exists and is finalized, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
-- [ ] **[machine]** when `variant_index` is set, `variant_of` references an existing package slug
-- [ ] **[machine]** when `variant_of` is set, `public_slug` does not collide with the base or any sibling variant's `public_slug`
+> **Runner-enforcement status:** the items below are tagged `[manual until runner]` because `platform/qa-rules.php` does not yet implement cross-package variant checks (no overwrite-vs-`-v<N>` routing detection, no `variant_of` linkage check, no sibling `public_slug` collision check, no cluster-wide `primary_keyword` uniqueness check). They are mandatory checks today; reviewers must confirm them by hand. Promote each tag to `[machine]` only after the corresponding check ships in `platform/qa-rules.php`.
+
+- [ ] **[manual until runner]** if a base package for the same canonical tour title already exists and `meta.json.publish_status` ∈ `{"ready_for_review", "ready_for_sync", "needs_live_verification", "published"}`, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
+- [ ] **[manual until runner]** if the base package is in `publish_status: draft` or `needs_fix`, this run did **not** unnecessarily fork a `-v<N>` (drafts are iterable in place)
+- [ ] **[manual until runner]** when `variant_index` is set, `variant_of` references an existing package slug under `content-system/tours/`
+- [ ] **[manual until runner]** when `variant_of` is set, `public_slug` does not collide with the base or any sibling variant's `public_slug`
+- [ ] **[manual until runner]** when `variant_of` is set, `variant_role` is one of the schema enum values and is **not** duplicated by any sibling in the same cluster (unless explicitly approved)
+- [ ] **[manual until runner]** when `variant_of` is set, `primary_keyword` is **not** duplicated by any sibling in the same cluster (cluster-keyword-uniqueness)
+- [ ] **[manual until runner]** when `variant_of` is set and the base package had open warnings, this variant has a non-empty `inherited_warnings[]` array recording the inheritance handshake decisions
+- [ ] **[manual until runner]** when `variant_of` is set, the variant ships with a `CHANGELOG.md` whose first entry records `variant_of`, `variant_index`, `variant_role`, and `variant_angle`
 - [ ] **[manual]** variant package differs from siblings only on `page_title`, `public_slug`, `primary_keyword`, hook, section ordering, FAQ angle, and CTA copy — pricing, duration, departures, transport, languages, and meeting points remain identical across the cluster
+
+## Content vs System Boundary
+
+- [ ] **[manual]** if this PR was created by `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE` / `WPS:FIX_PACKAGE` / `WPS:PUBLISH_BLOG`, the diff touches only files under `content-system/tours/<slug>/`. System rule changes belong in a separate `WPS:IMPROVE_SYSTEM_WORKFLOW` PR.
+- [ ] **[manual]** if this PR was created by `WPS:IMPROVE_SYSTEM_WORKFLOW` / `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`, the diff does **not** touch files under `content-system/tours/<slug>/`.
 
 ## Publish Path Status
 

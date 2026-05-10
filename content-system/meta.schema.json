@@ -71,12 +71,49 @@
       "type": "string",
       "description": "Short human label describing how this variant differs from siblings (e.g., 'BOFU day-trip / five-villages keyword variant')."
     },
+    "variant_role": {
+      "type": "string",
+      "enum": ["bofu_landing", "day_trip_bofu", "comparison_mofu", "informational_tofu", "seasonal_faq", "other"],
+      "description": "Cluster slot this variant fills. Two packages with the same variant_of must not share variant_role unless explicitly approved by the user."
+    },
+    "inherited_warnings": {
+      "type": "array",
+      "description": "Variant inheritance handshake log. One entry per warning inherited from the base package, with the user's decision.",
+      "items": {
+        "type": "object",
+        "required": ["field", "decision"],
+        "properties": {
+          "field": { "type": "string" },
+          "base_value": {},
+          "decision": { "type": "string", "enum": ["inherit", "resolved", "escalated"] },
+          "resolved_value": {}
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Non-blocking process warnings (e.g., placeholder website link, missing accessibility, unresolved cancellation unit). Distinct from conversion_blockers, which is reserved for true blockers (e.g., zero booking URLs of any channel)."
+    },
+    "attribution": {
+      "type": "object",
+      "description": "Optional attribution/UTM templates per channel. Reserved for future per-cluster relinking automation.",
+      "properties": {
+        "utm_template": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
     "canonical_title_status": {
       "type": "string",
       "enum": ["confirmed", "unconfirmed"],
       "description": "confirmed only after user clarifies when the source title is truncated/conflicted."
     },
-    "tour_title": { "type": "string", "minLength": 1 },
+    "tour_title": {
+      "type": "string",
+      "minLength": 1,
+      "deprecated": true,
+      "description": "Deprecated. Use canonical_tour_title (stable identifier) and page_title (SEO/H1 title). Do not set in new packages."
+    },
     "page_title": { "type": "string", "minLength": 1, "maxLength": 120 },
     "slug": {
       "type": "string",

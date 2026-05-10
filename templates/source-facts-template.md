@@ -4,6 +4,21 @@ These are raw and normalized facts extracted before public copy generation.
 
 > **Provenance-to-claim binding:** Every assertive sentence in `blog-post.md`, `faq.md`, `keywords.md`, and `internal-links.md` must trace to a row in the matrix below. Marketing-flavored facts (e.g., UNESCO status, "iconic", "world-famous", "scenic") count as claims and must be added as rows here before they appear in public copy.
 
+## Variant context (required for `-v<N>` packages)
+
+Fill this block **only** when this package is a content variant of an existing tour. Leave the section in place but note "Not a variant — base package." when this is the base.
+
+- Base package slug: <base slug>
+- Variant index: <integer ≥ 2>
+- Variant role: bofu_landing | day_trip_bofu | comparison_mofu | informational_tofu | seasonal_faq | other
+- Variant angle: <short human label>
+- Inheritance handshake completed (yes/no):
+- Inherited warnings (one row per gap):
+
+| Field | Base value | Decision (inherit / resolved / escalated) | Resolved value (if any) |
+|---|---|---|---|
+|  |  |  |  |
+
 ## Tour identity
 
 - Command:
@@ -25,7 +40,7 @@ Allowed `Status` values: `confirmed | missing | conflicted | inferred | needs_hu
 | canonical tour title |  |  |  |  |
 | internal product/reference code |  |  |  |  |
 | channel product codes (Viator/etc.) |  |  |  |  |
-| website booking URL |  |  |  | conversion blocker if missing |
+| website booking URL |  |  |  | non-blocker when at least one OTA URL exists (auto-fallback, recorded as a `warnings[]` entry); real `conversion_blockers[]` entry only when no booking URL of any channel is supplied |
 | TripAdvisor URL |  |  |  | warning if missing |
 | Viator URL |  |  |  | warning if missing |
 | price (per band) |  |  |  |  |
