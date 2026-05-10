@@ -31,11 +31,51 @@ if ($postsResult['ok']) {
         $workflowRows[] = [
             'title' => (string) ($post['title'] ?? 'Untitled'),
             'slug' => (string) ($post['slug'] ?? ''),
+            'publish_status' => (string) ($post['publish_status'] ?? 'draft'),
+            'qa_status' => (string) ($post['qa_status'] ?? 'pending'),
             'status_label' => $status['label'],
             'status_tone' => (string) ($status['tone'] ?? 'muted'),
+            'status_reason' => wps_status_reason($post),
             'next_action' => $nextAction,
         ];
     }
+}
+
+function wps_status_reason(array $post): string
+{
+    $publish = (string) ($post['publish_status'] ?? 'draft');
+    $qa = (string) ($post['qa_status'] ?? 'pending');
+    $warnings = $post['meta']['warnings'] ?? [];
+
+    if ($publish === 'published') {
+        return 'Live verification is complete and this package is confirmed published.';
+    }
+
+    if ($qa === 'needs_clarification') {
+        return 'Blocking clarifications are unresolved. Resolve them before final copy can proceed.';
+    }
+
+    if ($qa === 'needs_fix' || $publish === 'needs_fix') {
+        return 'QA found blocking issues that must be fixed before review or publish.';
+    }
+
+    if ($publish === 'ready_for_review') {
+        return 'Generated and internally complete, waiting for human review approval.';
+    }
+
+    if ($publish === 'ready_for_sync') {
+        return 'Approved in repo; still waiting for sync/deployment to live environment.';
+    }
+
+    if ($publish === 'needs_live_verification') {
+        return 'Synced/approved, but archive and single-post pages are not yet live-verified.';
+    }
+
+    if (!empty($warnings) && is_array($warnings)) {
+        return 'Still draft with warnings: ' . (string) $warnings[0];
+    }
+
+    return 'Draft content package. Generation exists, but review/publish gate is not completed yet.';
 }
 
 wps_render_header($settings['archive_title']);
@@ -59,6 +99,7 @@ wps_render_header($settings['archive_title']);
                     <tr>
                         <th>Package</th>
                         <th>Status</th>
+                        <th>Why this status</th>
                         <th>Next action</th>
                     </tr>
                 </thead>
@@ -70,6 +111,10 @@ wps_render_header($settings['archive_title']);
                                 <small class="muted"><?php echo wps_h($row['slug']); ?></small>
                             </td>
                             <td><span class="qa-pill qa-pill-<?php echo wps_h($row['status_tone']); ?>"><?php echo wps_h($row['status_label']); ?></span></td>
+                            <td>
+                                <small><?php echo wps_h($row['status_reason']); ?></small><br>
+                                <small class="muted">publish_status=<?php echo wps_h($row['publish_status']); ?> · qa_status=<?php echo wps_h($row['qa_status']); ?></small>
+                            </td>
                             <td><?php echo wps_h($row['next_action']); ?></td>
                         </tr>
                     <?php endforeach; ?>

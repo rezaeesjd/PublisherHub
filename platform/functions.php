@@ -293,6 +293,10 @@ function wps_current_nav_item(): string
 {
     $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 
+    if (str_contains($scriptName, '/platform/index.php')) {
+        return 'dashboard';
+    }
+
     if (str_contains($scriptName, '/platform/')) {
         return 'settings';
     }
@@ -305,6 +309,7 @@ function wps_render_header(string $title): void
     $settings = wps_load_settings();
     $currentNavItem = wps_current_nav_item();
     $archiveIsActive = $currentNavItem === 'archive';
+    $dashboardIsActive = $currentNavItem === 'dashboard';
     $settingsIsActive = $currentNavItem === 'settings';
     $isAdminContext = $currentNavItem === 'settings';
     $signedIn = function_exists('wps_is_logged_in') && wps_is_logged_in();
@@ -325,6 +330,7 @@ function wps_render_header(string $title): void
             <nav>
                 <a class="<?php echo $archiveIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_archive_url()); ?>" <?php echo $archiveIsActive ? 'aria-current="page"' : ''; ?>>Archive</a>
                 <?php if ($isAdminContext || $signedIn): ?>
+                    <a class="<?php echo $dashboardIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_asset_url('index.php')); ?>" <?php echo $dashboardIsActive ? 'aria-current="page"' : ''; ?>>Dashboard</a>
                     <a class="<?php echo $settingsIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_settings_url()); ?>" <?php echo $settingsIsActive ? 'aria-current="page"' : ''; ?>>Settings</a>
                 <?php endif; ?>
                 <?php if ($signedIn): ?>
