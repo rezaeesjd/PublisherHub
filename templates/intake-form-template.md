@@ -35,7 +35,7 @@ A machine-readable companion lives at `structures/intake-form.schema.json`.
 - **Difficulty** _(optional)_: `Easy` | `Moderate` | `Challenging`
 - **Languages** _(Required, blocking if missing)_: array of language names; mark per-language whether `live`, `audio`, or `written`
 - **Hotel pickup/drop-off** _(Required, blocking if conflicted with meeting point)_: `included` | `not_included` | `optional_addon`
-- **Wheelchair accessibility** _(optional, warning if missing)_: `accessible` | `not_accessible` | `partial`
+- **Wheelchair accessibility** _(Required, blocking if missing or ambiguous)_: `accessible` | `not_accessible` | `partial`
 
 ## Section 4 — Itinerary
 
@@ -90,5 +90,6 @@ These items get promoted into the provenance matrix so they can be referenced in
 
 1. If any **Required (blocking)** field is missing, conflicted, or has an ambiguous unit, the agent must ask the user via `AskUserQuestion` before generating any public copy.
 2. Fields marked **warning if missing** populate `meta.clarifications_needed` with `"blocking": false`. Generation may proceed.
-3. Fields marked **optional** are recorded in `source-facts.md` if provided, omitted otherwise.
-4. When all blocking-required fields are answered, set `meta.intake_questions_resolved: true`.
+3. For required clarification fields, include each presented user question in `meta.clarification_questions[]` for auditability.
+4. Fields marked **optional** are recorded in `source-facts.md` if provided, omitted otherwise.
+5. When all blocking-required fields are answered, set `meta.intake_questions_resolved: true`.
