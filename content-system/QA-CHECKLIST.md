@@ -40,6 +40,7 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] **[machine]** `meta.json` valid JSON
 - [ ] **[machine]** required schema fields present
 - [ ] **[machine]** no deprecated/alias key substitution for required fields (`product_code`, `channel_codes`, `website_url` are invalid substitutes)
+- [ ] **[machine]** canonical commerce keys present and populated: `product_reference_code`, `channel_product_codes`, `website_link`, `cta_primary_link`
 - [ ] **[machine]** `publish_status` ∈ allowed enum
 - [ ] **[machine]** `qa_status` ∈ `{pending, passing, warning, needs_fix, needs_clarification}`
 - [ ] **[machine]** `public_copy_state` ∈ `{not_started, holding_notice, provisional, final}`
@@ -130,6 +131,13 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 ## Issues Found
 
 1.
+
+For every issue, include:
+- Type: System instruction gap / Workflow enforcement gap / User input gap / Generated package issue / QA-reporting gap / Goal-conversion gap
+- Severity: High / Medium / Low
+- Owner: Agent / User input / System maintainer
+- Next action: one concrete action sentence
+- Blocking?: yes/no
 
 ## Recommended Fixes
 

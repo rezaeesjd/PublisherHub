@@ -50,6 +50,7 @@
 - **Must not do:** Modify files, rewrite content, or create PR unless requested.
 - **Allowed file changes:** none by default.
 - **Final expected status:** Structured QA report with prioritized actions.
+- **Canonical alias behavior:** `WPS:GENERATION_PROCESS_QA` is a specialized alias of this command for generation-only process audits.
 
 ## WPS:GENERATION_PROCESS_QA
 
@@ -60,6 +61,7 @@
 - **Must not do:** Modify any file. Rewrite the package. Create commits.
 - **Allowed file changes:** none.
 - **Final expected status:** Structured process-only review with scores, failure analysis, and prioritized improvements.
+- **Canonical routing rule:** Route internally through the same PROCESS_QA engine and force scope = `generation_only`.
 
 ## WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS
 

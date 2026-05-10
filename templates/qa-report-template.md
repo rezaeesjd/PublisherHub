@@ -32,6 +32,8 @@
 
 - [ ] **[machine]** JSON valid
 - [ ] **[machine]** Required fields present
+- [ ] **[machine]** Canonical commerce keys present (`product_reference_code`, `channel_product_codes`, `website_link`, `cta_primary_link`)
+- [ ] **[machine]** No deprecated key aliases in new package output (`product_code`, `channel_codes`, `website_url`)
 - [ ] **[machine]** Phase markers present (`generation_phase_completed`, `clarify_phase_required`, `clarify_phase_completed`, `publish_phase_completed`, `live_verification_completed`, `intake_questions_resolved`)
 - [ ] **[machine]** `publish_status` ∈ allowed enum
 - [ ] **[machine]** `qa_status` ∈ `{pending, passing, warning, needs_fix, needs_clarification}`
@@ -52,6 +54,17 @@
 - [ ] **[machine]** every blocking entry mirrored in `source-facts.md`
 - [ ] **[manual]** intake questions presented to the user via `AskUserQuestion` (or labeled question batch) before public copy generation
 - [ ] **[machine]** `intake_questions_resolved` is `true` only when no blocking entry remains (or provisional mode authorized)
+- [ ] **[machine]** clarify markers present and consistent: `clarification_questions_presented`, `clarification_questions_presented_at`, `clarification_mode_selected`
+
+## Clarification Interaction Log
+
+- Questions presented? (yes/no):
+- Presented at (YYYY-MM-DD):
+- Mode selected: resolve / holding_notice / provisional / unknown
+
+| Field | Raw value | Question presented to user |
+|---|---|---|
+|  |  |  |
 
 ## Link Provenance Checklist
 
@@ -107,6 +120,14 @@
 ## Issues Found
 
 1.
+
+Use this issue format for each item:
+- Type:
+- Severity:
+- Owner:
+- Blocking?:
+- Evidence:
+- Recommended action:
 
 ## Recommended Fixes
 

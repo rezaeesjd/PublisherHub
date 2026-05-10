@@ -29,6 +29,7 @@
   "clarification_questions_presented": false,
   "clarification_questions_presented_at": null,
   "clarification_mode_selected": "unknown",
+  "clarification_questions": [],
   "public_copy_state": "not_started",
   "publish_status": "draft",
   "human_review_required": true,
