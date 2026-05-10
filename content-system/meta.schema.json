@@ -35,7 +35,8 @@
     "blocking_issues",
     "conversion_blockers",
     "product_reference_code",
-    "channel_product_codes"
+    "channel_product_codes",
+    "direct_booking_followup_required"
   ],
   "additionalProperties": true,
   "properties": {
@@ -231,6 +232,26 @@
       "type": "string",
       "enum": ["resolve", "holding_notice", "provisional", "unknown", "auto_resolved"],
       "description": "Clarify-gate path selected for this generation run. Use `auto_resolved` when all detected ambiguities were handled by the non-blocking auto-resolution rules in AGENTS.md without prompting the user."
+    },
+    "clarify_decisions": {
+      "type": "array",
+      "description": "Machine-readable ambiguity decision log for every detected unclear/conflicted field.",
+      "items": {
+        "type": "object",
+        "required": ["field", "raw_value", "blocking", "decision", "reason"],
+        "properties": {
+          "field": { "type": "string" },
+          "raw_value": {},
+          "blocking": { "type": "boolean" },
+          "decision": { "type": "string", "enum": ["auto_resolved", "asked_user", "blocked", "resolved"] },
+          "reason": { "type": "string" },
+          "resolved_value": {}
+        }
+      }
+    },
+    "direct_booking_followup_required": {
+      "type": "boolean",
+      "description": "True when website_link is missing and an OTA URL is used as temporary primary CTA; requires a follow-up relink action."
     },
     "clarification_questions": {
       "type": "array",

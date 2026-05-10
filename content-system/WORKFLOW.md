@@ -108,3 +108,16 @@ Deferred stub format must be exactly one heading plus one line:
 # Deferred (Clarification Required)
 This file is intentionally deferred until blocking clarifications are resolved.
 ```
+
+
+## Direct-booking follow-up (required when OTA fallback is primary)
+
+- When `website_link` is missing and `cta_primary_link` uses an OTA URL, set `direct_booking_followup_required: true` in `meta.json`.
+- Add one actionable follow-up in `qa-report.md` to replace OTA primary CTA with direct website CTA once available.
+- Record rationale in `meta.json.warnings[]` and in the clarify decision ledger.
+
+
+## Clarify decision ledger (machine-readable)
+
+- For every ambiguity detected (blocking or non-blocking), populate `meta.json.clarify_decisions[]` with: `field`, `raw_value`, `blocking`, `decision`, `reason`, and optional `resolved_value`.
+- Allowed `decision` values: `auto_resolved`, `asked_user`, `blocked`, `resolved`.
