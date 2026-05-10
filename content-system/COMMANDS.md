@@ -2,10 +2,11 @@
 
 ## WPS:GENERATE_CONTENT
 
-- **Purpose:** Generate or update one tour content package.
+- **Purpose:** Generate one tour content package. The system is a multi-content publisher: each tour is expected to grow a cluster of variant packages over time.
 - **Should do:** Extract source facts first, build provenance matrix, run clarify gate, **invoke `WPS:CLARIFY` automatically** if blocking ambiguities are detected, generate remaining files only when allowed.
-- **Must not do:** Claim published/live verification; bypass blocking clarification gate; generate final `blog-post.md` while blocking clarifications remain (unless the user has explicitly approved provisional mode in chat).
-- **Allowed file changes:** package folder files plus templates/checklists if explicitly requested.
+- **Must do (multi-variant rule):** Before writing any file, check whether a base package for this canonical tour title already exists at `content-system/tours/<base-slug>/`. If that package is **approved** (`publish_status` ∈ `ready_for_review` / `ready_for_sync` / `needs_live_verification` / `published` — see `AGENTS.md` "Multi-variant rule (hard rule)") **do not overwrite** it — create a new variant package at `content-system/tours/<base-slug>-v<N>/` with `variant_of`, `variant_index`, `variant_role`, and a unique `public_slug` set in `meta.json`. A base package still in `publish_status: draft` or `needs_fix` is iterable in place — do **not** fork a variant for draft re-runs.
+- **Must not do:** Claim published/live verification; bypass blocking clarification gate; generate final `blog-post.md` while blocking clarifications remain (unless the user has explicitly approved provisional mode in chat); overwrite an approved base package (route to `WPS:FIX_PACKAGE` if an in-place rewrite of an approved package is genuinely intended); modify system files (`AGENTS.md`, `COMMANDS.md`, `WORKFLOW.md`, `QA-CHECKLIST.md`, `templates/`, `structures/`, `meta.schema.json`, `platform/`) — system rule changes belong in a separate `WPS:IMPROVE_SYSTEM_WORKFLOW` PR.
+- **Allowed file changes:** files under `content-system/tours/<slug>/` only (base or new variant). Templates/checklists may be touched only if the user explicitly requests it as part of the same task.
 - **Final expected status (no blockers):** `publish_status: draft`, `qa_status: pending`, `public_copy_state: final`, `intake_questions_resolved: true`.
 - **Final expected status (blockers, holding-notice mode):** `publish_status: draft`, `qa_status: needs_clarification`, `public_copy_state: holding_notice`, `intake_questions_resolved: false`.
 - **Optional flag:** `--provisional` — user-authorized only. Skips the must-ask-first gate, sets `public_copy_state: provisional` and `provisional_mode: true`. Never default behavior.
@@ -101,6 +102,20 @@
 - **Must not do:** Modify existing tour package content unless explicitly required for non-content examples.
 - **Allowed file changes:** system/workflow/template/documentation files.
 - **Final expected status:** clearer enforceable workflow for future runs.
+
+## WPS:RELINK_CLUSTER
+
+- **Purpose:** When a real direct website booking URL becomes available for a tour that already has one or more variants, propagate that URL across every package in the cluster in a single sweep.
+- **Invocation:** `WPS:RELINK_CLUSTER <base-slug> <new-website-url> [--cta "<copy>"]`
+- **Should do:**
+  - locate every package whose `meta.json.slug == <base-slug>` or `meta.json.variant_of == <base-slug>`
+  - update each package's `meta.json.website_link`, `cta_primary_link`, `cta_primary_channel: "website"`, and `cta_primary` (default copy: "Book on our website" unless `--cta` is supplied)
+  - rewrite the booking links in each `blog-post.md` so the website URL replaces the prior OTA fallback while keeping OTA links as secondary trust references
+  - record one entry in each package's `CHANGELOG.md` describing the relinking
+  - leave `source-facts.md` provenance rows updated: the website-URL row moves from `missing` to `confirmed`
+- **Must not do:** rewrite any other field (pricing, duration, departures, copy hooks, FAQs); add new variants; mark anything published.
+- **Allowed file changes:** `meta.json`, `blog-post.md`, `source-facts.md`, `qa-report.md`, and `CHANGELOG.md` for every package in the cluster. No system file changes.
+- **Final expected status:** every package in the cluster has `cta_primary_channel: "website"`, the website-URL row is `confirmed` in each `source-facts.md`, and the prior `meta.json.warnings[]` entry "website_link is a placeholder…" is removed from each.
 
 ## WPS:LIVE_VERIFY
 

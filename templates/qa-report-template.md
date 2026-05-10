@@ -71,7 +71,7 @@
 
 | Link type | Value | Source | Status | Blocking? |
 |---|---|---|---|---|
-| Website booking URL |  |  | provided / missing / placeholder | yes (if missing or placeholder, unless waived) |
+| Website booking URL |  |  | provided / missing / placeholder | only when **no** booking URL of any channel exists (otherwise warning, not blocker) |
 | TripAdvisor URL |  |  | provided / missing / placeholder | no |
 | Viator URL |  |  | provided / missing / placeholder | no |
 
@@ -87,7 +87,8 @@
 ## Conversion Checklist (final mode only)
 
 - [ ] **[machine]** Website URL used as primary CTA when provided
-- [ ] **[machine]** Missing website URL classified as conversion blocker unless waived
+- [ ] **[machine]** Missing website URL with at least one OTA URL present is recorded as a `meta.json.warnings[]` entry (not a `conversion_blockers[]` entry) and the OTA URL drives `cta_primary_link`
+- [ ] **[machine]** Missing website URL with **zero** booking URLs of any channel is recorded as a `conversion_blockers[]` entry and triggers the hard clarify gate
 - [ ] **[machine]** OTA links used as secondary trust/reference only (after primary CTA)
 - [ ] **[machine]** Soft CTA in first half + strong CTA at end
 - [ ] **[manual]** "Who this tour is best for" section present
@@ -120,16 +121,21 @@
 
 ## Issues Found
 
-1.
+Use the structured table below. Every row must classify the issue using one of the standard `WPS:PROCESS_QA` issue types so generation QA reports stay lint-comparable to process QA reports.
 
-Use this issue format for each item:
-- Type:
-- Severity:
-- Owner:
-- Blocking?:
-- Root cause class:
-- Evidence:
-- Recommended action:
+Allowed values for **Issue type**:
+- `system_instruction_gap` — a rule in `AGENTS.md` / `COMMANDS.md` / `WORKFLOW.md` is missing, ambiguous, or self-contradictory
+- `workflow_enforcement_gap` — the rule exists but the agent or runner did not enforce it
+- `user_input_gap` — the supplier intake is missing a field
+- `generated_package_issue` — the generated package itself is wrong (file missing, wrong content, schema break)
+- `front_end_rendering_risk` — the package is structurally valid but will render badly on the public site
+- `publish_verification_gap` — claims about live state cannot be verified
+
+Allowed values for **Severity**: `high | medium | low`.
+
+| # | Issue type | Severity | Owner | Blocking? | Evidence | Recommended action |
+|---|---|---|---|---|---|---|
+| 1 |  |  |  |  |  |  |
 
 ## Template Traceability
 

@@ -4,6 +4,7 @@
 
 1. User provides tour data (free text or structured intake; see `templates/intake-form-template.md`).
 2. Command is detected (`WPS:*`).
+2a. **Multi-variant routing check.** Before any file is created, the agent looks up the canonical tour title against existing folders under `content-system/tours/`. If a base package for this tour already exists and is **approved** (`publish_status` ∈ `ready_for_review` / `ready_for_sync` / `needs_live_verification` / `published`), the agent must create a **new variant package** at `<base-slug>-v<N>/` per the multi-variant rule in `AGENTS.md` and set `variant_of` / `variant_index` / `variant_angle` in the new `meta.json`. If the base package is still in `publish_status: draft` or `needs_fix`, the agent continues to refine it in place — draft re-runs do **not** fork a variant. Overwriting an approved base package is forbidden under `WPS:GENERATE_CONTENT`; in-place rewrites of approved packages must be routed through `WPS:FIX_PACKAGE`.
 3. Source facts are extracted to `source-facts.md`.
 4. Provenance matrix is created and normalized.
 5. Conflict + missing-input detection runs (the clarify gate).
@@ -33,7 +34,8 @@
 - `meta.json` must include `clarification_questions_presented: true/false`, `clarification_questions_presented_at` (YYYY-MM-DD), and `clarification_mode_selected` (`resolve`, `holding_notice`, `provisional`, `unknown`).
 - When blocking clarifications exist, these three clarify interaction markers are mandatory and must be populated before PR creation.
 - Allowed states under the hard gate: **resolve**, **holding notice**, or **explicit provisional mode**. Default if the user does not pick: **holding notice**.
-- Missing website booking URL → `conversion_blockers[]` entry + blocking clarification unless explicitly waived.
+- Missing website booking URL **with at least one OTA booking URL provided** → not a blocker. Record as `meta.json.warnings[]`; set `cta_primary_link` to the highest-priority OTA URL (website → Viator → TripAdvisor → GetYourGuide → other); keep `website_link` as `{{WebsiteLink}}`. Do **not** populate `conversion_blockers[]` for this case.
+- Missing website booking URL **and** no OTA booking URL of any channel → real conversion blocker. Append to `conversion_blockers[]` and `clarifications_needed[*].blocking=true` and force the hard clarify gate.
 - Canonical title conflicted/truncated → set `canonical_title_status: unconfirmed` and keep `can_generate_public_copy: false` until resolved or provisional mode is explicitly approved.
 - Missing OTA URLs → warnings, not blockers.
 - Cancellation window with no unit → blocking clarification (typed numeric field with unresolved unit).
@@ -80,7 +82,7 @@
 
 ## Link + product-code provenance guards
 
-- Website URL is a conversion-critical input. If missing, keep `{{WebsiteLink}}`, append `conversion_blockers[]`, and force hard clarify gate.
+- Website URL is the *preferred* primary CTA when supplied. When missing but an OTA URL exists, fall back to the OTA per the auto-resolution table; record as a warning, **not** a `conversion_blockers[]` entry. When missing **and** no OTA URL exists, append `conversion_blockers[]` and force the hard clarify gate.
 - Never overwrite a real provided URL with a placeholder token.
 - Keep product code separation explicit: `product_reference_code` is primary, `channel_product_codes` holds channel IDs (e.g., Viator/TripAdvisor).
 - Deprecated aliases (`product_code`, `channel_codes`, `website_url`) must not be used in newly generated packages.

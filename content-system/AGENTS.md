@@ -156,7 +156,7 @@ If the user asks only for strategy, templates, QA, or system setup, provide or u
 ---
 
 ## Tour folder creation rule
-Create one folder inside `/WebPublisherSystem/content-system/tours/` for each tour title.
+Create one folder inside `/WebPublisherSystem/content-system/tours/` for each **content package**. A "package" is one variant of one tour, not one tour. The system is intended to host **multiple content variants per tour** for SEO and conversion testing.
 
 Folder name format:
 - lowercase
@@ -168,6 +168,58 @@ Example:
 `Cinque Terre Full-Day Tour from Milan` → `/WebPublisherSystem/content-system/tours/cinque-terre-full-day-tour-from-milan/`
 
 The folder name is a stable source/content identifier. The public URL slug may later be edited separately in the platform without renaming the folder.
+
+### Multi-variant rule (hard rule)
+The system is a **multi-content publisher**: each tour is expected to grow a cluster of content variants over time (BOFU landing, day-trip BOFU, comparison MOFU, informational TOFU, seasonal/FAQ, etc.).
+
+When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft`), the agent must not overwrite it. Approved means:
+
+- `meta.json.publish_status` ∈ `{"ready_for_review", "ready_for_sync", "needs_live_verification", "published"}`
+
+A package in `publish_status: draft` is **iterable**: a follow-up `WPS:GENERATE_CONTENT` may continue to refine the draft in place, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Drafts have not yet been approved by a human reviewer; forking a `-v<N>` for every draft re-run would break normal iterative correction. Variant routing is reserved for tours where someone has already endorsed the prior package.
+
+When the base package is approved per the predicate above, the agent must create a **new variant package** in a sibling folder using the slug pattern:
+
+```
+<base-slug>-v<N>
+```
+
+…where `<N>` is the smallest positive integer such that the resulting folder does not already exist (the base package itself is implicitly `v1`; the first explicit variant is therefore `-v2`).
+
+The new variant package must:
+
+1. Use the same `canonical_tour_title` as the base package.
+2. Use a `slug` equal to the new folder name.
+3. Use a `public_slug` that does not collide with any other package's `public_slug` (uniqueness is enforced by `platform/post-overrides.php::wps_public_slug_in_use`). Prefer a keyword-meaningful public slug (e.g., `cinque-terre-day-trip-from-milan-five-villages`), not the mechanical `-v<N>` suffix.
+4. Set the variant linkage fields in `meta.json`:
+   - `variant_of`: base package slug (string)
+   - `variant_index`: integer ≥ 2
+   - `variant_angle`: short human label (e.g., `"BOFU day-trip / five-villages keyword variant"`)
+5. Differ from the base package only on `page_title`, `public_slug`, `primary_keyword`, hook paragraph, section ordering, FAQ angle, and CTA copy phrasing. Pricing, duration, departures, transport, languages, meeting points, and other source facts must remain identical across variants and must continue to trace to the same `source-facts.md` provenance rows.
+6. Include its own `source-facts.md` (with a "Variant context" section that names the base package), `qa-report.md`, and the rest of the 9 required files. A variant package is not allowed to share files with the base package by reference.
+
+Counter-cases:
+
+- If the base package is in `publish_status: draft` (regardless of `public_copy_state` or `generation_phase_completed`), the request continues to update the existing package — do **not** fork `-v<N>` for a draft. Iterative draft refinement is the expected behavior.
+- If the base package is in `publish_status: needs_fix` and the request is a re-generation to address the fixes, continue to update it in place. Do **not** fork `-v<N>`.
+- If the user explicitly requests an in-place rewrite of an already-approved package, route to `WPS:FIX_PACKAGE` instead.
+- The `-v<N>` mechanism applies to every tour, not just Cinque Terre.
+
+The QA runner and the agent both treat overwriting an approved base package without explicit `WPS:FIX_PACKAGE` routing as a hard failure.
+
+### Variant inheritance handshake (hard rule)
+
+When the multi-variant rule fires and the agent is about to create a `-v<N>` package, it must first run a **variant inheritance handshake** before any file is written:
+
+1. Collect the base package's open warnings and `needs_human_review` rows from `meta.json.warnings[]` and the `Status` column of `source-facts.md`'s provenance matrix.
+2. If any are present, batch them into a single `AskUserQuestion` call (one focused question per inherited gap, max four). Each option offered to the user must be one of:
+   - **Inherit unchanged** — the variant copies the base's auto-resolved decision (current default if the user does not answer).
+   - **Resolve now** — the user supplies the missing value; the variant records it as `confirmed` and removes the warning.
+   - **Escalate to blocker** — the user wants this gap blocking; the variant adds a `clarifications_needed` entry with `blocking: true` and enters the hard clarify gate.
+3. Record every answer in the new variant's `meta.json.inherited_warnings[]` array (one entry per gap, with `field`, `base_value`, `decision` ∈ `inherit | resolved | escalated`, and the resolved value when applicable).
+4. Only after the handshake completes may the variant package proceed to file generation.
+
+A variant created without an `inherited_warnings[]` array (when the base had open warnings) is non-compliant and must be flagged by the QA runner.
 
 ---
 
@@ -208,7 +260,7 @@ This file is intentionally deferred until blocking clarifications are resolved.
 This resolves the hard-gate rule (do not generate dependent final content) while preserving machine-readable package completeness.
 
 ### Recommended (not required) files
-- `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`), what changed, who/what triggered it. Makes refresh diffs auditable.
+- `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`, `WPS:RELINK_CLUSTER`, etc.), what changed, who/what triggered it. Required (not just recommended) when the package is a variant: every `-v<N>` package must ship with a `CHANGELOG.md` whose first entry records the variant creation, the `variant_of` base slug, the `variant_index`, and the `variant_role` chosen. Use `templates/changelog-template.md` as the seed.
 - `images/` folder — store hero and gallery assets here. Reference the hero from `meta.hero_image` (relative path, e.g. `images/hero.jpg`) and any others in `meta.image_gallery`.
 
 The QA runner (`platform/qa.php`) raises a warning when these are missing or when `meta.hero_image` is unset but an `images/` folder exists.
@@ -868,6 +920,13 @@ Required behavior:
 
 ---
 
+## Strict content vs system boundary
+`WPS:GENERATE_CONTENT`, `WPS:GENERATE_CONTENT_FROM_INTAKE`, `WPS:FIX_PACKAGE`, and `WPS:PUBLISH_BLOG` produce **content-only** PRs. Their commits and PRs must touch only files under `content-system/tours/<slug>/`.
+
+System rule changes — `AGENTS.md`, `COMMANDS.md`, `WORKFLOW.md`, `QA-CHECKLIST.md`, `templates/`, `structures/`, `meta.schema.json`, and `platform/` — belong in a separate PR routed through `WPS:IMPROVE_SYSTEM_WORKFLOW` or `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`.
+
+When a single user message asks for both a tour package update *and* a system rule change, the agent must split the work into two PRs (the system PR first, the content PR second so the new rule applies to the new content). Bundling them is a hard failure.
+
 ## Strict generation vs publish boundary
 Content package generation and publish verification are separate gates.
 
@@ -985,7 +1044,7 @@ The agent must never invoke the hard clarify gate for any item in the non-blocki
 Before processing tour data, prefer to collect these fields explicitly. Whenever any of them is missing, blocking, or ambiguous in the supplied data, treat it as a blocking clarification.
 
 - Active system brand (default: Milano Adventures)
-- Direct website booking URL (conversion blocker if missing)
+- Direct website booking URL (**non-blocker** when at least one OTA URL is provided — auto-fallback per the non-blocking auto-resolution table below; recorded as a `meta.json.warnings[]` entry, not a `conversion_blockers[]` entry. A booking URL of *any* channel must exist; zero booking URLs is the only true blocker.)
 - Primary product/reference code, plus any channel-specific codes (Viator, TripAdvisor, GetYourGuide, etc.)
 - Cancellation window — number **and** unit (hours / days)
 - Hotel pickup status (yes / no / optional add-on) when source data shows both a meeting point and a pickup feature
