@@ -8,7 +8,7 @@
 - Public copy state: holding_notice
 
 ## Result
-Generation is intentionally paused under the hard clarification gate. A holding notice was created in `blog-post.md`.
+Generation is intentionally paused under the hard clarification gate. A holding notice was created in `blog-post.md` and dependent assets are deferred as stubs.
 
 ## Blocking clarifications
 1. Conflicting product/reference code: `187808P82` vs `187808P109`.
@@ -22,10 +22,11 @@ Generation is intentionally paused under the hard clarification gate. A holding 
 - `meta.json` created and valid JSON.
 - `qa-report.md` created.
 - `blog-post.md` is in holding-notice format and includes active brand mention.
+- All 9 required package files now exist; blocked files are marked deferred.
 
 ## Not executed due to hard gate
 - Full SEO post generation.
-- FAQ generation.
-- Keyword clustering.
-- Internal link plan.
-- Automation notes.
+- Final FAQ generation.
+- Final keyword clustering.
+- Final internal link plan.
+- Final automation notes.

@@ -31,26 +31,8 @@ wps_render_header($settings['archive_title']);
             <?php echo wps_h($postsResult['error']); ?>
             <br><a href="../platform/settings.php">Check settings</a>
         </div>
-        <div class="post-grid">
-            <article class="post-card">
-                <p class="post-label">Demo post</p>
-                <h3><a href="post.php?slug=sample-cinque-terre-tour-from-milan">Cinque Terre Tour from Milan: Easy Full-Day Coastal Guide</a></h3>
-                <p>This demo card shows how the archive will look when published posts are available.</p>
-                <div class="post-meta"><span>Sample</span><span>Preview</span></div>
-                <a class="read-more" href="post.php?slug=sample-cinque-terre-tour-from-milan">Read sample guide →</a>
-            </article>
-        </div>
     <?php elseif (empty($postsResult['posts'])): ?>
-        <p class="muted">No synced GitHub posts were found yet. A sample post is shown below so you can preview the published archive layout.</p>
-        <div class="post-grid">
-            <article class="post-card">
-                <p class="post-label">Demo post</p>
-                <h3><a href="post.php?slug=sample-cinque-terre-tour-from-milan">Cinque Terre Tour from Milan: Easy Full-Day Coastal Guide</a></h3>
-                <p>This demo card shows how the archive will look when published posts are available.</p>
-                <div class="post-meta"><span>Sample</span><span>Preview</span></div>
-                <a class="read-more" href="post.php?slug=sample-cinque-terre-tour-from-milan">Read sample guide →</a>
-            </article>
-        </div>
+        <p class="muted">No published tour posts are available yet.</p>
     <?php else: ?>
         <div class="post-grid">
             <?php foreach ($postsResult['posts'] as $post): ?>

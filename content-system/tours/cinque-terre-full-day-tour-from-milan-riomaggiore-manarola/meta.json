@@ -15,7 +15,7 @@
   "public_copy_state": "holding_notice",
   "human_review_required": true,
   "provisional_mode": false,
-  "generation_phase_completed": false,
+  "generation_phase_completed": true,
   "clarify_phase_required": true,
   "clarify_phase_completed": false,
   "publish_phase_completed": false,
