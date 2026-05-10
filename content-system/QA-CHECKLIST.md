@@ -52,7 +52,8 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 ## Link Handling
 
 - [ ] **[machine]** if a real website booking URL is provided, `website_link` and `cta_primary_link` use it (not `{{WebsiteLink}}`)
-- [ ] **[machine]** missing website URL recorded as `conversion_blockers[]` entry
+- [ ] **[machine]** if website URL is missing but at least one OTA URL (Viator/TripAdvisor/GYG) is provided, `cta_primary_link` uses the highest-priority OTA URL and `cta_primary_channel` is set; missing website URL is recorded as a non-blocking warning, **not** a `conversion_blockers[]` entry
+- [ ] **[machine]** missing website URL **and** missing all OTA URLs is a `conversion_blockers[]` entry (zero possible CTA)
 - [ ] **[machine]** if real TripAdvisor / Viator URLs are provided, they are used in `meta.json`
 - [ ] **[machine]** placeholders (`{{WebsiteLink}}`, `{{TripAdvisorLink}}`, `{{ViatorLink}}`) only appear where the corresponding source field is missing
 - [ ] **[machine]** `blog-post.md` does not contain a malformed `{{...}}` token
