@@ -26,3 +26,10 @@
 - `publish_phase_completed`: `true`
 - `live_verification_completed`: `false`
 - Follow-up: sync/deploy package, then run `WPS:LIVE_VERIFY` to validate archive + single post URL before marking `published`.
+
+## Live verification (WPS:LIVE_VERIFY)
+- Date: 2026-05-10
+- Scope: all publishable packages in content-system/tours/
+- Result: ⚠️ Could not verify deployed live archive/single-post URLs from this environment because no public deployment base URL was provided.
+- Status update: package moved to `needs_live_verification` with `live_verification_completed: false`.
+- Next step: provide the deployed WebPublisherSystem base URL, then re-run WPS:LIVE_VERIFY to check archive listing, single post render, and CTA link rendering.
