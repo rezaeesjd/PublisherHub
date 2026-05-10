@@ -21,7 +21,7 @@
   "publish_phase_completed": false,
   "live_verification_completed": false,
   "intake_questions_resolved": false,
-  "last_qa_date": "2026-05-09",
+  "last_qa_date": "2026-05-10",
   "clarifications_needed": [
     {
       "field": "primary_product_code",
@@ -46,13 +46,20 @@
       "raw_value": "May 1, 2026",
       "question": "What does May 1, 2026 represent (pricing effective date, seasonal launch date, or something else)?",
       "blocking": true
+    },
+    {
+      "field": "wheelchair_accessibility",
+      "raw_value": "No (unlabeled accessibility flag in source input)",
+      "question": "Can you confirm whether this tour is wheelchair accessible (yes/no)?",
+      "blocking": true
     }
   ],
   "blocking_issues": [
     "missing_primary_website_cta",
     "conflicting_product_code",
     "cancellation_unit_unresolved",
-    "date_role_unresolved"
+    "date_role_unresolved",
+    "wheelchair_accessibility_unconfirmed"
   ],
   "conversion_blockers": [
     "missing_primary_website_cta"
