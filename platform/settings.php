@@ -49,11 +49,11 @@ wps_render_header('Settings');
 
 <section class="panel">
     <h2>Operations</h2>
-    <p>System Sync and GitHub Import work together here. Sync uses active GitHub Import connection(s), refreshes repository files, preserves protected runtime data like <code>platform/data/</code>, and removes stale files deleted from connected repositories. You can also back up local edits and run QA.</p>
+    <p>Use these tools to manage imports, run quality checks, and back up local edits.</p>
     <div class="actions">
-        <a class="button-secondary" href="system-sync.php">System Sync</a>
         <a class="button-secondary" href="backup.php">Download Backup</a>
         <a class="button-secondary" href="qa.php">Run QA</a>
+        <a class="button-secondary" href="github-import.php">Manage GitHub Import</a>
     </div>
     <p class="muted">Signed in as <strong><?php echo wps_h(wps_current_admin_email()); ?></strong>. <a href="logout.php">Sign out</a>.</p>
 </section>
@@ -106,9 +106,6 @@ if ($ghimportEngineAvailable) {
         </div>
     </div>
 
-    <div class="actions">
-        <a class="button-secondary" href="github-import.php">Manage GitHub Import</a>
-    </div>
 </section>
 <?php endif; ?>
 
