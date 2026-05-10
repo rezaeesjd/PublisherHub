@@ -24,6 +24,7 @@
 - **Should do:** Record ambiguity list in `source-facts.md`, `meta.json.clarifications_needed`, and `qa-report.md`. Present the questions to the user via `AskUserQuestion` (or end the chat reply with a clearly labeled question batch) and stop further generation.
 - **Must not do:** Generate final public copy while blockers remain (unless provisional mode explicitly approved in chat). Make implicit assumptions about ambiguous fields.
 - **Allowed file changes:** `source-facts.md`, `meta.json`, `qa-report.md`. May write a holding-notice `blog-post.md` per `templates/holding-notice-template.md`.
+- **Enforcement mode:** first run behaves as `clarify-only` (Pass A): do not populate strategy/SEO files until user response or explicit mode selection.
 - **Final expected status:** `qa_status: needs_clarification`, `public_copy_state: holding_notice` (or `provisional` if explicitly authorized).
 - **Auto-trigger:** `WPS:CLARIFY` is automatic inside `WPS:GENERATE_CONTENT` whenever a blocking ambiguity is detected.
 
@@ -76,6 +77,14 @@
 - **Must not do:** Modify content under `content-system/tours/` (except adding non-content example files such as `EXEMPLAR_NOTES.md` when explicitly recommended by the QA report).
 - **Allowed file changes:** system/workflow/template/schema/documentation files.
 - **Final expected status:** Clearer enforceable workflow for future runs.
+
+## WPS:CLARIFY_ONLY
+
+- **Purpose:** Forced pass-A clarify handshake when blockers are known.
+- **Should do:** Write/update only `source-facts.md`, `meta.json`, and `qa-report.md`; record `clarifications_needed`; set `can_generate_public_copy=false`; present question batch.
+- **Must not do:** Generate final `blog-post.md`, or populate `brief.md`, `keywords.md`, `faq.md`, `internal-links.md`, `automation-notes.md` except deferred stubs when requested by package contract.
+- **Allowed file changes:** `source-facts.md`, `meta.json`, `qa-report.md`, optional holding notice + deferred stubs.
+- **Final expected status:** `qa_status: needs_clarification`, `public_copy_state: holding_notice|not_started`, `clarify_phase_completed: false`.
 
 ## WPS:FIX_PACKAGE
 

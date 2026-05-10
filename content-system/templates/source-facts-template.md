@@ -12,6 +12,16 @@
 - TripAdvisor URL:
 - Viator URL:
 
+## Clarification handshake (required when blockers exist)
+
+- Clarify pass: Pass A / Pass B
+- Blocking clarifications open: yes/no
+- Question batch presented to user (copy exact wording):
+  1.
+  2.
+  3.
+  4.
+
 ## Provenance matrix
 
 | Field | Raw value | Source | Status | Notes |
@@ -43,3 +53,8 @@
 | Review text/source |  |  | missing |  |
 | Missing critical inputs |  |  | confirmed |  |
 | Conflicts detected |  |  | confirmed |  |
+
+## Machine fields (for meta consistency)
+
+- canonical_title_status: confirmed / unconfirmed
+- can_generate_public_copy: true / false

@@ -9,3 +9,5 @@ In the meantime, you can view current supplier pages:
 - Viator: {{ViatorLink}}
 
 For direct booking support, contact Milano Adventures and we’ll share the official website booking link as soon as verification is complete.
+
+> Validation note: in generated package output, replace OTA placeholders with real URLs when provided. Do not leave `{{TripAdvisorLink}}` or `{{ViatorLink}}` tokens in final holding notice files.

@@ -7,7 +7,10 @@
 3. Source facts are extracted to `source-facts.md`.
 4. Provenance matrix is created and normalized.
 5. Conflict + missing-input detection runs (the clarify gate).
-6. **If any blocking clarification exists:** the agent presents the questions to the user via `AskUserQuestion` and stops before final public copy. The user picks one of:
+6. **If any blocking clarification exists:** the agent enters a strict two-pass clarify handshake.
+   - **Pass A (clarify-only pass):** write/update only `source-facts.md`, `meta.json`, `qa-report.md`; present questions; stop.
+   - **Pass B (resume pass):** continue only after user answers blockers, or explicitly approves provisional mode, or confirms holding-notice mode.
+   The user picks one of:
    - **Resolve** — answer in chat → blockers removed → continue to step 7.
    - **Holding notice** — agent writes a minimal holding-notice `blog-post.md`, sets `public_copy_state: holding_notice`, and stops.
    - **Provisional mode** — explicit user authorization → agent generates a draft, sets `public_copy_state: provisional`, and adds `provisional_mode: true`.
@@ -31,6 +34,7 @@
 - When blocking clarifications exist, these three clarify interaction markers are mandatory and must be populated before PR creation.
 - Allowed states under the hard gate: **resolve**, **holding notice**, or **explicit provisional mode**. Default if the user does not pick: **holding notice**.
 - Missing website booking URL → `conversion_blockers[]` entry + blocking clarification unless explicitly waived.
+- Canonical title conflicted/truncated → set `canonical_title_status: unconfirmed` and keep `can_generate_public_copy: false` until resolved or provisional mode is explicitly approved.
 - Missing OTA URLs → warnings, not blockers.
 - Cancellation window with no unit → blocking clarification (typed numeric field with unresolved unit).
 
@@ -56,6 +60,7 @@
 - `clarify_phase_required` true whenever any blocking ambiguity exists.
 - `clarify_phase_completed` true only after the user resolves blockers OR explicitly authorizes provisional mode.
 - `intake_questions_resolved` true only after every blocking-required intake field is answered (or waived in provisional mode).
+- `can_generate_public_copy` true only when blocking clarifications are empty OR provisional mode is explicitly approved.
 - `publish_phase_completed` true only after `WPS:PUBLISH_BLOG` finishes its checks.
 - `live_verification_completed` true only after `WPS:LIVE_VERIFY` confirms archive + single post.
 - `publish_status` must not be `published` while `live_verification_completed == false`.
