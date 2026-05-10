@@ -89,6 +89,9 @@
 - [ ] **[machine]** Website URL used as primary CTA when provided
 - [ ] **[machine]** Missing website URL with at least one OTA URL present is recorded as a `meta.json.warnings[]` entry (not a `conversion_blockers[]` entry) and the OTA URL drives `cta_primary_link`
 - [ ] **[machine]** Missing website URL with **zero** booking URLs of any channel is recorded as a `conversion_blockers[]` entry and triggers the hard clarify gate
+
+- [ ] **[machine]** `direct_booking_followup_required == true` when website URL is missing and any OTA URL is used as fallback
+- [ ] **[manual]** follow-up action to replace OTA primary CTA with website CTA is recorded
 - [ ] **[machine]** OTA links used as secondary trust/reference only (after primary CTA)
 - [ ] **[machine]** Soft CTA in first half + strong CTA at end
 - [ ] **[manual]** "Who this tour is best for" section present
@@ -156,3 +159,10 @@ Allowed values for **Severity**: `high | medium | low`.
 - public_copy_state:
 - intake_questions_resolved:
 - blocker summary:
+
+
+## Template Traceability & Decision Evidence
+
+- [ ] **[manual]** `automation-notes.md` lists all template paths used in this run
+- [ ] **[manual]** `meta.json.clarify_decisions[]` entries exist for each ambiguity handled
+- [ ] **[manual]** conversion follow-up task exists when OTA fallback is primary CTA

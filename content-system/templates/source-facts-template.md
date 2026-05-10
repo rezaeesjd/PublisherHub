@@ -58,3 +58,15 @@
 
 - canonical_title_status: confirmed / unconfirmed
 - can_generate_public_copy: true / false
+
+
+## Clarify decision ledger
+
+| Field | Raw value | Blocking? | Resolution path | Reasoning |
+|---|---|---|---|---|
+|  |  |  |  |  |
+
+## Conversion follow-up
+
+- direct_booking_followup_required: true / false
+- follow-up trigger reason (if true):
