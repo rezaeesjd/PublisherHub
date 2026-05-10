@@ -107,7 +107,7 @@ wps_render_header($settings['archive_title']);
                     <?php foreach ($workflowRows as $row): ?>
                         <tr>
                             <td>
-                                <strong><?php echo wps_h($row['title']); ?></strong><br>
+                                <strong><a href="edit-post.php?slug=<?php echo rawurlencode($row['slug']); ?>"><?php echo wps_h($row['title']); ?></a></strong><br>
                                 <small class="muted"><?php echo wps_h($row['slug']); ?></small>
                             </td>
                             <td><span class="qa-pill qa-pill-<?php echo wps_h($row['status_tone']); ?>"><?php echo wps_h($row['status_label']); ?></span></td>
@@ -115,7 +115,7 @@ wps_render_header($settings['archive_title']);
                                 <small><?php echo wps_h($row['status_reason']); ?></small><br>
                                 <small class="muted">publish_status=<?php echo wps_h($row['publish_status']); ?> · qa_status=<?php echo wps_h($row['qa_status']); ?></small>
                             </td>
-                            <td><?php echo wps_h($row['next_action']); ?></td>
+                            <td><?php echo wps_h($row['next_action']); ?><br><a href="edit-post.php?slug=<?php echo rawurlencode($row['slug']); ?>">Open package</a></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -185,7 +185,7 @@ wps_render_header($settings['archive_title']);
                 <?php if (($item['type'] ?? '') !== 'dir') { continue; } ?>
                 <article class="post-card">
                     <p class="post-label">GitHub folder</p>
-                    <h3><?php echo wps_h(ucwords(str_replace('-', ' ', $item['name']))); ?></h3>
+                    <h3><a href="edit-post.php?slug=<?php echo rawurlencode((string) $item['name']); ?>"><?php echo wps_h(ucwords(str_replace('-', ' ', $item['name']))); ?></a></h3>
                     <p class="muted"><?php echo wps_h($item['path']); ?></p>
                     <span class="read-more">Use QA Report and Blog Editor to review this package →</span>
                 </article>
