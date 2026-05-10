@@ -762,12 +762,21 @@ If no usable image asset exists, omit `meta.hero_image` entirely rather than poi
 ## Clarification protocol (`WPS:CLARIFY`)
 When the supplied product input contains a value whose meaning is ambiguous and that value affects public copy or `meta.json`, do not guess. Run the clarification protocol instead.
 
-Examples of ambiguous values worth flagging:
-- a number with no unit (`9` for cancellation — hours? days?)
-- a count with no label (`15` — minimum to operate? minimum booking notice?)
-- conflicting product reference codes (e.g. `187808P109` provided by user vs `187808P82` in a Viator URL)
-- a date with no role (`May 1, 2026` — pricing valid from? listing publish date?)
+Examples of ambiguous values worth flagging — **only when they would otherwise enter public copy or `meta.json`'s typed fields**:
 - a brand or supplier name that conflicts with the active system brand
+- inclusions/exclusions that contradict each other in ways that change what the buyer pays for
+- conflicting durations or meeting points that change what the post promises
+- review/rating numbers that disagree across sources
+
+Do **not** flag (handle automatically per the non-blocking table in the Enforcement Addendum):
+- a number with no unit (`9` for cancellation) — exclude from public copy
+- a count with no label (`15`) — ignore
+- multiple product codes from different channels — treat as channel-specific
+- a date with no role — omit from public copy
+- a missing website booking URL when an OTA URL exists — use OTA as primary CTA
+- a truncated title — derive a clean title
+- itinerary scope mismatch between title and description — pick the broader, higher-conversion scope
+- missing wheelchair accessibility — omit, warn only
 
 Behavior:
 1. Ask the user one focused question per ambiguous value before generating public copy. Use the smallest set of questions that unblocks generation.
@@ -932,18 +941,32 @@ When blocking issues exist and the user has not yet answered them, the agent mus
 
 #### Blocking clarification issue types
 
-- conflicting product code
-- conflicting tour title
-- conflicting itinerary scope
-- conflicting duration/timing
+A clarification is **blocking** only when it prevents the agent from producing safe, conversion-ready public copy. The list is intentionally narrow.
+
+Blocking:
+- conflicting duration/timing that affects what the public post promises
 - conflicting meeting point
-- conflicting inclusions/exclusions
-- missing website booking URL
-- missing primary CTA link
+- conflicting inclusions/exclusions that affect what the buyer is paying for
+- missing **all** booking links (no website URL **and** no Viator/TripAdvisor/other OTA URL — i.e., zero possible primary CTA)
 - unclear active brand
-- unclear review/rating source
-- conflicting OTA/source data
-- unresolved unit on a typed numeric field (e.g., cancellation window with no unit)
+- conflicting OTA/source data that materially changes the product
+- conflicting review/rating claims that would be published
+
+Non-blocking (handle automatically — do **not** ask the user, do **not** add to `clarifications_needed[*].blocking=true`):
+
+| Issue | Auto-resolution rule |
+|---|---|
+| Truncated canonical title (e.g. ends in `…` / `...`) | Derive a clean title from the longest unambiguous prefix plus the most descriptive scope from the description (e.g. "Cinque Terre Full-Day Tour from Milan"). Strip trailing ellipsis. Record the derived title in `source-facts.md` with status `inferred`. Never publish an ellipsis in `canonical_tour_title`, `page_title`, or H1. |
+| Multiple product/reference codes from different channels (e.g. Viator `187808P82`, TripAdvisor `33344981`, supplier `187808P109`) | Treat as **channel-specific**, not a conflict. Map each code to its channel by URL domain in `channel_product_codes` (`viator`, `tripadvisor`, `getyourguide`, etc.). Use the supplier-provided code (or the first non-OTA code) as `product_reference_code`. If only OTA codes exist, pick the one matching the primary booking channel. |
+| Missing direct website booking URL but at least one OTA booking URL is present | Use the highest-priority available booking URL as `cta_primary_link`, in this order: website → Viator → TripAdvisor → GetYourGuide → other. Set `cta_primary_channel` accordingly (`website` / `viator` / `tripadvisor` / etc.). Adjust CTA copy to match (e.g. "Book on Viator", "Reserve on TripAdvisor"). `website_link` keeps `{{WebsiteLink}}` as a placeholder and is recorded as a non-blocking warning, **not** a blocker. |
+| Cancellation window without unit | Exclude cancellation specifics from public copy entirely. Do **not** mention the number, unit, or window. Record the raw value in `source-facts.md` with status `needs_human_review`. The post may say "see the booking page for the latest cancellation policy" but must not invent a number or unit. |
+| Unlabeled numeric policy values (e.g. a bare `15`) | Ignore. Do not surface in public copy. Record the raw value in `source-facts.md` with status `needs_human_review` and move on. |
+| Itinerary scope conflict between title and description (e.g. title names 2 towns, description names all 5) | Pick the more general / higher-conversion scope from the description (the broader tour). Use that as the canonical scope and align the title accordingly. Record the choice in `source-facts.md` with status `inferred`. |
+| Wheelchair accessibility status missing | Omit from public copy. Record as `missing` in `source-facts.md`. Surface as a non-blocking warning in `qa-report.md`, never as a blocker. |
+| Date with unclear role (e.g. `May 1, 2026`) | Omit from public copy. Record as `needs_human_review`. |
+| Truncated free-text fields (general case) | Use the longest unambiguous portion. Strip trailing `…` / `...`. Mark `inferred`. |
+
+The agent must never invoke the hard clarify gate for any item in the non-blocking table above. Use `AskUserQuestion` only for the blocking list.
 
 #### When blocking issues exist
 
@@ -1031,7 +1054,8 @@ Before writing `blog-post.md`, run this order:
 ### Website link and CTA enforcement
 - If real website booking URL is provided, store it in `source-facts.md` and `meta.json`, and use it as primary CTA in `blog-post.md`.
 - Do not replace a real provided website URL with `{{WebsiteLink}}`.
-- If website booking URL is missing, `{{WebsiteLink}}` is allowed only as placeholder and is a **conversion blocker** unless user explicitly waives placeholder mode.
+- If website booking URL is missing **but** at least one real OTA booking URL is provided (Viator, TripAdvisor, GetYourGuide, etc.), use the highest-priority available URL as `cta_primary_link` per the order in the non-blocking auto-resolution table above. This is **not** a blocker. CTA copy must match the chosen channel (e.g. "Book on Viator", "Reserve on TripAdvisor").
+- If website booking URL is missing **and** no OTA booking URL is provided either, then there is no possible primary CTA and that is a real blocker.
 - Missing TripAdvisor/Viator URLs are warnings (non-blocking), but real provided OTA links must be preserved.
 
 ### Source-facts provenance matrix requirement

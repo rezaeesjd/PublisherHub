@@ -178,8 +178,8 @@
     },
     "clarification_mode_selected": {
       "type": "string",
-      "enum": ["resolve", "holding_notice", "provisional", "unknown"],
-      "description": "Clarify-gate path selected for this generation run."
+      "enum": ["resolve", "holding_notice", "provisional", "unknown", "auto_resolved"],
+      "description": "Clarify-gate path selected for this generation run. Use `auto_resolved` when all detected ambiguities were handled by the non-blocking auto-resolution rules in AGENTS.md without prompting the user."
     },
     "clarification_questions": {
       "type": "array",
