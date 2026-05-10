@@ -38,7 +38,7 @@
   "public_copy_state": "final",
   "intake_questions_resolved": true,
   "clarification_questions_presented": false,
-  "clarification_questions_presented_at": null,
+  "clarification_questions_presented_at": "2026-05-10",
   "clarification_mode_selected": "auto_resolved",
   "human_review_required": true,
   "last_qa_date": "2026-05-10"
