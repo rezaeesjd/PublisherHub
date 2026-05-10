@@ -126,7 +126,11 @@ Use placeholders only when real links are not provided:
 
 If placeholders are used, `qa-report.md` must flag the post as not fully publish-ready until final links are added or intentionally approved.
 
-Prefer the website link as the main CTA. TripAdvisor and Viator may be used only as secondary trust or alternate booking references when appropriate.
+The post is allowed to go live without a website URL as long as at least one real booking link exists (Viator, TripAdvisor, GetYourGuide, or another OTA).
+
+Prefer the website link as the main CTA when available. If missing, use the highest-priority available OTA link as the primary CTA and keep direct-booking follow-up flagged.
+
+Public booking links in `blog-post.md` should be rendered as clear CTA buttons (primary + optional secondary) rather than inline body links.
 
 ---
 
@@ -782,6 +786,8 @@ See the full tour details, inclusions, and current availability before you book.
 
 Use the final website booking URL when provided. Use `{{WebsiteLink}}` only when the real URL is missing.
 
+Button-first CTA rule: place booking URLs inside CTA buttons/blocks, not inline narrative links in paragraphs.
+
 ---
 
 ## Automation guidance rules
@@ -1113,7 +1119,8 @@ Before writing `blog-post.md`, run this order:
 ### Website link and CTA enforcement
 - If real website booking URL is provided, store it in `source-facts.md` and `meta.json`, and use it as primary CTA in `blog-post.md`.
 - Do not replace a real provided website URL with `{{WebsiteLink}}`.
-- If website booking URL is missing **but** at least one real OTA booking URL is provided (Viator, TripAdvisor, GetYourGuide, etc.), use the highest-priority available URL as `cta_primary_link` per the order in the non-blocking auto-resolution table above. This is **not** a blocker. CTA copy must match the chosen channel (e.g. "Book on Viator", "Reserve on TripAdvisor").
+- If website booking URL is missing **but** at least one real OTA booking URL is provided (Viator, TripAdvisor, GetYourGuide, etc.), use the highest-priority available URL as `cta_primary_link` per the order in the non-blocking auto-resolution table above. This is **not** a blocker and should not prevent go-live. CTA copy must match the chosen channel (e.g. "Book on Viator", "Reserve on TripAdvisor").
+- In public copy, render booking destinations as CTA buttons/blocks instead of inline links inside body paragraphs.
 - If website booking URL is missing **and** no OTA booking URL is provided either, then there is no possible primary CTA and that is a real blocker.
 - Missing TripAdvisor/Viator URLs are warnings (non-blocking), but real provided OTA links must be preserved.
 
