@@ -20,14 +20,13 @@
 12. Source facts appear grounded and non-invented: **PASS**
 13. Review/rating claims traceable to source-facts: **PASS**
 14. TripAdvisor/Viator positioned as secondary trust + OTA fallback: **PASS**
-15. Live archive verification: **WARNING** (not verified from this environment)
-16. Live single-post URL verification: **WARNING** (not verified from this environment)
+15. Live archive verification: **PASS** (user-confirmed 2026-05-11)
+16. Live single-post URL verification: **PASS** (user-confirmed 2026-05-11)
 
 ## QA Summary
 - `qa_status`: **warning**
-- `publish_status`: **needs_live_verification**
+- `publish_status`: **published**
 - `public_copy_state`: **final**
 
 ## Follow-ups
 - Add direct website booking URL and switch primary CTA from Viator to website once available.
-- Run `WPS:LIVE_VERIFY` after deployment sync to confirm archive listing and single-post render.
