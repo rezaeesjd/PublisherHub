@@ -56,7 +56,7 @@ wps_render_header('System Sync');
     <?php endif; ?>
 
     <?php if ($success): ?>
-        <div class="alert <?php echo str_contains($success, 'error') ? 'alert-error' : 'alert-success'; ?>"><?php echo wps_h($success); ?></div>
+        <div class="alert <?php echo wps_str_contains($success, 'error') ? 'alert-error' : 'alert-success'; ?>"><?php echo wps_h($success); ?></div>
     <?php endif; ?>
 
     <form method="post" class="actions">

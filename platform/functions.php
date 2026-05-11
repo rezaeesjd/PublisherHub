@@ -225,6 +225,17 @@ function wps_atomic_write(string $path, string $contents): bool
     return true;
 }
 
+
+function wps_str_contains(string $haystack, string $needle): bool
+{
+    return $needle === '' || strpos($haystack, $needle) !== false;
+}
+
+function wps_str_starts_with(string $haystack, string $needle): bool
+{
+    return $needle === '' || strncmp($haystack, $needle, strlen($needle)) === 0;
+}
+
 function wps_h(?string $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
@@ -272,7 +283,7 @@ function wps_asset_url(string $path): string
 
     $localPath = __DIR__ . '/' . $cleanPath;
     $version = is_file($localPath) ? (string) filemtime($localPath) : (string) time();
-    $separator = str_contains($assetUrl, '?') ? '&' : '?';
+    $separator = wps_str_contains($assetUrl, '?') ? '&' : '?';
 
     return $assetUrl . $separator . 'v=' . rawurlencode($version);
 }
@@ -403,15 +414,15 @@ function wps_current_nav_item(): string
 {
     $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 
-    if (str_contains($scriptName, '/platform/clusters.php')) {
+    if (wps_str_contains($scriptName, '/platform/clusters.php')) {
         return 'clusters';
     }
 
-    if (str_contains($scriptName, '/platform/index.php')) {
+    if (wps_str_contains($scriptName, '/platform/index.php')) {
         return 'dashboard';
     }
 
-    if (str_contains($scriptName, '/platform/')) {
+    if (wps_str_contains($scriptName, '/platform/')) {
         return 'settings';
     }
 
