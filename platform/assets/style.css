@@ -516,6 +516,28 @@ button:active { transform: translateY(0); box-shadow: none; }
 .content-body li { margin-bottom: 9px; }
 .content-body a { font-weight: 700; }
 
+
+.content-body a.cta-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 10px 12px 0;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: var(--brand);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.content-body a.cta-button:hover {
+    background: var(--brand-dark);
+    color: #fff;
+}
+
 /* ─── Footer ─────────────────────────────────────────── */
 
 .site-footer {
