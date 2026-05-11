@@ -3,14 +3,14 @@
 ```mermaid
 flowchart TD
     A0([0. Input Received]) --> A1[Collect core facts\n• tour title\n• price/duration\n• itinerary\n• links]
-    A1 --> A2{Blocking ambiguity?}
+    A1 --> A1b[Source Facts Matrix\nconfirmed/inferred/missing]
+    A1b --> A2{Blocking ambiguity?}
 
     A2 -->|Yes| A3[Clarification Gate\nAsk focused questions]
     A3 --> A4[Holding notice or provisional draft]
-    A4 --> A1
+    A4 --> A1b
 
-    A2 -->|No| B1[Source Facts Matrix\nconfirmed/inferred/missing]
-    B1 --> B2[SEO + Conversion Strategy\nTOFU/MOFU/BOFU mapping]
+    A2 -->|No| B2[SEO + Conversion Strategy\nTOFU/MOFU/BOFU mapping]
     B2 --> B3[Keyword Cluster\nPrimary + long-tail + comparison]
     B3 --> B4[Draft Landing-Blog Post\nClear promise + value + CTA blocks]
 
