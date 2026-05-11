@@ -10,6 +10,24 @@ Start with one of these commands:
 - `WPS:FIX_PACKAGE` — fix an existing package
 - `WPS:PUBLISH_BLOG` — validate and publish-prep an existing package
 
+## Workflow enforcement requirement
+
+Generation/fix/publish workflows are NOT considered complete until all required workflow completion checks pass.
+
+Before reporting success, the agent must follow:
+
+```text
+structures/workflow-completion-checklist.md
+```
+
+If any required step fails or is skipped, the workflow must explicitly report:
+
+- what completed successfully
+- what did not complete
+- what still requires human review or future automation
+
+Do not silently skip registry updates, QA updates, or system-QA backlog updates.
+
 ## Required funnel instruction
 Always specify the intended funnel stage and content role.
 
@@ -147,6 +165,20 @@ Keep all source facts identical unless new confirmed facts are provided.
 Change only the keyword angle, title, hook, structure, FAQ angle, CTA wording, and internal-link path.
 ```
 
+## Required post-generation workflow
+
+After generation, the agent must:
+
+1. Save/update package files
+2. Save/update package `qa-report.md`
+3. Read and update `content-system/clusters/cluster-registry.json`
+4. Update cluster asset statuses and missing assets
+5. Run system/process self-QA
+6. Append reusable findings to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
+7. Explicitly report workflow completion status
+
+The workflow is not considered complete until those steps are handled.
+
 ## Example full prompt
 
 ```text
@@ -170,4 +202,10 @@ Populate all cluster metadata fields in meta.json.
 Write internal-links.md according to the funnel path.
 Do not invent tour facts, pricing, reviews, ratings, meeting points, inclusions, or cancellation rules.
 Use website booking as primary CTA when available; otherwise use OTA fallback according to system rules.
+
+Workflow completion is REQUIRED.
+Update cluster-registry.json.
+Update qa-report.md.
+Append reusable findings to SYSTEM-QA-BACKLOG.md.
+Do not report success unless the workflow completion checklist passes.
 ```
