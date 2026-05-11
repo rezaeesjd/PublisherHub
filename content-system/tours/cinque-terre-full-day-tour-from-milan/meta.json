@@ -22,12 +22,12 @@
   "clarify_phase_required": false,
   "clarify_phase_completed": true,
   "publish_phase_completed": true,
-  "live_verification_completed": false,
+  "live_verification_completed": true,
   "clarifications_needed": [],
   "blocking_issues": [],
   "conversion_blockers": [],
   "qa_status": "warning",
-  "publish_status": "needs_live_verification",
+  "publish_status": "published",
   "public_copy_state": "final",
   "intake_questions_resolved": true,
   "clarification_questions_presented": false,
@@ -37,12 +37,12 @@
   "warnings": [
     "Direct website booking URL missing; Viator used as primary CTA fallback.",
     "Cancellation policy value '15' has no explicit unit; excluded from specific public copy.",
-    "Live archive and single-post verification not completed in this environment."
+    "Live status confirmed by user on 2026-05-11; archive and single-post checks marked verified."
   ],
   "clarify_decisions": [
     {
       "field": "canonical_tour_title",
-      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &…",
+      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &\u2026",
       "blocking": false,
       "decision": "auto_resolved",
       "reason": "Truncated title",
