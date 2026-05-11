@@ -70,7 +70,34 @@ Priority definitions:
 
 ## Open items
 
-_No open items yet. Future generation runs should append findings here._
+### SYSQA-20260511-001: Workflow completion enforcement missing
+- Date added: 2026-05-11
+- Added after run/package: `system-wide`
+- Priority: P1
+- Owner agent: Cross-functional
+- Area: qa-rule
+- Status: resolved
+- Problem:
+  Content generation workflows could finish after creating package files while silently skipping cluster-registry updates and cumulative system-QA updates.
+- Why it matters:
+  This creates operational drift where AI workflows, dashboard state, and QA history become inconsistent.
+- Recommended fix:
+  Add a workflow completion contract/checklist and require all generation prompts to enforce registry updates, package QA updates, and system-QA backlog updates before reporting success.
+- Files likely affected:
+  - `structures/workflow-completion-checklist.md`
+  - `templates/content-generation-agent-prompt.md`
+- Implementation steps:
+  1. Create reusable workflow completion checklist.
+  2. Update generation prompt with explicit workflow enforcement rules.
+  3. Require cluster-registry and system-QA updates before workflow success.
+- Acceptance criteria:
+  - Generation prompts reference workflow completion checklist.
+  - Registry updates and system-QA updates are explicitly required.
+  - Workflow cannot silently skip operational state updates.
+- Risk if ignored:
+  Dashboard and AI operational state diverge over time.
+- Implementation note:
+  Added workflow-completion-checklist.md and updated content-generation-agent-prompt.md to enforce required workflow completion steps.
 
 ---
 
