@@ -193,7 +193,19 @@ if (!function_exists('wps_render_markdown')) {
             $text = preg_replace_callback(
                 '/\[([^\]]+)\]\(([^)\s]+)\)/',
                 function ($m) {
-                    return '<a href="' . $m[2] . '">' . $m[1] . '</a>';
+                    $label = $m[1];
+                    $url = $m[2];
+                    $urlLower = strtolower($url);
+                    $labelLower = strtolower(trim(strip_tags($label)));
+
+                    $isBookingDomain = preg_match('/(viator\.com|tripadvisor\.com|getyourguide\.com)/', $urlLower) === 1;
+                    $isBookingIntent = preg_match('/\b(book|reserve|check availability|see availability|book now)\b/', $labelLower) === 1;
+
+                    if ($isBookingDomain && $isBookingIntent) {
+                        return '<a class="cta-button cta-button-booking" href="' . $url . '" target="_blank" rel="noopener nofollow">' . $label . '</a>';
+                    }
+
+                    return '<a href="' . $url . '">' . $label . '</a>';
                 },
                 $text
             );
