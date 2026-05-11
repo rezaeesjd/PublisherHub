@@ -6,6 +6,7 @@
 
 const WPS_DATA_DIR = __DIR__ . '/data';
 const WPS_SETTINGS_FILE = WPS_DATA_DIR . '/settings.json';
+const WPS_CLUSTER_REGISTRY_FILE = __DIR__ . '/../content-system/clusters/cluster-registry.json';
 
 function wps_ensure_data_dir(): void
 {
@@ -66,6 +67,119 @@ function wps_save_settings(array $settings): bool
         WPS_SETTINGS_FILE,
         json_encode($settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
     );
+}
+
+function wps_default_cluster_registry(): array
+{
+    return [
+        'schema_version' => '1.0',
+        'last_updated' => gmdate('Y-m-d'),
+        'source_of_truth' => true,
+        'description' => 'Machine-readable cluster registry used by both AI agents and the WebPublisherSystem dashboard. Do not maintain separate cluster status sources.',
+        'default_required_assets' => [
+            ['required' => true, 'cluster_type' => 'BOFU', 'cluster_role' => 'main-booking-post', 'purpose' => 'Main commercial booking-intent asset', 'recommended_linking_priority' => 'link-to-booking'],
+            ['required' => true, 'cluster_type' => 'MOFU', 'cluster_role' => 'comparison-post', 'purpose' => 'Compare guided tour vs DIY, transport, or alternatives', 'recommended_linking_priority' => 'link-to-bofu'],
+            ['required' => false, 'cluster_type' => 'MOFU', 'cluster_role' => 'comparison-post', 'purpose' => 'Compare this tour with another destination or tour option', 'recommended_linking_priority' => 'link-to-bofu'],
+            ['required' => true, 'cluster_type' => 'TOFU', 'cluster_role' => 'destination-guide', 'purpose' => 'Broad discovery guide to attract early-stage travelers', 'recommended_linking_priority' => 'link-to-mofu'],
+            ['required' => false, 'cluster_type' => 'TOFU', 'cluster_role' => 'itinerary-guide', 'purpose' => 'Practical itinerary, timing, seasonal, or route guide', 'recommended_linking_priority' => 'link-to-mofu'],
+            ['required' => true, 'cluster_type' => 'FAQ', 'cluster_role' => 'faq-support-post', 'purpose' => 'Remove booking doubts and link back to BOFU', 'recommended_linking_priority' => 'link-to-bofu'],
+        ],
+        'allowed_asset_statuses' => ['not_started', 'planned', 'draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'ready_for_sync', 'needs_live_verification', 'published', 'refresh_needed'],
+        'clusters' => [],
+    ];
+}
+
+function wps_load_cluster_registry(): array
+{
+    if (!is_file(WPS_CLUSTER_REGISTRY_FILE)) {
+        return ['ok' => true, 'registry' => wps_default_cluster_registry(), 'error' => ''];
+    }
+
+    $json = file_get_contents(WPS_CLUSTER_REGISTRY_FILE);
+    $data = json_decode((string) $json, true);
+
+    if (!is_array($data)) {
+        return ['ok' => false, 'registry' => wps_default_cluster_registry(), 'error' => 'Cluster registry JSON is invalid.'];
+    }
+
+    $data = array_merge(wps_default_cluster_registry(), $data);
+    if (!isset($data['clusters']) || !is_array($data['clusters'])) {
+        $data['clusters'] = [];
+    }
+
+    return ['ok' => true, 'registry' => $data, 'error' => ''];
+}
+
+function wps_save_cluster_registry(array $registry): bool
+{
+    $registry['last_updated'] = gmdate('Y-m-d');
+    $registry['source_of_truth'] = true;
+
+    return wps_atomic_write(
+        WPS_CLUSTER_REGISTRY_FILE,
+        json_encode($registry, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+    );
+}
+
+function wps_cluster_asset_status_counts(array $cluster): array
+{
+    $counts = [];
+    foreach (($cluster['assets'] ?? []) as $asset) {
+        if (!is_array($asset)) {
+            continue;
+        }
+        $status = (string) ($asset['status'] ?? 'not_started');
+        $counts[$status] = ($counts[$status] ?? 0) + 1;
+    }
+    return $counts;
+}
+
+function wps_cluster_completeness(array $cluster): array
+{
+    $assets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
+    $total = count($assets);
+    $createdStatuses = ['draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'ready_for_sync', 'needs_live_verification', 'published', 'refresh_needed'];
+    $created = 0;
+    $published = 0;
+    $missingRequired = [];
+
+    foreach ($assets as $asset) {
+        $status = (string) ($asset['status'] ?? 'not_started');
+        if (in_array($status, $createdStatuses, true)) {
+            $created++;
+        }
+        if ($status === 'published') {
+            $published++;
+        }
+        if (!empty($asset['required']) && in_array($status, ['not_started', 'planned'], true)) {
+            $missingRequired[] = (string) (($asset['cluster_type'] ?? '') . ' / ' . ($asset['cluster_role'] ?? ''));
+        }
+    }
+
+    return ['created' => $created, 'published' => $published, 'total' => $total, 'missing_required' => $missingRequired];
+}
+
+function wps_cluster_status_label(array $cluster): string
+{
+    $explicit = trim((string) ($cluster['cluster_status'] ?? ''));
+    if ($explicit !== '') {
+        return $explicit;
+    }
+
+    $score = wps_cluster_completeness($cluster);
+    if ($score['total'] === 0 || $score['created'] === 0) {
+        return 'not-started';
+    }
+    if (!empty($score['missing_required'])) {
+        return 'early';
+    }
+    if ($score['created'] >= 6) {
+        return 'complete';
+    }
+    if ($score['created'] >= 4) {
+        return 'minimally-complete';
+    }
+    return 'early';
 }
 
 /**
@@ -134,14 +248,12 @@ function wps_system_url_base(): string
     $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
     $origin = wps_url_origin();
 
-    // Preferred when the package is uploaded as /WebPublisherSystem/.
     $marker = '/WebPublisherSystem/';
     $pos = strpos($scriptName, $marker);
     if ($pos !== false) {
         return $origin . substr($scriptName, 0, $pos + strlen('/WebPublisherSystem'));
     }
 
-    // Fallback for renamed installs: remove the current app subfolder from URL path.
     $dir = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
     $segments = array_values(array_filter(explode('/', trim($dir, '/')), fn($part) => $part !== ''));
     $last = end($segments);
@@ -199,8 +311,6 @@ function wps_archive_slug_from_setting(array $settings): string
     }
 
     $path = trim($path, '/');
-
-    // If user pasted /WebPublisherSystem/blogs2/, keep only the part inside WebPublisherSystem.
     $parts = array_values(array_filter(explode('/', $path), fn($part) => $part !== ''));
     $systemIndex = array_search('WebPublisherSystem', $parts, true);
     if ($systemIndex !== false) {
@@ -293,6 +403,10 @@ function wps_current_nav_item(): string
 {
     $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 
+    if (str_contains($scriptName, '/platform/clusters.php')) {
+        return 'clusters';
+    }
+
     if (str_contains($scriptName, '/platform/index.php')) {
         return 'dashboard';
     }
@@ -310,8 +424,9 @@ function wps_render_header(string $title): void
     $currentNavItem = wps_current_nav_item();
     $archiveIsActive = $currentNavItem === 'archive';
     $dashboardIsActive = $currentNavItem === 'dashboard';
+    $clustersIsActive = $currentNavItem === 'clusters';
     $settingsIsActive = $currentNavItem === 'settings';
-    $isAdminContext = $currentNavItem === 'settings';
+    $isAdminContext = in_array($currentNavItem, ['settings', 'clusters', 'dashboard'], true);
     $signedIn = function_exists('wps_is_logged_in') && wps_is_logged_in();
     $logoutUrl = defined('WPS_ASSET_BASE') && WPS_ASSET_BASE === '.' ? 'logout.php' : '../platform/logout.php';
     ?>
@@ -331,6 +446,7 @@ function wps_render_header(string $title): void
                 <a class="<?php echo $archiveIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_archive_url()); ?>" <?php echo $archiveIsActive ? 'aria-current="page"' : ''; ?>>Archive</a>
                 <?php if ($isAdminContext || $signedIn): ?>
                     <a class="<?php echo $dashboardIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_asset_url('index.php')); ?>" <?php echo $dashboardIsActive ? 'aria-current="page"' : ''; ?>>Dashboard</a>
+                    <a class="<?php echo $clustersIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_asset_url('clusters.php')); ?>" <?php echo $clustersIsActive ? 'aria-current="page"' : ''; ?>>Clusters</a>
                     <a class="<?php echo $settingsIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_settings_url()); ?>" <?php echo $settingsIsActive ? 'aria-current="page"' : ''; ?>>Settings</a>
                 <?php endif; ?>
                 <?php if ($signedIn): ?>
