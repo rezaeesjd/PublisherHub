@@ -262,20 +262,77 @@ function ghimport_parse_github_url(string $input): array
     $result['repo']  = preg_replace('/\.git$/', '', $segments[1]);
 
     // /tree/{branch}[/{path...}]
-    // Note: GitHub branch names may contain "/" (e.g. "feature/my-branch"), but
-    // the URL structure is identical to owner/repo/tree/{branch}/{path}, making
-    // it impossible to distinguish branch from path without an API call. The
-    // parser treats segment[3] as the branch and the rest as content_path. For
-    // slash-containing branch names, users should set the branch override field.
+    // Branch names may contain slashes. For tree URLs, try to resolve the
+    // longest matching branch name using GitHub's branches API, then treat the
+    // remaining segments as content_path.
     if (isset($segments[2]) && $segments[2] === 'tree' && isset($segments[3])) {
-        $result['branch'] = $segments[3];
-        if (count($segments) > 4) {
-            $result['content_path'] = implode('/', array_slice($segments, 4));
-        }
+        $treeTail = array_slice($segments, 3);
+        $resolved = ghimport_resolve_tree_branch_and_path($result['owner'], $result['repo'], $treeTail);
+
+        $result['branch'] = $resolved['branch'];
+        $result['content_path'] = $resolved['content_path'];
     }
 
     $result['ok'] = true;
     return $result;
+}
+
+
+/**
+ * Resolve /tree URL tail into branch + path, including branch names with '/'.
+ *
+ * @param string $owner
+ * @param string $repo
+ * @param array<int,string> $treeTail Segments after /tree/
+ * @return array{branch:string,content_path:string}
+ */
+function ghimport_resolve_tree_branch_and_path(string $owner, string $repo, array $treeTail): array
+{
+    $fallbackBranch = $treeTail[0] ?? 'main';
+    $fallbackPath = count($treeTail) > 1 ? implode('/', array_slice($treeTail, 1)) : '';
+
+    if (count($treeTail) <= 1) {
+        return ['branch' => $fallbackBranch, 'content_path' => ''];
+    }
+
+    $branches = ghimport_fetch_repo_branch_names($owner, $repo);
+    if (empty($branches)) {
+        return ['branch' => $fallbackBranch, 'content_path' => $fallbackPath];
+    }
+
+    for ($i = count($treeTail); $i >= 1; $i--) {
+        $candidate = implode('/', array_slice($treeTail, 0, $i));
+        if (in_array($candidate, $branches, true)) {
+            $path = $i < count($treeTail) ? implode('/', array_slice($treeTail, $i)) : '';
+            return ['branch' => $candidate, 'content_path' => $path];
+        }
+    }
+
+    return ['branch' => $fallbackBranch, 'content_path' => $fallbackPath];
+}
+
+/**
+ * Fetch branch names for a repository (best-effort; returns [] on failure).
+ *
+ * @return array<int,string>
+ */
+function ghimport_fetch_repo_branch_names(string $owner, string $repo): array
+{
+    $url = 'https://api.github.com/repos/' . rawurlencode($owner) . '/' . rawurlencode($repo) . '/branches?per_page=100';
+    $res = ghimport_http_get($url);
+
+    if (!($res['ok'] ?? false) || ($res['status'] ?? 0) >= 400 || !is_array($res['body'] ?? null)) {
+        return [];
+    }
+
+    $names = [];
+    foreach ($res['body'] as $row) {
+        if (is_array($row) && isset($row['name']) && is_string($row['name']) && $row['name'] !== '') {
+            $names[] = $row['name'];
+        }
+    }
+
+    return $names;
 }
 
 // ---------------------------------------------------------------------------
