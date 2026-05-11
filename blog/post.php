@@ -29,6 +29,35 @@ if ($post && $contentResult['ok']) {
 $pageTitle = $post['title'] ?? 'Blog Post';
 $baseSlug = $post['base_slug'] ?? $post['slug'] ?? '';
 $publicSlug = $post['public_slug'] ?? $post['slug'] ?? '';
+
+$publishedDate = (string) ($post['published_date'] ?? '');
+$schemaPublishedDate = $publishedDate ? ($publishedDate . 'T00:00:00Z') : gmdate('c');
+$schemaModifiedDate = gmdate('c');
+$canonicalUrl = sprintf('https://%s%s/post.php?slug=%s', $_SERVER['HTTP_HOST'] ?? 'localhost', rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/blog'), '/'), rawurlencode((string) $publicSlug));
+$articleSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => (string) ($post['title'] ?? ''),
+    'description' => (string) ($post['meta_description'] ?? ''),
+    'datePublished' => $schemaPublishedDate,
+    'dateModified' => $schemaModifiedDate,
+    'mainEntityOfPage' => [
+        '@type' => 'WebPage',
+        '@id' => $canonicalUrl,
+    ],
+    'author' => [
+        '@type' => 'Organization',
+        'name' => (string) ($post['brand'] ?? 'Milano Adventures'),
+    ],
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => (string) ($post['brand'] ?? 'Milano Adventures'),
+    ],
+    'about' => array_values(array_filter([
+        (string) ($post['primary_keyword'] ?? ''),
+        (string) ($post['funnel_stage'] ?? ''),
+    ])),
+];
 wps_render_header($pageTitle);
 ?>
 
@@ -53,6 +82,9 @@ wps_render_header($pageTitle);
             <?php endif; ?>
             <?php if (!empty($post['product_reference_code'])): ?>
                 <span>Ref <?php echo wps_h($post['product_reference_code']); ?></span>
+            <?php endif; ?>
+            <?php if (!empty($publishedDate)): ?>
+                <span>Published <?php echo wps_h($publishedDate); ?></span>
             <?php endif; ?>
             <?php if (!empty($post['has_local_edits'])): ?>
                 <span>Edited</span>
@@ -81,5 +113,9 @@ wps_render_header($pageTitle);
         </div>
     </section>
 <?php endif; ?>
+
+<script type="application/ld+json">
+<?php echo json_encode($articleSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>
+</script>
 
 <?php wps_render_footer(); ?>
