@@ -101,6 +101,19 @@ function wps_get_posts(array $settings): array
         }
 
         $slug = $meta['slug'] ?? $folderName;
+        $publishedDate = '';
+        if (!empty($meta['last_qa_date']) && is_string($meta['last_qa_date'])) {
+            $publishedDate = $meta['last_qa_date'];
+        } else {
+            $blogFilePath = $folderPath . '/blog-post.md';
+            if (is_file($blogFilePath)) {
+                $modifiedAt = filemtime($blogFilePath);
+                if ($modifiedAt !== false) {
+                    $publishedDate = gmdate('Y-m-d', $modifiedAt);
+                }
+            }
+        }
+
         $posts[] = [
             'folder_name' => $folderName,
             'folder_path' => $folderPath,
@@ -114,6 +127,7 @@ function wps_get_posts(array $settings): array
             'publish_status' => (string) ($meta['publish_status'] ?? 'draft'),
             'qa_status' => (string) ($meta['qa_status'] ?? 'pending'),
             'public_copy_state' => (string) ($meta['public_copy_state'] ?? 'not_started'),
+            'published_date' => $publishedDate,
             'meta' => $meta,
         ];
     }
