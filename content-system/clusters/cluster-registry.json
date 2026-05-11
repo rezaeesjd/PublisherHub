@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "last_updated": "2026-05-11",
+  "source_of_truth": true,
+  "description": "Machine-readable cluster registry used by both AI agents and the WebPublisherSystem dashboard. Do not maintain separate cluster status sources.",
+  "default_required_assets": [
+    {
+      "required": true,
+      "cluster_type": "BOFU",
+      "cluster_role": "main-booking-post",
+      "purpose": "Main commercial booking-intent asset",
+      "recommended_linking_priority": "link-to-booking"
+    },
+    {
+      "required": true,
+      "cluster_type": "MOFU",
+      "cluster_role": "comparison-post",
+      "purpose": "Compare guided tour vs DIY, transport, or alternatives",
+      "recommended_linking_priority": "link-to-bofu"
+    },
+    {
+      "required": false,
+      "cluster_type": "MOFU",
+      "cluster_role": "comparison-post",
+      "purpose": "Compare this tour with another destination or tour option",
+      "recommended_linking_priority": "link-to-bofu"
+    },
+    {
+      "required": true,
+      "cluster_type": "TOFU",
+      "cluster_role": "destination-guide",
+      "purpose": "Broad discovery guide to attract early-stage travelers",
+      "recommended_linking_priority": "link-to-mofu"
+    },
+    {
+      "required": false,
+      "cluster_type": "TOFU",
+      "cluster_role": "itinerary-guide",
+      "purpose": "Practical itinerary, timing, seasonal, or route guide",
+      "recommended_linking_priority": "link-to-mofu"
+    },
+    {
+      "required": true,
+      "cluster_type": "FAQ",
+      "cluster_role": "faq-support-post",
+      "purpose": "Remove booking doubts and link back to BOFU",
+      "recommended_linking_priority": "link-to-bofu"
+    }
+  ],
+  "allowed_asset_statuses": [
+    "not_started",
+    "planned",
+    "draft",
+    "needs_clarification",
+    "needs_fix",
+    "ready_for_review",
+    "ready_for_sync",
+    "needs_live_verification",
+    "published",
+    "refresh_needed"
+  ],
+  "clusters": []
+}
