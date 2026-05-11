@@ -1,0 +1,68 @@
+{
+  "canonical_tour_title": "Cinque Terre Full-Day Tour from Milan",
+  "slug": "cinque-terre-full-day-tour-from-milan",
+  "public_slug": "cinque-terre-full-day-tour-from-milan",
+  "page_title": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & Five Villages",
+  "primary_keyword": "cinque terre full-day tour from milan",
+  "product_reference_code": "187808P109",
+  "channel_product_codes": {
+    "viator": "187808P82",
+    "tripadvisor": "d33344981"
+  },
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
+  "viator_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
+  "cta_primary_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
+  "cta_primary_channel": "viator",
+  "direct_booking_followup_required": true,
+  "variant_of": null,
+  "variant_index": 1,
+  "variant_angle": "Base BOFU landing-blog hybrid",
+  "generation_phase_completed": true,
+  "clarify_phase_required": false,
+  "clarify_phase_completed": true,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "clarifications_needed": [],
+  "blocking_issues": [],
+  "conversion_blockers": [],
+  "qa_status": "warning",
+  "publish_status": "draft",
+  "public_copy_state": "final",
+  "intake_questions_resolved": true,
+  "clarification_questions_presented": false,
+  "clarification_questions_presented_at": null,
+  "clarification_mode_selected": "auto_resolved_non_blocking",
+  "provisional_mode": false,
+  "warnings": [
+    "Direct website booking URL missing; Viator used as primary CTA fallback.",
+    "Cancellation policy value '15' has no explicit unit; excluded from specific public copy."
+  ],
+  "clarify_decisions": [
+    {
+      "field": "canonical_tour_title",
+      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &…",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "Truncated title",
+      "resolved_value": "Cinque Terre Full-Day Tour from Milan"
+    },
+    {
+      "field": "website_link",
+      "raw_value": "missing",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "OTA links present, so CTA fallback allowed",
+      "resolved_value": "viator_link as cta_primary_link"
+    },
+    {
+      "field": "cancellation_policy",
+      "raw_value": "15",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "Unit unclear; omitted from specific public claim"
+    }
+  ],
+  "active_brand": "Milano Adventures",
+  "last_qa_date": "2026-05-11"
+}
