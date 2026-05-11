@@ -216,7 +216,7 @@ function ghimport_parse_github_url(string $input): array
     }
 
     // Shorthand: owner/repo  or  owner/repo@branch
-    if (!str_contains($input, '://') && !str_starts_with($input, 'github.com')) {
+    if (!wps_str_contains($input, '://') && !wps_str_starts_with($input, 'github.com')) {
         $atParts    = explode('@', $input, 2);
         $slashParts = array_values(array_filter(explode('/', trim($atParts[0], '/'))));
 
@@ -233,7 +233,7 @@ function ghimport_parse_github_url(string $input): array
     }
 
     // Prepend scheme if bare domain was passed
-    if (str_starts_with($input, 'github.com')) {
+    if (wps_str_starts_with($input, 'github.com')) {
         $input = 'https://' . $input;
     }
 
