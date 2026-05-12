@@ -41,6 +41,9 @@ $editValues = [
     'faq_content' => $override['faq_content'] ?? ($post ? wps_edit_get_file_value($post, 'faq.md') : ''),
 ];
 
+$sourceFactsContent = $post ? wps_edit_get_file_value($post, 'source-facts.md') : '';
+$briefContent = $post ? wps_edit_get_file_value($post, 'brief.md') : '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $post) {
     wps_csrf_validate_or_die();
 
@@ -109,6 +112,21 @@ wps_render_header($pageTitle);
                 <span>Local edits active</span>
             <?php endif; ?>
         </div>
+    </section>
+
+    <section class="panel">
+        <h2>Original tour source content</h2>
+        <p class="muted">These fields are read-only and come from the generated package files used to build this blog.</p>
+
+        <label>
+            Source facts (source-facts.md)
+            <textarea rows="14" readonly><?php echo wps_h($sourceFactsContent); ?></textarea>
+        </label>
+
+        <label>
+            Package brief (brief.md)
+            <textarea rows="8" readonly><?php echo wps_h($briefContent); ?></textarea>
+        </label>
     </section>
 
     <section class="panel">
