@@ -203,43 +203,72 @@ wps_render_header($settings['archive_title']);
 </section>
 
 <section class="panel">
-    <h2>Detected content folders</h2>
+    <h2>Content clusters</h2>
 
-    <?php if (!$connection['ok']): ?>
-        <p>Content folders cannot be loaded until the GitHub connection works.</p>
-    <?php elseif (empty($connection['items'])): ?>
-        <p>No folders found in the configured GitHub content path yet.</p>
+    <?php
+        $clusterRegistryResult = wps_load_cluster_registry();
+        $dashboardClusters = $clusterRegistryResult['registry']['clusters'] ?? [];
+    ?>
+
+    <?php if (!($clusterRegistryResult['ok'] ?? false)): ?>
+        <div class="alert alert-error">
+            <?php echo wps_h((string) ($clusterRegistryResult['error'] ?? 'Cluster registry could not be loaded.')); ?>
+        </div>
+    <?php elseif (empty($dashboardClusters)): ?>
+        <p class="muted">No clusters are registered yet.</p>
     <?php else: ?>
-        <?php
-            $detectedFolderCards = [];
-            foreach ($connection['items'] as $item) {
-                if (($item['type'] ?? '') !== 'dir') {
-                    continue;
-                }
+        <div class="post-grid">
+            <?php foreach ($dashboardClusters as $cluster): ?>
+                <?php
+                    $clusterName = (string) ($cluster['title'] ?? $cluster['cluster_parent'] ?? 'Untitled Cluster');
+                    $clusterParent = (string) ($cluster['cluster_parent'] ?? '');
+                    $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
+                    $generatedAssets = array_values(array_filter($clusterAssets, static function (array $asset): bool {
+                        return !in_array((string) ($asset['status'] ?? ''), ['planned', 'not_started'], true);
+                    }));
+                ?>
+                <article class="post-card" id="cluster-<?php echo wps_h($clusterParent); ?>">
+                    <p class="post-label">Cluster</p>
+                    <h3><?php echo wps_h($clusterName); ?></h3>
+                    <p class="muted">Original cluster title: <?php echo wps_h($clusterName); ?></p>
+                    <p class="muted"><?php echo count($generatedAssets); ?> generated / <?php echo count($clusterAssets); ?> total contents</p>
 
-                $folderSlug = (string) ($item['name'] ?? '');
-                if ($folderSlug === '' || !isset($workflowFolderMap[$folderSlug])) {
-                    continue;
-                }
-
-                $detectedFolderCards[] = $item;
-            }
-        ?>
-
-        <?php if (empty($detectedFolderCards)): ?>
-            <p class="muted">No valid content packages were detected. Folders without a readable <code>meta.json</code> are hidden.</p>
-        <?php else: ?>
-            <div class="post-grid">
-                <?php foreach ($detectedFolderCards as $item): ?>
-                    <article class="post-card">
-                        <p class="post-label">GitHub folder</p>
-                        <h3><a href="edit-post.php?slug=<?php echo rawurlencode((string) $item['name']); ?>"><?php echo wps_h(ucwords(str_replace('-', ' ', $item['name']))); ?></a></h3>
-                        <p class="muted"><?php echo wps_h($item['path']); ?></p>
-                        <span class="read-more">Use QA Report and Blog Editor to review this package →</span>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+                    <details>
+                        <summary class="button-secondary" style="display:inline-block; cursor:pointer; margin-top:0.5rem;">Show contents</summary>
+                        <div style="margin-top:0.75rem;">
+                            <?php if (empty($clusterAssets)): ?>
+                                <p class="muted">No content assets defined in this cluster yet.</p>
+                            <?php else: ?>
+                                <ul class="cluster-asset-list">
+                                    <?php foreach ($clusterAssets as $asset): ?>
+                                        <?php
+                                            $assetTitle = (string) ($asset['title'] ?? $asset['package_slug'] ?? 'Untitled content');
+                                            $assetSlug = (string) ($asset['package_slug'] ?? '');
+                                            $assetType = (string) ($asset['cluster_type'] ?? 'N/A');
+                                            $assetRole = (string) ($asset['cluster_role'] ?? 'N/A');
+                                            $assetStatus = (string) ($asset['status'] ?? 'unknown');
+                                            $isGenerated = !in_array($assetStatus, ['planned', 'not_started'], true);
+                                        ?>
+                                        <li>
+                                            <strong><?php echo wps_h($assetTitle); ?></strong><br>
+                                            <small class="muted">
+                                                <?php echo $isGenerated ? 'Generated content' : 'Original/planned content'; ?>
+                                                · Type: <?php echo wps_h($assetType); ?>
+                                                · Role: <?php echo wps_h($assetRole); ?>
+                                                · Status: <?php echo wps_h($assetStatus); ?>
+                                            </small>
+                                            <?php if ($assetSlug !== ''): ?>
+                                                <br><a href="edit-post.php?slug=<?php echo rawurlencode($assetSlug); ?>">Open package</a>
+                                            <?php endif; ?>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+                    </details>
+                </article>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 </section>
 
