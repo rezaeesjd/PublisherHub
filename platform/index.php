@@ -9,7 +9,7 @@ $settings = wps_load_settings();
 $connection = wps_test_github_connection($settings);
 $postsResult = wps_get_posts($settings);
 $registryResult = wps_load_cluster_registry();
-$clusters = $registryResult['registry']['clusters'] ?? [];
+$clusters = array_values(array_filter(($registryResult['registry']['clusters'] ?? []), 'is_array'));
 
 $clusterIndex = wps_index_tour_clusters();
 $postsBySlug = [];
