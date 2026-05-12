@@ -11,6 +11,7 @@ $postsResult = wps_get_posts($settings);
 $clusterIndex = wps_index_tour_clusters();
 $workflowCounts = ['Published' => 0, 'Needs Review' => 0, 'Revision Required' => 0, 'Blocked' => 0, 'Draft' => 0];
 $workflowRows = [];
+$workflowFolderMap = [];
 if ($postsResult['ok']) {
     foreach ($postsResult['posts'] as $post) {
         $status = wps_human_workflow_status($post);
@@ -41,6 +42,8 @@ if ($postsResult['ok']) {
             $clusterRole = (string) ($clusterMembership['asset']['cluster_role'] ?? '');
             $clusterIsParent = ((string) ($clusterMembership['cluster']['primary_conversion_asset'] ?? '')) === $slug;
         }
+
+        $workflowFolderMap[$post['folder_name'] ?? $slug] = true;
 
         $workflowRows[] = [
             'title' => (string) ($post['title'] ?? 'Untitled'),
@@ -207,17 +210,36 @@ wps_render_header($settings['archive_title']);
     <?php elseif (empty($connection['items'])): ?>
         <p>No folders found in the configured GitHub content path yet.</p>
     <?php else: ?>
-        <div class="post-grid">
-            <?php foreach ($connection['items'] as $item): ?>
-                <?php if (($item['type'] ?? '') !== 'dir') { continue; } ?>
-                <article class="post-card">
-                    <p class="post-label">GitHub folder</p>
-                    <h3><a href="edit-post.php?slug=<?php echo rawurlencode((string) $item['name']); ?>"><?php echo wps_h(ucwords(str_replace('-', ' ', $item['name']))); ?></a></h3>
-                    <p class="muted"><?php echo wps_h($item['path']); ?></p>
-                    <span class="read-more">Use QA Report and Blog Editor to review this package →</span>
-                </article>
-            <?php endforeach; ?>
-        </div>
+        <?php
+            $detectedFolderCards = [];
+            foreach ($connection['items'] as $item) {
+                if (($item['type'] ?? '') !== 'dir') {
+                    continue;
+                }
+
+                $folderSlug = (string) ($item['name'] ?? '');
+                if ($folderSlug === '' || !isset($workflowFolderMap[$folderSlug])) {
+                    continue;
+                }
+
+                $detectedFolderCards[] = $item;
+            }
+        ?>
+
+        <?php if (empty($detectedFolderCards)): ?>
+            <p class="muted">No valid content packages were detected. Folders without a readable <code>meta.json</code> are hidden.</p>
+        <?php else: ?>
+            <div class="post-grid">
+                <?php foreach ($detectedFolderCards as $item): ?>
+                    <article class="post-card">
+                        <p class="post-label">GitHub folder</p>
+                        <h3><a href="edit-post.php?slug=<?php echo rawurlencode((string) $item['name']); ?>"><?php echo wps_h(ucwords(str_replace('-', ' ', $item['name']))); ?></a></h3>
+                        <p class="muted"><?php echo wps_h($item['path']); ?></p>
+                        <span class="read-more">Use QA Report and Blog Editor to review this package →</span>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 </section>
 
