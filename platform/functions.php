@@ -564,7 +564,6 @@ function wps_ensure_archive_alias(array $settings): void
     $aliasHtaccess = <<<HTACCESS
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /{$slug}/
 
     RewriteRule ^post/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [QSA,L]
     RewriteRule ^page/([0-9]+)/?$ index.php?page=$1 [QSA,L]
