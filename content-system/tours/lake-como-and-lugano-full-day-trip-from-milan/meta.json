@@ -20,12 +20,14 @@
   "operating_days": "",
   "meeting_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
   "end_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
-  "languages": ["English"],
+  "languages": [
+    "English"
+  ],
   "max_travelers": 22,
   "max_travelers_per_booking": 15,
   "qa_status": "needs_clarification",
-  "publish_status": "draft",
-  "public_copy_state": "holding_notice",
+  "publish_status": "archived",
+  "public_copy_state": "not_started",
   "generation_phase_completed": false,
   "clarify_phase_required": true,
   "clarify_phase_completed": false,
@@ -85,5 +87,8 @@
   "cta_primary": "Request booking",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": false
+  "can_generate_public_copy": false,
+  "notes": [
+    "Single generated blog intentionally disabled; package retained as tour-content source for dashboard and future cluster content generation."
+  ]
 }

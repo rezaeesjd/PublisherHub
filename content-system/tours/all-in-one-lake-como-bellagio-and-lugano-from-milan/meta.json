@@ -21,12 +21,15 @@
   "operating_days": "Daily",
   "meeting_point": "Piazza IV Novembre, Milano MI, Italy",
   "end_point": "Piazza IV Novembre, Milano MI, Italy",
-  "languages": ["English", "Spanish"],
+  "languages": [
+    "English",
+    "Spanish"
+  ],
   "max_travelers": 22,
   "max_travelers_per_booking": 15,
-  "qa_status": "warning",
-  "publish_status": "ready_for_review",
-  "public_copy_state": "final",
+  "qa_status": "passing",
+  "publish_status": "archived",
+  "public_copy_state": "not_started",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
   "clarify_phase_completed": true,
@@ -64,5 +67,8 @@
   "cta_primary": "Book on Viator",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": true
+  "can_generate_public_copy": true,
+  "notes": [
+    "Single generated blog intentionally disabled; package retained as tour-content source for dashboard and future cluster content generation."
+  ]
 }
