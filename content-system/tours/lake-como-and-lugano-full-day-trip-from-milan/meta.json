@@ -25,7 +25,7 @@
   ],
   "max_travelers": 22,
   "max_travelers_per_booking": 15,
-  "qa_status": "passing",
+  "qa_status": "needs_clarification",
   "publish_status": "archived",
   "public_copy_state": "not_started",
   "generation_phase_completed": false,

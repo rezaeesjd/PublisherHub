@@ -159,6 +159,10 @@ function wps_human_workflow_status(array $post): array
         return ['label' => 'Published', 'tone' => 'success'];
     }
 
+    if ($publish === 'archived') {
+        return ['label' => 'Archived', 'tone' => 'muted'];
+    }
+
     if ($qa === 'needs_clarification') {
         return ['label' => 'Blocked', 'tone' => 'danger'];
     }
