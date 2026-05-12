@@ -8,95 +8,94 @@ wps_require_auth();
 $settings = wps_load_settings();
 $connection = wps_test_github_connection($settings);
 $postsResult = wps_get_posts($settings);
-$clusterIndex = wps_index_tour_clusters();
+$registryResult = wps_load_cluster_registry();
+$clusters = array_values(array_filter(($registryResult['registry']['clusters'] ?? []), 'is_array'));
+
+$postsBySlug = [];
+if ($postsResult['ok']) {
+    foreach ($postsResult['posts'] as $post) {
+        $slug = (string) ($post['slug'] ?? '');
+        if ($slug !== '') {
+            $postsBySlug[$slug] = $post;
+        }
+    }
+}
+
 $workflowCounts = ['Published' => 0, 'Needs Review' => 0, 'Revision Required' => 0, 'Blocked' => 0, 'Draft' => 0];
-$workflowRows = [];
-$workflowFolderMap = [];
+$assignedSlugs = [];
+$totalClusters = count($clusters);
+$totalAssets = 0;
+$publishedAssets = 0;
+$missingRequiredAssets = 0;
+foreach ($clusters as $cluster) {
+    $score = wps_cluster_completeness($cluster);
+    $totalAssets += (int) $score['total'];
+    $publishedAssets += (int) $score['published'];
+    $missingRequiredAssets += count($score['missing_required']);
+    foreach (($cluster['assets'] ?? []) as $asset) {
+        if (!is_array($asset)) {
+            continue;
+        }
+        $slug = trim((string) ($asset['package_slug'] ?? ''));
+        if ($slug !== '') {
+            $assignedSlugs[$slug] = true;
+        }
+    }
+}
 if ($postsResult['ok']) {
     foreach ($postsResult['posts'] as $post) {
         $status = wps_human_workflow_status($post);
         if (isset($workflowCounts[$status['label']])) {
             $workflowCounts[$status['label']]++;
         }
-
-        $nextAction = 'Continue content generation';
-        if ($status['label'] === 'Needs Review') {
-            $nextAction = 'Run QA and complete human review';
-        } elseif ($status['label'] === 'Revision Required') {
-            $nextAction = 'Return to generate step and fix package';
-        } elseif ($status['label'] === 'Published') {
-            $nextAction = 'Monitor performance and refresh later';
-        } elseif ($status['label'] === 'Blocked') {
-            $nextAction = 'Resolve clarifications before continuing';
-        }
-
-        $slug = (string) ($post['slug'] ?? '');
-        $clusterMembership = $clusterIndex['by_package_slug'][$slug] ?? null;
-        $clusterTitle = '';
-        $clusterParent = '';
-        $clusterRole = '';
-        $clusterIsParent = false;
-        if (is_array($clusterMembership)) {
-            $clusterTitle = (string) ($clusterMembership['cluster']['title'] ?? '');
-            $clusterParent = (string) ($clusterMembership['cluster']['cluster_parent'] ?? '');
-            $clusterRole = (string) ($clusterMembership['asset']['cluster_role'] ?? '');
-            $clusterIsParent = ((string) ($clusterMembership['cluster']['primary_conversion_asset'] ?? '')) === $slug;
-        }
-
-        $workflowFolderMap[$post['folder_name'] ?? $slug] = true;
-
-        $workflowRows[] = [
-            'title' => (string) ($post['title'] ?? 'Untitled'),
-            'slug' => $slug,
-            'publish_status' => (string) ($post['publish_status'] ?? 'draft'),
-            'qa_status' => (string) ($post['qa_status'] ?? 'pending'),
-            'status_label' => $status['label'],
-            'status_tone' => (string) ($status['tone'] ?? 'muted'),
-            'status_reason' => wps_status_reason($post),
-            'next_action' => $nextAction,
-            'cluster_title' => $clusterTitle,
-            'cluster_parent' => $clusterParent,
-            'cluster_role' => $clusterRole,
-            'cluster_is_parent' => $clusterIsParent,
-        ];
     }
 }
 
-function wps_status_reason(array $post): string
+function wps_asset_next_action(string $status): string
 {
-    $publish = (string) ($post['publish_status'] ?? 'draft');
-    $qa = (string) ($post['qa_status'] ?? 'pending');
-    $warnings = $post['meta']['warnings'] ?? [];
-
-    if ($publish === 'published') {
-        return 'Live verification is complete and this package is confirmed published.';
+    switch ($status) {
+        case 'published':
+            return 'Live — monitor and refresh later.';
+        case 'needs_live_verification':
+            return 'Verify the archive and single-post pages are live.';
+        case 'ready_for_sync':
+            return 'Sync/deploy to live environment.';
+        case 'ready_for_review':
+            return 'Run QA and complete human review.';
+        case 'needs_fix':
+            return 'Return to generation and fix the package.';
+        case 'needs_clarification':
+            return 'Resolve blocking clarifications before continuing.';
+        case 'draft':
+            return 'Continue drafting the package.';
+        case 'refresh_needed':
+            return 'Refresh stale content.';
+        case 'planned':
+            return 'Not generated yet — run generation.';
+        case 'not_started':
+        default:
+            return 'Not started — kick off generation.';
     }
+}
 
-    if ($qa === 'needs_clarification') {
-        return 'Blocking clarifications are unresolved. Resolve them before final copy can proceed.';
+function wps_asset_status_tone(string $status): string
+{
+    switch ($status) {
+        case 'published':
+            return 'success';
+        case 'ready_for_review':
+        case 'ready_for_sync':
+        case 'needs_live_verification':
+        case 'draft':
+            return 'warning';
+        case 'needs_clarification':
+        case 'needs_fix':
+            return 'danger';
+        case 'planned':
+        case 'not_started':
+        default:
+            return 'muted';
     }
-
-    if ($qa === 'needs_fix' || $publish === 'needs_fix') {
-        return 'QA found blocking issues that must be fixed before review or publish.';
-    }
-
-    if ($publish === 'ready_for_review') {
-        return 'Generated and internally complete, waiting for human review approval.';
-    }
-
-    if ($publish === 'ready_for_sync') {
-        return 'Approved in repo; still waiting for sync/deployment to live environment.';
-    }
-
-    if ($publish === 'needs_live_verification') {
-        return 'Synced/approved, but archive and single-post pages are not yet live-verified.';
-    }
-
-    if (!empty($warnings) && is_array($warnings)) {
-        return 'Still draft with warnings: ' . (string) $warnings[0];
-    }
-
-    return 'Draft content package. Generation exists, but review/publish gate is not completed yet.';
 }
 
 wps_render_header($settings['archive_title']);
@@ -109,54 +108,8 @@ wps_render_header($settings['archive_title']);
 </section>
 
 <section class="panel">
-    <h2>Package workflow queue</h2>
-    <p class="muted">This queue follows your approved loop: Generate → Review → Fix if needed → Approve for publish → Sync → Live verify.</p>
-    <?php if (empty($workflowRows)): ?>
-        <p class="muted">No content packages found yet. Run a generation command first.</p>
-    <?php else: ?>
-        <div class="table-wrap">
-            <table class="workflow-table">
-                <thead>
-                    <tr>
-                        <th>Package</th>
-                        <th>Cluster</th>
-                        <th>Status</th>
-                        <th>Why this status</th>
-                        <th>Next action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($workflowRows as $row): ?>
-                        <tr>
-                            <td>
-                                <strong><a href="edit-post.php?slug=<?php echo rawurlencode($row['slug']); ?>"><?php echo wps_h($row['title']); ?></a></strong><br>
-                                <small class="muted"><?php echo wps_h($row['slug']); ?></small>
-                            </td>
-                            <td>
-                                <?php if ($row['cluster_title'] !== ''): ?>
-                                    <a href="clusters.php#cluster-<?php echo wps_h(rawurlencode($row['cluster_parent'])); ?>"><?php echo wps_h($row['cluster_title']); ?></a><br>
-                                    <small class="muted"><?php echo wps_h($row['cluster_role']); ?><?php echo $row['cluster_is_parent'] ? ' · cluster parent' : ''; ?></small>
-                                <?php else: ?>
-                                    <small class="muted">Not yet linked to a cluster</small>
-                                <?php endif; ?>
-                            </td>
-                            <td><span class="qa-pill qa-pill-<?php echo wps_h($row['status_tone']); ?>"><?php echo wps_h($row['status_label']); ?></span></td>
-                            <td>
-                                <small><?php echo wps_h($row['status_reason']); ?></small><br>
-                                <small class="muted">publish_status=<?php echo wps_h($row['publish_status']); ?> · qa_status=<?php echo wps_h($row['qa_status']); ?></small>
-                            </td>
-                            <td><?php echo wps_h($row['next_action']); ?><br><a href="edit-post.php?slug=<?php echo rawurlencode($row['slug']); ?>">Open package</a></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-    <?php endif; ?>
-</section>
-
-<section class="panel">
     <h2>Workflow snapshot</h2>
-    <p class="muted">This is the operational status view for the generate → review → publish loop.</p>
+    <p class="muted">Combined view of packages on disk and cluster registry coverage. The cluster registry (<code>content-system/clusters/cluster-registry.json</code>) is the source of truth.</p>
     <div class="status-grid">
         <?php foreach ($workflowCounts as $label => $count): ?>
             <div class="status-card">
@@ -164,6 +117,18 @@ wps_render_header($settings['archive_title']);
                 <span><?php echo (int) $count; ?> package(s)</span>
             </div>
         <?php endforeach; ?>
+        <div class="status-card">
+            <strong>Tours (clusters)</strong>
+            <span><?php echo (int) $totalClusters; ?> tour cluster(s)</span>
+        </div>
+        <div class="status-card">
+            <strong>Tracked assets</strong>
+            <span><?php echo (int) $publishedAssets; ?> published / <?php echo (int) $totalAssets; ?> total</span>
+        </div>
+        <div class="status-card">
+            <strong>Missing required</strong>
+            <span><?php echo (int) $missingRequiredAssets; ?> required asset(s) missing</span>
+        </div>
     </div>
     <div class="actions">
         <a class="button-secondary" href="qa.php">Open QA Report</a>
@@ -172,9 +137,186 @@ wps_render_header($settings['archive_title']);
 </section>
 
 <section class="panel">
-    <h2>Archive setup status</h2>
-    <p>This platform is installed and connected to the configured public GitHub repository path.</p>
+    <h2>Tours and their generated content</h2>
+    <p class="muted">One section per original tour. Each row underneath is a piece of content generated (or planned) from that tour, with its workflow status and the next action needed.</p>
 
+    <?php if (!($registryResult['ok'] ?? false)): ?>
+        <div class="alert alert-error">
+            <?php echo wps_h((string) ($registryResult['error'] ?? 'Cluster registry could not be loaded.')); ?>
+        </div>
+    <?php elseif (empty($clusters)): ?>
+        <p class="muted">No tour clusters registered yet. Add the first cluster to <code>content-system/clusters/cluster-registry.json</code>.</p>
+    <?php else: ?>
+        <?php foreach ($clusters as $cluster): ?>
+            <?php
+                $score = wps_cluster_completeness($cluster);
+                $clusterStatus = wps_cluster_status_label($cluster);
+                $clusterName = (string) ($cluster['title'] ?? $cluster['cluster_parent'] ?? 'Untitled Tour');
+                $parentSlug = (string) ($cluster['cluster_parent'] ?? '');
+                $primarySlug = (string) ($cluster['primary_conversion_asset'] ?? $parentSlug);
+                $destination = (string) ($cluster['destination'] ?? '');
+                $originCity = (string) ($cluster['origin_city'] ?? '');
+                $viatorUrl = (string) ($cluster['viator_url'] ?? '');
+                $nextGeneration = (string) ($cluster['next_recommended_generation'] ?? 'Review missing required assets');
+                $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
+            ?>
+            <article class="panel cluster-panel" id="cluster-<?php echo wps_h($parentSlug); ?>" style="border:1px solid var(--border); margin-bottom:1.25rem;">
+                <header style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.75rem; align-items:baseline;">
+                    <div>
+                        <p class="eyebrow">Tour cluster</p>
+                        <h3 style="margin:0;"><?php echo wps_h($clusterName); ?></h3>
+                        <p class="muted" style="margin:0.25rem 0 0;">
+                            <?php if ($destination !== ''): ?>Destination: <?php echo wps_h($destination); ?><?php endif; ?>
+                            <?php if ($originCity !== ''): ?> · From: <?php echo wps_h($originCity); ?><?php endif; ?>
+                            <?php if ($parentSlug !== ''): ?> · parent: <code><?php echo wps_h($parentSlug); ?></code><?php endif; ?>
+                        </p>
+                    </div>
+                    <div style="text-align:right;">
+                        <span class="qa-pill qa-pill-muted"><?php echo wps_h($clusterStatus); ?></span><br>
+                        <small class="muted">
+                            <?php echo (int) $score['created']; ?>/<?php echo (int) $score['total']; ?> assets generated
+                            · <?php echo (int) $score['published']; ?> published
+                        </small>
+                    </div>
+                </header>
+
+                <p style="margin:0.75rem 0;">
+                    <strong>Primary conversion asset:</strong>
+                    <?php if (isset($postsBySlug[$primarySlug])): ?>
+                        <a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($postsBySlug[$primarySlug]['title'] ?? $primarySlug); ?></a>
+                    <?php else: ?>
+                        <?php echo wps_h($primarySlug); ?>
+                    <?php endif; ?>
+                    <?php if ($viatorUrl !== ''): ?>
+                        · <a href="<?php echo wps_h($viatorUrl); ?>" target="_blank" rel="noopener">Viator listing</a>
+                    <?php endif; ?>
+                </p>
+
+                <p style="margin:0 0 0.75rem;"><strong>Next recommended generation:</strong> <?php echo wps_h($nextGeneration); ?></p>
+
+                <?php if (!empty($clusterAssets)): ?>
+                    <div class="table-wrap">
+                        <table class="workflow-table">
+                            <thead>
+                                <tr>
+                                    <th>Generated content</th>
+                                    <th>Type / role</th>
+                                    <th>Status</th>
+                                    <th>What's needed next</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($clusterAssets as $asset): ?>
+                                    <?php
+                                        $assetSlug = (string) ($asset['package_slug'] ?? '');
+                                        $assetTitle = (string) ($asset['title'] ?? $assetSlug ?: 'Untitled content');
+                                        $assetStatus = (string) ($asset['status'] ?? 'not_started');
+                                        $assetType = (string) ($asset['cluster_type'] ?? '');
+                                        $assetRole = (string) ($asset['cluster_role'] ?? '');
+                                        $assetRequired = !empty($asset['required']);
+                                        $assetNotes = trim((string) ($asset['notes'] ?? ''));
+                                        $assetIsPrimary = $assetSlug !== '' && $assetSlug === $primarySlug;
+                                        $packageExists = $assetSlug !== ''
+                                            && preg_match('/^[a-z0-9][a-z0-9-]*$/', $assetSlug)
+                                            && is_dir(WPS_LOCAL_CONTENT_DIR . '/' . $assetSlug);
+                                        $tone = wps_asset_status_tone($assetStatus);
+                                        $nextAction = wps_asset_next_action($assetStatus);
+                                    ?>
+                                    <tr>
+                                        <td>
+                                            <strong>
+                                                <?php if ($packageExists): ?>
+                                                    <a href="edit-post.php?slug=<?php echo rawurlencode($assetSlug); ?>"><?php echo wps_h($assetTitle); ?></a>
+                                                <?php else: ?>
+                                                    <?php echo wps_h($assetTitle); ?>
+                                                <?php endif; ?>
+                                            </strong>
+                                            <?php if ($assetIsPrimary): ?> <em>· primary</em><?php endif; ?>
+                                            <?php if ($assetRequired): ?> <small class="muted">· required</small><?php endif; ?>
+                                            <?php if ($assetSlug !== ''): ?>
+                                                <br><small class="muted"><?php echo wps_h($assetSlug); ?></small>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <span class="qa-pill qa-pill-muted"><?php echo wps_h($assetType ?: 'asset'); ?></span><br>
+                                            <small class="muted"><?php echo wps_h($assetRole ?: '—'); ?></small>
+                                        </td>
+                                        <td><span class="qa-pill qa-pill-<?php echo wps_h($tone); ?>"><?php echo wps_h($assetStatus); ?></span></td>
+                                        <td>
+                                            <?php echo wps_h($nextAction); ?>
+                                            <?php if ($assetNotes !== ''): ?>
+                                                <br><small class="muted"><?php echo wps_h($assetNotes); ?></small>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php else: ?>
+                    <p class="muted">No assets defined for this tour yet.</p>
+                <?php endif; ?>
+
+                <?php if (!empty($score['missing_required'])): ?>
+                    <p style="margin-top:0.75rem;"><strong>Missing required:</strong>
+                        <?php echo wps_h(implode(', ', $score['missing_required'])); ?>
+                    </p>
+                <?php endif; ?>
+            </article>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</section>
+
+<?php
+    $unclusteredPosts = [];
+    if ($postsResult['ok']) {
+        foreach ($postsResult['posts'] as $post) {
+            $slug = (string) ($post['slug'] ?? '');
+            $folder = (string) ($post['folder_name'] ?? '');
+            $assigned = isset($assignedSlugs[$slug]) || isset($assignedSlugs[$folder]);
+            if (!$assigned) {
+                $unclusteredPosts[] = $post;
+            }
+        }
+    }
+?>
+
+<?php if (!empty($unclusteredPosts)): ?>
+<section class="panel">
+    <h2>Packages not linked to any tour</h2>
+    <p class="muted">These packages exist on disk but aren't referenced in the cluster registry. Either link them to a tour cluster or remove them.</p>
+    <div class="table-wrap">
+        <table class="workflow-table">
+            <thead>
+                <tr>
+                    <th>Package</th>
+                    <th>Status</th>
+                    <th>Why this status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($unclusteredPosts as $post): ?>
+                    <?php
+                        $status = wps_human_workflow_status($post);
+                        $slug = (string) ($post['slug'] ?? '');
+                    ?>
+                    <tr>
+                        <td>
+                            <strong><a href="edit-post.php?slug=<?php echo rawurlencode($slug); ?>"><?php echo wps_h($post['title'] ?? 'Untitled'); ?></a></strong><br>
+                            <small class="muted"><?php echo wps_h($slug); ?></small>
+                        </td>
+                        <td><span class="qa-pill qa-pill-<?php echo wps_h($status['tone'] ?? 'muted'); ?>"><?php echo wps_h($status['label']); ?></span></td>
+                        <td><small class="muted">publish_status=<?php echo wps_h((string) $post['publish_status']); ?> · qa_status=<?php echo wps_h((string) $post['qa_status']); ?></small></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+<?php endif; ?>
+
+<section class="panel">
+    <h2>Archive setup status</h2>
     <div class="status-grid">
         <div class="status-card">
             <strong>Archive URL</strong>
@@ -200,82 +342,6 @@ wps_render_header($settings['archive_title']);
             <br><a href="settings.php">Check settings</a>
         </div>
     <?php endif; ?>
-</section>
-
-<section class="panel">
-    <h2>Content clusters</h2>
-
-    <?php
-        $clusterRegistryResult = wps_load_cluster_registry();
-        $dashboardClusters = $clusterRegistryResult['registry']['clusters'] ?? [];
-    ?>
-
-    <?php if (!($clusterRegistryResult['ok'] ?? false)): ?>
-        <div class="alert alert-error">
-            <?php echo wps_h((string) ($clusterRegistryResult['error'] ?? 'Cluster registry could not be loaded.')); ?>
-        </div>
-    <?php elseif (empty($dashboardClusters)): ?>
-        <p class="muted">No clusters are registered yet.</p>
-    <?php else: ?>
-        <div class="post-grid">
-            <?php foreach ($dashboardClusters as $cluster): ?>
-                <?php
-                    $clusterName = (string) ($cluster['title'] ?? $cluster['cluster_parent'] ?? 'Untitled Cluster');
-                    $clusterParent = (string) ($cluster['cluster_parent'] ?? '');
-                    $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
-                    $generatedAssets = array_values(array_filter($clusterAssets, static function (array $asset): bool {
-                        return !in_array((string) ($asset['status'] ?? ''), ['planned', 'not_started'], true);
-                    }));
-                ?>
-                <article class="post-card" id="cluster-<?php echo wps_h($clusterParent); ?>">
-                    <p class="post-label">Cluster</p>
-                    <h3><?php echo wps_h($clusterName); ?></h3>
-                    <p class="muted">Original cluster title: <?php echo wps_h($clusterName); ?></p>
-                    <p class="muted"><?php echo count($generatedAssets); ?> generated / <?php echo count($clusterAssets); ?> total contents</p>
-
-                    <details>
-                        <summary class="button-secondary" style="display:inline-block; cursor:pointer; margin-top:0.5rem;">Show contents</summary>
-                        <div style="margin-top:0.75rem;">
-                            <?php if (empty($clusterAssets)): ?>
-                                <p class="muted">No content assets defined in this cluster yet.</p>
-                            <?php else: ?>
-                                <ul class="cluster-asset-list">
-                                    <?php foreach ($clusterAssets as $asset): ?>
-                                        <?php
-                                            $assetTitle = (string) ($asset['title'] ?? $asset['package_slug'] ?? 'Untitled content');
-                                            $assetSlug = (string) ($asset['package_slug'] ?? '');
-                                            $assetType = (string) ($asset['cluster_type'] ?? 'N/A');
-                                            $assetRole = (string) ($asset['cluster_role'] ?? 'N/A');
-                                            $assetStatus = (string) ($asset['status'] ?? 'unknown');
-                                            $isGenerated = !in_array($assetStatus, ['planned', 'not_started'], true);
-                                        ?>
-                                        <li>
-                                            <strong><?php echo wps_h($assetTitle); ?></strong><br>
-                                            <small class="muted">
-                                                <?php echo $isGenerated ? 'Generated content' : 'Original/planned content'; ?>
-                                                · Type: <?php echo wps_h($assetType); ?>
-                                                · Role: <?php echo wps_h($assetRole); ?>
-                                                · Status: <?php echo wps_h($assetStatus); ?>
-                                            </small>
-                                            <?php if ($assetSlug !== ''): ?>
-                                                <br><a href="edit-post.php?slug=<?php echo rawurlencode($assetSlug); ?>">Open package</a>
-                                            <?php endif; ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php endif; ?>
-                        </div>
-                    </details>
-                </article>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-</section>
-
-<section class="panel muted-panel">
-    <h2>Next phase</h2>
-    <p>The next step is adding a sync/publish feature that reads each folder's <code>meta.json</code>, <code>blog-post.md</code>, and <code>faq.md</code>, then creates public blog pages from them.</p>
-    <a class="button-secondary" href="settings.php">Open Settings</a>
 </section>
 
 <?php wps_render_footer(); ?>

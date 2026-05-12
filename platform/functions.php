@@ -559,10 +559,6 @@ function wps_current_nav_item(): string
 {
     $scriptName = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
 
-    if (wps_str_contains($scriptName, '/platform/clusters.php')) {
-        return 'clusters';
-    }
-
     if (wps_str_contains($scriptName, '/platform/index.php')) {
         return 'dashboard';
     }
@@ -580,9 +576,8 @@ function wps_render_header(string $title): void
     $currentNavItem = wps_current_nav_item();
     $archiveIsActive = $currentNavItem === 'archive';
     $dashboardIsActive = $currentNavItem === 'dashboard';
-    $clustersIsActive = $currentNavItem === 'clusters';
     $settingsIsActive = $currentNavItem === 'settings';
-    $isAdminContext = in_array($currentNavItem, ['settings', 'clusters', 'dashboard'], true);
+    $isAdminContext = in_array($currentNavItem, ['settings', 'dashboard'], true);
     $signedIn = function_exists('wps_is_logged_in') && wps_is_logged_in();
     $logoutUrl = defined('WPS_ASSET_BASE') && WPS_ASSET_BASE === '.' ? 'logout.php' : '../platform/logout.php';
     ?>
@@ -602,7 +597,6 @@ function wps_render_header(string $title): void
                 <a class="<?php echo $archiveIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_archive_url()); ?>" <?php echo $archiveIsActive ? 'aria-current="page"' : ''; ?>>Archive</a>
                 <?php if ($isAdminContext || $signedIn): ?>
                     <a class="<?php echo $dashboardIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_asset_url('index.php')); ?>" <?php echo $dashboardIsActive ? 'aria-current="page"' : ''; ?>>Dashboard</a>
-                    <a class="<?php echo $clustersIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_asset_url('clusters.php')); ?>" <?php echo $clustersIsActive ? 'aria-current="page"' : ''; ?>>Clusters</a>
                     <a class="<?php echo $settingsIsActive ? 'active' : ''; ?>" href="<?php echo wps_h(wps_settings_url()); ?>" <?php echo $settingsIsActive ? 'aria-current="page"' : ''; ?>>Settings</a>
                 <?php endif; ?>
                 <?php if ($signedIn): ?>
