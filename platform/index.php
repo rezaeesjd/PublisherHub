@@ -210,7 +210,11 @@ wps_render_header($settings['archive_title']);
         $dashboardClusters = $clusterRegistryResult['registry']['clusters'] ?? [];
     ?>
 
-    <?php if (empty($dashboardClusters)): ?>
+    <?php if (!($clusterRegistryResult['ok'] ?? false)): ?>
+        <div class="alert alert-error">
+            <?php echo wps_h((string) ($clusterRegistryResult['error'] ?? 'Cluster registry could not be loaded.')); ?>
+        </div>
+    <?php elseif (empty($dashboardClusters)): ?>
         <p class="muted">No clusters are registered yet.</p>
     <?php else: ?>
         <div class="post-grid">
