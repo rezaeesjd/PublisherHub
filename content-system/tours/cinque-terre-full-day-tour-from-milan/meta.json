@@ -2,8 +2,6 @@
   "canonical_tour_title": "Cinque Terre Full-Day Tour from Milan",
   "slug": "cinque-terre-full-day-tour-from-milan",
   "public_slug": "cinque-terre-full-day-tour-from-milan-five-villages",
-  "variant_of": null,
-  "variant_index": 1,
   "variant_angle": "MOFU full-day five-villages overview",
   "product_reference_code": "187808P109",
   "channel_product_codes": {
@@ -31,8 +29,8 @@
   "live_verification_completed": false,
   "intake_questions_resolved": true,
   "clarification_questions_presented": false,
-  "clarification_questions_presented_at": null,
-  "clarification_mode_selected": "auto_resolve",
+  "clarification_questions_presented_at": "2026-05-12",
+  "clarification_mode_selected": "auto_resolved",
   "provisional_mode": false,
   "blocking_issues": [],
   "conversion_blockers": [],
@@ -67,5 +65,14 @@
       "resolved_value": "See booking page for latest cancellation terms"
     }
   ],
-  "last_qa_date": "2026-05-12"
+  "last_qa_date": "2026-05-12",
+  "brand": "Milano Adventures",
+  "page_title": "Cinque Terre Full-Day Tour from Milan: Visit the Five Villages",
+  "meta_description": "Discover Cinque Terre on a full-day trip from Milan with guided logistics, scenic village stops, and easy booking via trusted tour platforms.",
+  "primary_keyword": "cinque terre full day tour from milan",
+  "funnel_stage": "MOFU",
+  "cta_primary": "Book on Viator",
+  "human_review_required": true,
+  "canonical_title_status": "unconfirmed",
+  "can_generate_public_copy": true
 }
