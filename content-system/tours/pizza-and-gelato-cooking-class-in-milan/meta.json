@@ -21,14 +21,12 @@
   "operating_days": "Daily (Mon–Sun)",
   "meeting_point": "Via Giovanni Battista Sammartini, 1, 20125 Milano MI, Italy",
   "end_point": "Via Giovanni Battista Sammartini, 1, 20125 Milano MI, Italy",
-  "languages": [
-    "English"
-  ],
+  "languages": ["English"],
   "max_travelers": 8,
   "max_travelers_per_booking": 8,
-  "qa_status": "passing",
-  "publish_status": "archived",
-  "public_copy_state": "not_started",
+  "qa_status": "warning",
+  "publish_status": "ready_for_review",
+  "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
   "clarify_phase_completed": true,
@@ -64,8 +62,5 @@
   "cta_primary": "Book on Viator",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": true,
-  "notes": [
-    "Single generated blog intentionally disabled; package retained as tour-content source for dashboard and future cluster content generation."
-  ]
+  "can_generate_public_copy": true
 }
