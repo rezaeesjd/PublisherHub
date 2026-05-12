@@ -127,7 +127,7 @@
       "viator_url": "https://www.viator.com/tours/Milan/All-in-one-Lake-Como-Bellagio-and-Lugano-from-Milan-Scenic-Cruise/d512-187808P57",
       "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33353135-All_in_One_Lake_Como_Bellagio_Lugano_from_Milan_Scenic_Cruise-Milan_Lombardy.html",
       "website_url": "{{WebsiteLink}}",
-      "next_recommended_generation": "Resolve clarifications on the two sister BOFU posts (private + lake-only) so all three lake variants can publish together",
+      "next_recommended_generation": "Resolve clarifications on the lake-only BOFU post, then generate the private-vs-group MOFU comparison post.",
       "last_updated": "2026-05-12",
       "assets": [
         {
@@ -151,17 +151,6 @@
           "status": "needs_clarification",
           "next_step_link_target": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
           "notes": "Lake-only variant. Blocked: missing booking permalink, price, schedule."
-        },
-        {
-          "required": false,
-          "cluster_type": "MOFU",
-          "cluster_role": "comparison-post",
-          "package_slug": "private-full-day-trip-to-lake-como-from-milan",
-          "public_slug": "private-full-day-trip-to-lake-como-from-milan",
-          "title": "Private Full Day Trip to Lake Como from Milan",
-          "status": "needs_clarification",
-          "next_step_link_target": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
-          "notes": "Private upgrade variant. Blocked: missing booking permalink, price, meeting point, itinerary."
         },
         {
           "required": true,
@@ -227,7 +216,7 @@
           "cluster_role": "comparison-post",
           "package_slug": "milan-cooking-class-vs-food-tour",
           "public_slug": "",
-          "title": "Milan: cooking class vs food tour — which to choose",
+          "title": "Milan: cooking class vs food tour \u2014 which to choose",
           "status": "planned",
           "next_step_link_target": "pizza-and-gelato-cooking-class-in-milan",
           "notes": "Decision-support asset."
