@@ -172,6 +172,11 @@ function wps_default_settings(): array
         'google_site_verification' => '',
         'bing_site_verification' => '',
         'twitter_handle' => '',
+        // Whether clean URL rewrites (/blog/post/<slug>/) are active. Set
+        // to false on hosts where .htaccess / mod_rewrite isn't honored
+        // (AllowOverride None, plain nginx without a rewrite block, etc.)
+        // so link generation falls back to /blog/post.php?slug=<slug>.
+        'clean_urls_enabled' => true,
         'updated_at' => gmdate('c'),
     ];
 }
@@ -647,9 +652,11 @@ function wps_render_header(string $title): void
 }
 
 /**
- * Render the public clean URL for a post. Returns the canonical
- * /blog/post/<slug>/ form when clean URLs are available, falling back to
- * the legacy ?slug= query string when they are not yet enabled.
+ * Render the public URL for a post. Emits the canonical
+ * /blog/post/<slug>/ form when clean URLs are active (the default — the
+ * shipped .htaccess provides the rewrite), and falls back to the
+ * /blog/post.php?slug=<slug> form when settings.clean_urls_enabled is
+ * false (i.e. the host doesn't honor .htaccess / mod_rewrite is off).
  */
 function wps_public_post_url(string $publicSlug): string
 {
@@ -658,7 +665,29 @@ function wps_public_post_url(string $publicSlug): string
     if ($publicSlug === '') {
         return $archiveUrl;
     }
-    return $archiveUrl . 'post/' . rawurlencode($publicSlug);
+    $settings = wps_load_settings();
+    $clean = !array_key_exists('clean_urls_enabled', $settings) || !empty($settings['clean_urls_enabled']);
+    return $clean
+        ? $archiveUrl . 'post/' . rawurlencode($publicSlug)
+        : $archiveUrl . 'post.php?slug=' . rawurlencode($publicSlug);
+}
+
+/**
+ * Render an archive-pagination URL. Page 1 is always the bare archive URL
+ * (canonical). Higher pages use /page/<n>/ under clean URLs and ?page=<n>
+ * otherwise. See wps_public_post_url() for the fallback rationale.
+ */
+function wps_archive_page_url(int $page): string
+{
+    $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
+    if ($page <= 1) {
+        return $archiveUrl;
+    }
+    $settings = wps_load_settings();
+    $clean = !array_key_exists('clean_urls_enabled', $settings) || !empty($settings['clean_urls_enabled']);
+    return $clean
+        ? $archiveUrl . 'page/' . $page
+        : $archiveUrl . '?page=' . $page;
 }
 
 /**

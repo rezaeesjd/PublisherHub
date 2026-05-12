@@ -34,9 +34,7 @@ $twitterHandle = trim((string) ($settings['twitter_handle'] ?? ''));
 $cssVersion = @filemtime(__DIR__ . '/../platform/assets/theme.css') ?: time();
 $themeCssUrl = rtrim(wps_system_url_base(), '/') . '/platform/assets/theme.css?v=' . rawurlencode((string) $cssVersion);
 
-$canonical = $paged['page'] === 1
-    ? $archiveUrl
-    : $archiveUrl . 'page/' . $paged['page'];
+$canonical = wps_archive_page_url($paged['page']);
 $pageTitle = $archiveTitle !== '' ? $archiveTitle : 'Blog';
 if ($paged['page'] > 1) {
     $pageTitle .= ' — Page ' . $paged['page'];
@@ -75,12 +73,8 @@ $jsonLdWebSite = [
     'name'     => $siteName,
 ];
 
-$prevUrl = $paged['page'] > 1
-    ? ($paged['page'] - 1 === 1 ? $archiveUrl : $archiveUrl . 'page/' . ($paged['page'] - 1))
-    : '';
-$nextUrl = $paged['page'] < $paged['pages']
-    ? $archiveUrl . 'page/' . ($paged['page'] + 1)
-    : '';
+$prevUrl = $paged['page'] > 1 ? wps_archive_page_url($paged['page'] - 1) : '';
+$nextUrl = $paged['page'] < $paged['pages'] ? wps_archive_page_url($paged['page'] + 1) : '';
 
 $analyticsHead = wps_render_analytics($settings, 'head');
 $analyticsBody = wps_render_analytics($settings, 'body');

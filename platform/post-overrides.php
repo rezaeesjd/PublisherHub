@@ -130,11 +130,20 @@ function wps_apply_post_override(array $post): array
     $baseSlug = wps_post_safe_slug((string) ($post['slug'] ?? ''));
     $post['base_slug'] = $baseSlug;
 
+    // Legacy slugs can be declared in two places: directly in meta.json
+    // (authored alongside content) or in the platform/data override file
+    // (edited via the dashboard). Both sources are merged so either path
+    // works for operators.
+    $metaLegacy = ($post['meta']['legacy_slugs'] ?? null);
+    $metaLegacy = is_array($metaLegacy)
+        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $metaLegacy)))
+        : [];
+
     $override = wps_load_post_override($baseSlug);
     if (!$override) {
         $post['public_slug'] = $baseSlug;
         $post['has_local_edits'] = false;
-        $post['legacy_slugs'] = [];
+        $post['legacy_slugs'] = array_values(array_unique($metaLegacy));
         return $post;
     }
 
@@ -149,10 +158,12 @@ function wps_apply_post_override(array $post): array
     $post['has_local_edits'] = true;
     $post['local_override'] = $override;
 
-    $legacy = $override['legacy_slugs'] ?? [];
-    $post['legacy_slugs'] = is_array($legacy)
-        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $legacy)))
+    $overrideLegacy = $override['legacy_slugs'] ?? [];
+    $overrideLegacy = is_array($overrideLegacy)
+        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $overrideLegacy)))
         : [];
+
+    $post['legacy_slugs'] = array_values(array_unique(array_merge($metaLegacy, $overrideLegacy)));
 
     return $post;
 }

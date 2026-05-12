@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $settings['force_https'] = !empty($_POST['force_https']);
+    $settings['clean_urls_enabled'] = !empty($_POST['clean_urls_enabled']);
 
     $pageSize = (int) ($_POST['archive_page_size'] ?? $settings['archive_page_size'] ?? 20);
     $settings['archive_page_size'] = max(5, min(100, $pageSize));
@@ -190,6 +191,12 @@ wps_render_header('Settings');
             <input type="checkbox" name="force_https" value="1" <?php echo !empty($settings['force_https']) ? 'checked' : ''; ?>>
             Force HTTPS (301-redirect HTTP requests and emit HSTS)
             <small>Disable on localhost or pre-TLS staging hosts.</small>
+        </label>
+
+        <label class="full checkbox-row">
+            <input type="checkbox" name="clean_urls_enabled" value="1" <?php echo (!array_key_exists('clean_urls_enabled', $settings) || !empty($settings['clean_urls_enabled'])) ? 'checked' : ''; ?>>
+            Use clean URLs (/blog/post/&lt;slug&gt;/)
+            <small>Requires <code>mod_rewrite</code> + <code>AllowOverride</code> on Apache, or an equivalent rewrite block on nginx. Uncheck on hosts that ignore <code>.htaccess</code> — links fall back to <code>/blog/post.php?slug=…</code>.</small>
         </label>
 
         <div class="full actions">
