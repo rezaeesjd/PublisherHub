@@ -16,7 +16,7 @@
   "viator_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
   "cta_primary_link": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
   "cta_primary_channel": "viator",
-  "direct_booking_followup_required": true,
+  "direct_booking_followup_required": false,
   "price_from": "EUR 157",
   "duration_text": "13 hours 30 minutes",
   "start_time": "07:00",
@@ -38,7 +38,6 @@
   "conversion_blockers": [],
   "clarifications_needed": [],
   "warnings": [
-    "Direct website booking URL missing; Viator used as primary CTA fallback.",
     "Cancellation value provided as bare number '15' with no unit; excluded from specific policy claims.",
     "Wheelchair accessibility not provided; omitted from public copy."
   ],
@@ -56,8 +55,8 @@
       "raw_value": "missing",
       "blocking": false,
       "decision": "auto_resolved",
-      "reason": "OTA links exist; Viator selected as primary CTA per fallback hierarchy.",
-      "resolved_value": "cta_primary_channel=viator"
+      "reason": "At least one permalink is present; channel links are equal priority.",
+      "resolved_value": "permalink_present=true"
     },
     {
       "field": "cancellation_policy",

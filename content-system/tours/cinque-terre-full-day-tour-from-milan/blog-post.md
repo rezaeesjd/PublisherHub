@@ -24,4 +24,3 @@ This tour is ideal for travelers who prefer a guided full-day format, want to ma
 **Alternate booking option**
 ➡️ [Reserve on TripAdvisor](https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html)
 
-> Looking for direct website booking? It will be added once the official direct booking URL is available.

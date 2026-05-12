@@ -29,9 +29,9 @@
 | canonical tour title | Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &… | User input | inferred | Trailing ellipsis removed; broader canonical title used |
 | product/reference code | 187808P109 | User input | confirmed | Non-OTA code treated as primary |
 | channel product codes | Viator: 187808P82; TripAdvisor: 33344981; Supplier: 187808P109 | User input + URLs | confirmed | Channel-specific mapping |
-| website booking URL | not provided | User input | missing | Non-blocking because OTA links exist |
+| website booking URL | not provided | User input | missing | No issue: other valid permalinks are present |
 | TripAdvisor URL | provided | User input | confirmed | Secondary trust/alternate booking |
-| Viator URL | provided | User input | confirmed | Selected as primary CTA fallback |
+| Viator URL | provided | User input | confirmed | Valid permalink |
 | price | Adult 275 EUR; Child 157 EUR; Infant 0 EUR | User input | confirmed | Per person |
 | duration | 13 Hrs and 30 minutes | User input | confirmed | One-day tour |
 | start time | 07:00 | User input | confirmed | Relative booking cutoff 9h |
@@ -49,5 +49,5 @@
 | review rating | none provided | User input | missing | No rating claim allowed |
 | review count | none provided | User input | missing | No review count claim allowed |
 | review text/source | none provided | User input | missing | No testimonial claim allowed |
-| missing critical inputs | direct website booking URL missing | Derived | needs_human_review | Non-blocking OTA fallback applied |
+| missing critical inputs | none (at least one booking permalink is available) | Derived | not_applicable | Viator and TripAdvisor links satisfy booking-link requirement |
 | conflicts detected | Title names 2 villages while description covers all 5 villages | User input | inferred | Canonical scope aligned to full Cinque Terre |
