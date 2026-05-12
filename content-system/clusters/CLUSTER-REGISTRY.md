@@ -173,7 +173,7 @@ _Last regenerated: 2026-05-12 from `cluster-registry.json` (3 clusters, 14 decla
 - Viator URL: https://www.viator.com/tours/Milan/All-in-one-Lake-Como-Bellagio-and-Lugano-from-Milan-Scenic-Cruise/d512-187808P57
 - TripAdvisor URL: https://www.tripadvisor.com/AttractionProductReview-g187849-d33353135-All_in_One_Lake_Como_Bellagio_Lugano_from_Milan_Scenic_Cruise-Milan_Lombardy.html
 - Last updated: 2026-05-12
-- Next recommended generation: Resolve clarifications on the two sister BOFU posts (private + lake-only) so all three lake variants can publish together
+- Next recommended generation: Resolve clarifications on the lake-only BOFU post, then generate the private-vs-group MOFU comparison post.
 
 ## Asset inventory
 
@@ -181,7 +181,6 @@ _Last regenerated: 2026-05-12 from `cluster-registry.json` (3 clusters, 14 decla
 | --- | --- | --- | --- | --- | --- | --- |
 | Yes | BOFU | `main-booking-post` | All-in-One Lake Como, Bellagio & Lugano from Milan + Scenic Cruise | `all-in-one-lake-como-bellagio-and-lugano-from-milan` | ready_for_review | viator |
 | No | MOFU | `comparison-post` | Lake Como and Lugano Full Day Trip from Milan (lake-only sister) | `lake-como-and-lugano-full-day-trip-from-milan` | needs_clarification | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
-| No | MOFU | `comparison-post` | Private Full Day Trip to Lake Como from Milan | `private-full-day-trip-to-lake-como-from-milan` | needs_clarification | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
 | Yes | MOFU | `comparison-post` | Lake Como private vs group day tour from Milan | `lake-como-private-vs-group-from-milan` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
 | Yes | TOFU | `destination-guide` | Lake Como travel guide for first-time visitors | `lake-como-travel-guide` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
 | Yes | FAQ | `faq-support-post` | Lake Como from Milan: pickup, passports, timing FAQ | `lake-como-from-milan-faq` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |

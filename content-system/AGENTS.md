@@ -128,7 +128,7 @@ If placeholders are used, `qa-report.md` must flag the post as not fully publish
 
 The post is allowed to go live without a website URL as long as at least one real booking link exists (Viator, TripAdvisor, GetYourGuide, or another OTA).
 
-Prefer the website link as the main CTA when available. If missing, use the highest-priority available OTA link as the primary CTA and keep direct-booking follow-up flagged.
+Prefer the website link as the main CTA when available. If missing, any one real booking URL (Viator, TripAdvisor, website, GetYourGuide, or other OTA) is sufficient and acceptable as the primary CTA. Viator, TripAdvisor, and website links have equal priority/value for blocker resolution; providing at least one real booking URL is enough to proceed.
 
 Public booking links in `blog-post.md` should be rendered as clear CTA buttons (primary + optional secondary) rather than inline body links.
 
@@ -827,14 +827,14 @@ Examples of ambiguous values worth flagging — **only when they would otherwise
 - review/rating numbers that disagree across sources
 
 Do **not** flag (handle automatically per the non-blocking table in the Enforcement Addendum):
-- a number with no unit (`9` for cancellation) — exclude from public copy
-- a count with no label (`15`) — ignore
+- a number with no unit (`9` for cancellation) — default to `24 hours prior to departure`
+- a count with no label (`15`) — treat as default cancellation policy `24 hours prior to departure`
 - multiple product codes from different channels — treat as channel-specific
 - a date with no role — omit from public copy
-- a missing website booking URL when an OTA URL exists — use OTA as primary CTA
+- a missing website booking URL when an OTA URL exists — use any one real booking URL as primary CTA (website/Viator/TripAdvisor equal-value for blocker resolution)
 - a truncated title — derive a clean title
 - itinerary scope mismatch between title and description — pick the broader, higher-conversion scope
-- missing wheelchair accessibility — omit, warn only
+- missing wheelchair accessibility — omit with no warning and no blocker
 
 Behavior:
 1. Ask the user one focused question per ambiguous value before generating public copy. Use the smallest set of questions that unblocks generation.
@@ -1034,11 +1034,11 @@ Non-blocking (handle automatically — do **not** ask the user, do **not** add t
 |---|---|
 | Truncated canonical title (e.g. ends in `…` / `...`) | Derive a clean title from the longest unambiguous prefix plus the most descriptive scope from the description (e.g. "Cinque Terre Full-Day Tour from Milan"). Strip trailing ellipsis. Record the derived title in `source-facts.md` with status `inferred`. Never publish an ellipsis in `canonical_tour_title`, `page_title`, or H1. |
 | Multiple product/reference codes from different channels (e.g. Viator `187808P82`, TripAdvisor `33344981`, supplier `187808P109`) | Treat as **channel-specific**, not a conflict. Map each code to its channel by URL domain in `channel_product_codes` (`viator`, `tripadvisor`, `getyourguide`, etc.). Use the supplier-provided code (or the first non-OTA code) as `product_reference_code`. If only OTA codes exist, pick the one matching the primary booking channel. |
-| Missing direct website booking URL but at least one OTA booking URL is present | Use the highest-priority available booking URL as `cta_primary_link`, in this order: website → Viator → TripAdvisor → GetYourGuide → other. Set `cta_primary_channel` accordingly (`website` / `viator` / `tripadvisor` / etc.). Adjust CTA copy to match (e.g. "Book on Viator", "Reserve on TripAdvisor"). `website_link` keeps `{{WebsiteLink}}` as a placeholder and is recorded as a non-blocking warning, **not** a blocker. |
-| Cancellation window without unit | Exclude cancellation specifics from public copy entirely. Do **not** mention the number, unit, or window. Record the raw value in `source-facts.md` with status `needs_human_review`. The post may say "see the booking page for the latest cancellation policy" but must not invent a number or unit. |
-| Unlabeled numeric policy values (e.g. a bare `15`) | Ignore. Do not surface in public copy. Record the raw value in `source-facts.md` with status `needs_human_review` and move on. |
+| Missing direct website booking URL but at least one OTA booking URL is present | Use any one available real booking URL as `cta_primary_link` (website, Viator, TripAdvisor, GetYourGuide, or other OTA). Viator, TripAdvisor, and website are equal-value fallback channels for blocker resolution. Set `cta_primary_channel` accordingly and match CTA copy to the selected channel. `website_link` may remain `{{WebsiteLink}}` as a placeholder and is recorded as non-blocking metadata only (not a warning, not a blocker). |
+| Cancellation window without unit | Default cancellation policy to "24 hours prior to departure" for public copy and metadata unless explicit source data states otherwise. Record the raw value in `source-facts.md` with status `inferred` and note the 24-hour default rule used. |
+| Unlabeled numeric policy values (e.g. a bare `15`) | Treat as cancellation policy input and normalize to the default "24 hours prior to departure" unless explicit unit-qualified policy is provided elsewhere. Record as `inferred` with a note that default cancellation policy was applied. |
 | Itinerary scope conflict between title and description (e.g. title names 2 towns, description names all 5) | Pick the more general / higher-conversion scope from the description (the broader tour). Use that as the canonical scope and align the title accordingly. Record the choice in `source-facts.md` with status `inferred`. |
-| Wheelchair accessibility status missing | Omit from public copy. Record as `missing` in `source-facts.md`. Surface as a non-blocking warning in `qa-report.md`, never as a blocker. |
+| Wheelchair accessibility status missing | Omit from public copy and record as `missing` in `source-facts.md`. Do not warn, do not block, and do not require human review solely for this field. |
 | Date with unclear role (e.g. `May 1, 2026`) | Omit from public copy. Record as `needs_human_review`. |
 | Truncated free-text fields (general case) | Use the longest unambiguous portion. Strip trailing `…` / `...`. Mark `inferred`. |
 
@@ -1068,6 +1068,8 @@ Before processing tour data, prefer to collect these fields explicitly. Whenever
 - Wheelchair accessibility (yes / no / not applicable)
 - Languages (live guide / audio / written) and whether they are confirmed for every departure
 - Review/rating data: rating, count, and source — or explicit "no review data available"
+- Retail price parsing rule: when source contains multiline `Retail Price` (e.g., Adult/Child/Infant/Youth rows), treat it as valid price input. Extract `price_from` from the lowest non-zero payable traveler class and keep the full breakdown in `source-facts.md`.
+- Departure-time parsing rule: `Time Price Apply` should be interpreted as departure/start time unless a more explicit start-time field is provided.
 
 Tours that arrive with all of these fields can usually generate end-to-end without a clarification round.
 
@@ -1130,10 +1132,10 @@ Before writing `blog-post.md`, run this order:
 ### Website link and CTA enforcement
 - If real website booking URL is provided, store it in `source-facts.md` and `meta.json`, and use it as primary CTA in `blog-post.md`.
 - Do not replace a real provided website URL with `{{WebsiteLink}}`.
-- If website booking URL is missing **but** at least one real OTA booking URL is provided (Viator, TripAdvisor, GetYourGuide, etc.), use the highest-priority available URL as `cta_primary_link` per the order in the non-blocking auto-resolution table above. This is **not** a blocker and should not prevent go-live. CTA copy must match the chosen channel (e.g. "Book on Viator", "Reserve on TripAdvisor").
+- If website booking URL is missing **but** at least one real OTA booking URL is provided (Viator, TripAdvisor, GetYourGuide, etc.), use any one available real URL as `cta_primary_link`. Viator, TripAdvisor, and website are equal-value channels for blocker resolution. This is **not** a blocker and should not prevent go-live. CTA copy must match the chosen channel (e.g. "Book on Viator", "Reserve on TripAdvisor").
 - In public copy, render booking destinations as CTA buttons/blocks instead of inline links inside body paragraphs.
 - If website booking URL is missing **and** no OTA booking URL is provided either, then there is no possible primary CTA and that is a real blocker.
-- Missing TripAdvisor/Viator URLs are warnings (non-blocking), but real provided OTA links must be preserved.
+- Missing TripAdvisor/Viator URLs are non-blocking metadata gaps; do not raise a generation warning solely for their absence, but preserve any real provided OTA links.
 
 ### Source-facts provenance matrix requirement
 Every generated `source-facts.md` must include this table:
