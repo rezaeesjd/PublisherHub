@@ -71,7 +71,5 @@
   "cta_primary": "Book on Viator",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": true,
-  "cluster_parent": "pisa-from-florence",
-  "cluster_role": "main-booking-post"
+  "can_generate_public_copy": true
 }

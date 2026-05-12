@@ -1,5 +1,8 @@
 # FAQ
 
+## What time does the class start?
+The class starts at 15:00 (3 PM).
+
 ## How long is the class?
 Approximately 3 hours, including the lesson, tasting, and the meal at the end.
 

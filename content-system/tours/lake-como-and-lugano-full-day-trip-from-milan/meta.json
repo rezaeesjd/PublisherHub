@@ -85,7 +85,5 @@
   "cta_primary": "Request booking",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": false,
-  "cluster_parent": "lake-como-and-lugano-from-milan",
-  "cluster_role": "comparison-post"
+  "can_generate_public_copy": false
 }

@@ -16,7 +16,7 @@
 - Themes: Food & Drink (Baking, Cooking)
 - Duration: 3 hours
 - Meeting point: Via Giovanni Battista Sammartini, 1, 20125 Milano MI, Italy (Info Point inside Mercato Centrale Milan)
-- Start time: 03:00 as supplied (likely 15:00 — see warning)
+- Start time: 15:00 (operator-confirmed; supplied as "03:00" in CSV, corrected on review)
 - Operating days: Mon–Sun
 - Max travelers: 8 (small-group format)
 - Max travelers per booking: 8
@@ -41,7 +41,7 @@
 | price (per band) | Adult 197; Child 153; Infant 0 (EUR) | User input | confirmed | Per person |
 | pricing valid from | July 13, 2026 | User input | confirmed | |
 | duration | 3 hours | User input | confirmed | |
-| start time | 03:00 | User input | needs_human_review | Likely 15:00; flagged for confirmation |
+| start time | 03:00 (CSV) → 15:00 | User input + operator confirmation | confirmed | Operator confirmed 15:00 (3 PM); CSV "03:00" was a typo |
 | departure days | Mon;Tue;Wed;Thu;Fri;Sat;Sun | User input | confirmed | Daily |
 | meeting point | Info Point inside Mercato Centrale, Via G.B. Sammartini 1 | User input | confirmed | Next to Milano Centrale |
 | end point | Same address | User input | inferred | "End Same as Start = Yes" |
@@ -68,7 +68,6 @@
 
 ## Missing inputs (non-blocking warnings)
 
-- Confirm start time (03:00 as supplied vs intended 15:00).
 - Cancellation policy unit (hours vs days) for "9".
 - Minimum travelers to operate.
 
