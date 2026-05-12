@@ -137,8 +137,8 @@ wps_render_header($settings['archive_title']);
 </section>
 
 <section class="panel">
-    <h2>Tours and their generated content</h2>
-    <p class="muted">One section per original tour. Each row underneath is a piece of content generated (or planned) from that tour, with its workflow status and the next action needed.</p>
+    <h2>Tours, source packages, and content assets</h2>
+    <p class="muted">Each cluster shows one source tour package (kept for dashboard/content-generation data) and separate blog assets (TOFU/MOFU/FAQ, etc.) generated from that source.</p>
 
     <?php if (!($registryResult['ok'] ?? false)): ?>
         <div class="alert alert-error">
@@ -159,6 +159,10 @@ wps_render_header($settings['archive_title']);
                 $viatorUrl = (string) ($cluster['viator_url'] ?? '');
                 $nextGeneration = (string) ($cluster['next_recommended_generation'] ?? 'Review missing required assets');
                 $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
+                $sourcePost = $postsBySlug[$primarySlug] ?? null;
+                $blogAssets = array_values(array_filter($clusterAssets, static function (array $asset) use ($primarySlug): bool {
+                    return (string) ($asset['package_slug'] ?? '') !== $primarySlug;
+                }));
             ?>
             <article class="panel cluster-panel" id="cluster-<?php echo wps_h($parentSlug); ?>" style="border:1px solid var(--border); margin-bottom:1.25rem;">
                 <header style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.75rem; align-items:baseline;">
@@ -181,7 +185,7 @@ wps_render_header($settings['archive_title']);
                 </header>
 
                 <p style="margin:0.75rem 0;">
-                    <strong>Primary conversion asset:</strong>
+                    <strong>Source tour package:</strong>
                     <?php if (isset($postsBySlug[$primarySlug])): ?>
                         <a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($postsBySlug[$primarySlug]['title'] ?? $primarySlug); ?></a>
                     <?php else: ?>
@@ -194,19 +198,58 @@ wps_render_header($settings['archive_title']);
 
                 <p style="margin:0 0 0.75rem;"><strong>Next recommended generation:</strong> <?php echo wps_h($nextGeneration); ?></p>
 
-                <?php if (!empty($clusterAssets)): ?>
+                <div class="table-wrap" style="margin-bottom:0.75rem;">
+                    <table class="workflow-table">
+                        <thead>
+                            <tr>
+                                <th>Source package</th>
+                                <th>Package role</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <?php if ($sourcePost): ?>
+                                        <strong><a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($sourcePost['title'] ?? $primarySlug); ?></a></strong>
+                                    <?php else: ?>
+                                        <strong><?php echo wps_h($primarySlug !== '' ? $primarySlug : 'Unlinked source package'); ?></strong>
+                                    <?php endif; ?>
+                                    <?php if ($primarySlug !== ''): ?>
+                                        <br><small class="muted"><?php echo wps_h($primarySlug); ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <span class="qa-pill qa-pill-muted">source_content</span><br>
+                                    <small class="muted">Canonical tour data (not a blog asset)</small>
+                                </td>
+                                <td>
+                                    <?php
+                                        $sourceStatus = $sourcePost ? (string) ($sourcePost['publish_status'] ?? 'draft') : 'not_started';
+                                        $sourceTone = wps_asset_status_tone($sourceStatus);
+                                    ?>
+                                    <span class="qa-pill qa-pill-<?php echo wps_h($sourceTone); ?>"><?php echo wps_h($sourceStatus); ?></span>
+                                </td>
+                                <td><small class="muted">Used for dashboard facts and future cluster blog generation.</small></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <?php if (!empty($blogAssets)): ?>
                     <div class="table-wrap">
                         <table class="workflow-table">
                             <thead>
                                 <tr>
-                                    <th>Generated content</th>
+                                    <th>Blog content asset</th>
                                     <th>Type / role</th>
                                     <th>Status</th>
                                     <th>What's needed next</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($clusterAssets as $asset): ?>
+                                <?php foreach ($blogAssets as $asset): ?>
                                     <?php
                                         $assetSlug = (string) ($asset['package_slug'] ?? '');
                                         $assetTitle = (string) ($asset['title'] ?? $assetSlug ?: 'Untitled content');
@@ -215,7 +258,6 @@ wps_render_header($settings['archive_title']);
                                         $assetRole = (string) ($asset['cluster_role'] ?? '');
                                         $assetRequired = !empty($asset['required']);
                                         $assetNotes = trim((string) ($asset['notes'] ?? ''));
-                                        $assetIsPrimary = $assetSlug !== '' && $assetSlug === $primarySlug;
                                         $packageExists = $assetSlug !== ''
                                             && preg_match('/^[a-z0-9][a-z0-9-]*$/', $assetSlug)
                                             && is_dir(WPS_LOCAL_CONTENT_DIR . '/' . $assetSlug);
@@ -231,7 +273,6 @@ wps_render_header($settings['archive_title']);
                                                     <?php echo wps_h($assetTitle); ?>
                                                 <?php endif; ?>
                                             </strong>
-                                            <?php if ($assetIsPrimary): ?> <em>· primary</em><?php endif; ?>
                                             <?php if ($assetRequired): ?> <small class="muted">· required</small><?php endif; ?>
                                             <?php if ($assetSlug !== ''): ?>
                                                 <br><small class="muted"><?php echo wps_h($assetSlug); ?></small>
