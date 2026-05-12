@@ -15,14 +15,29 @@
 
 if (!function_exists('wps_render_markdown')) {
 
-    function wps_render_markdown(string $markdown): string
+    function wps_render_markdown(string $markdown, ?string $contextFolder = null): string
     {
-        $renderer = new WpsMarkdownRenderer();
+        $renderer = new WpsMarkdownRenderer($contextFolder);
         return $renderer->render($markdown);
     }
 
     final class WpsMarkdownRenderer
     {
+        /** Folder used to resolve relative image paths to disk so we can
+         *  emit accurate width/height attributes (CLS fix). Null skips. */
+        private ?string $contextFolder;
+
+        /** Track the first image we render so it can stay eager-loaded; all
+         *  later images get loading="lazy" — better for LCP. */
+        private bool $sawFirstImage = false;
+
+        public function __construct(?string $contextFolder = null)
+        {
+            $this->contextFolder = $contextFolder !== null && is_dir($contextFolder)
+                ? rtrim($contextFolder, '/')
+                : null;
+        }
+
         public function render(string $markdown): string
         {
             $lines = preg_split('/\r\n|\r|\n/', $markdown) ?: [];
@@ -177,14 +192,15 @@ if (!function_exists('wps_render_markdown')) {
             // Escape everything else.
             $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 
-            // Images: ![alt](url)
+            // Images: ![alt](url) — emits loading/decoding and width/height
+            // for local images so we don't ship a CLS-triggering bare <img>.
             $text = preg_replace_callback(
                 '/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;([^&]*)&quot;)?\)/',
                 function ($m) {
                     $alt = $m[1];
                     $url = $m[2];
                     $title = isset($m[3]) ? ' title="' . $m[3] . '"' : '';
-                    return '<img src="' . $url . '" alt="' . $alt . '"' . $title . '>';
+                    return $this->renderImageTag($url, $alt, $title);
                 },
                 $text
             );
@@ -218,12 +234,69 @@ if (!function_exists('wps_render_markdown')) {
             $text = preg_replace('/(?<!\*)\*([^*\s][^*]*[^*\s]|[^*\s])\*(?!\*)/', '<em>$1</em>', $text);
             $text = preg_replace('/(?<!_)_([^_\s][^_]*[^_\s]|[^_\s])_(?!_)/', '<em>$1</em>', $text);
 
+            // (image/link emission helpers live further down)
+
             // Restore code spans.
             $text = preg_replace_callback("/\x01CODE(\d+)\x01/", function ($m) use ($codeSpans) {
                 return $codeSpans[(int) $m[1]] ?? '';
             }, $text);
 
             return $text;
+        }
+
+        /**
+         * Build a single <img> tag with lazy loading + (when resolvable
+         * locally) explicit width/height to prevent CLS. The first image
+         * in the document is left eager so it can serve as a hero LCP.
+         */
+        private function renderImageTag(string $url, string $alt, string $titleAttr): string
+        {
+            $isFirst = !$this->sawFirstImage;
+            $this->sawFirstImage = true;
+
+            $loading = $isFirst ? 'eager' : 'lazy';
+            $fetchPriority = $isFirst ? ' fetchpriority="high"' : '';
+
+            $dimensions = $this->probeLocalImageSize($url);
+            $widthHeightAttr = '';
+            if ($dimensions !== null) {
+                [$w, $h] = $dimensions;
+                $widthHeightAttr = ' width="' . $w . '" height="' . $h . '"';
+            }
+
+            return '<img src="' . $url . '" alt="' . $alt . '"'
+                . $widthHeightAttr
+                . ' loading="' . $loading . '" decoding="async"'
+                . $fetchPriority
+                . $titleAttr
+                . '>';
+        }
+
+        /**
+         * Resolve a markdown image URL to disk and read its pixel size so
+         * we can emit width/height. Returns [w, h] or null when:
+         *  - we don't have a context folder
+         *  - the URL is remote (http/https) — handled by srcset in 2A.8 pass
+         *  - the file doesn't exist or getimagesize() fails
+         */
+        private function probeLocalImageSize(string $url): ?array
+        {
+            if ($this->contextFolder === null) {
+                return null;
+            }
+            if (preg_match('#^(https?:)?//#i', $url) || str_starts_with($url, 'data:')) {
+                return null;
+            }
+            $rel = ltrim(parse_url($url, PHP_URL_PATH) ?: $url, '/');
+            $path = $this->contextFolder . '/' . $rel;
+            if (!is_file($path)) {
+                return null;
+            }
+            $size = @getimagesize($path);
+            if (!is_array($size) || empty($size[0]) || empty($size[1])) {
+                return null;
+            }
+            return [(int) $size[0], (int) $size[1]];
         }
     }
 }

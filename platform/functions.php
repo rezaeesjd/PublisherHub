@@ -99,6 +99,36 @@ function wps_enforce_https(): void
 }
 
 /**
+ * Emit baseline security + indexing headers for public blog responses.
+ * Safe to call multiple times — bails if headers already sent.
+ */
+function wps_emit_public_headers(): void
+{
+    if (PHP_SAPI === 'cli' || headers_sent()) {
+        return;
+    }
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Permissions-Policy: interest-cohort=()');
+}
+
+/**
+ * Emit X-Robots-Tag: noindex,nofollow when a post is not in 'published'
+ * status. Drafts and review-state copies remain accessible by direct URL
+ * (preview behavior) but stay out of Google's index.
+ */
+function wps_emit_noindex_if_unpublished(string $publishStatus): void
+{
+    if (PHP_SAPI === 'cli' || headers_sent()) {
+        return;
+    }
+    if ($publishStatus !== 'published') {
+        header('X-Robots-Tag: noindex, nofollow, noarchive');
+    }
+}
+
+/**
  * Resolve the email allowed to sign in as admin. Reads from settings;
  * falls back to the legacy install email so existing deployments do not
  * lose access during the migration.
@@ -135,6 +165,13 @@ function wps_default_settings(): array
         'force_https' => false,
         'archive_page_size' => 20,
         'organization_logo_url' => '',
+        'archive_og_image_url' => '',
+        'default_author_name' => '',
+        'default_author_url' => '',
+        'ga4_measurement_id' => '',
+        'google_site_verification' => '',
+        'bing_site_verification' => '',
+        'twitter_handle' => '',
         'updated_at' => gmdate('c'),
     ];
 }
@@ -607,6 +644,276 @@ function wps_render_header(string $title): void
     </header>
     <main class="container">
     <?php
+}
+
+/**
+ * Render the public clean URL for a post. Returns the canonical
+ * /blog/post/<slug>/ form when clean URLs are available, falling back to
+ * the legacy ?slug= query string when they are not yet enabled.
+ */
+function wps_public_post_url(string $publicSlug): string
+{
+    $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
+    $publicSlug = trim($publicSlug);
+    if ($publicSlug === '') {
+        return $archiveUrl;
+    }
+    return $archiveUrl . 'post/' . rawurlencode($publicSlug);
+}
+
+/**
+ * Resolve a meta.hero_image value to a public URL.
+ *  - http(s) URLs pass through unchanged.
+ *  - Relative paths (e.g. "images/hero.jpg") resolve against the tour
+ *    folder name under the content-system tours path.
+ * Returns '' when the value is empty or cannot be resolved on disk.
+ */
+function wps_resolve_hero_image_url(string $heroValue, string $tourFolderName): string
+{
+    $heroValue = trim($heroValue);
+    if ($heroValue === '') {
+        return '';
+    }
+    if (preg_match('#^https?://#i', $heroValue)) {
+        return $heroValue;
+    }
+    if ($tourFolderName === '' || !preg_match('/^[a-zA-Z0-9_-]+$/', $tourFolderName)) {
+        return '';
+    }
+    $rel = ltrim($heroValue, '/');
+    $diskPath = __DIR__ . '/../content-system/tours/' . $tourFolderName . '/' . $rel;
+    if (!is_file($diskPath)) {
+        return '';
+    }
+    $base = rtrim(wps_system_url_base(), '/') . '/';
+    return $base . 'content-system/tours/' . rawurlencode($tourFolderName) . '/' . str_replace('%2F', '/', rawurlencode($rel));
+}
+
+/**
+ * Compute reading time (whole minutes, min 1) and word count from HTML.
+ * Strips tags first so navigation and inline code don't inflate the count.
+ */
+function wps_reading_time(string $html, int $wordsPerMinute = 220): array
+{
+    $words = str_word_count(strip_tags($html));
+    $minutes = max(1, (int) ceil($words / max(1, $wordsPerMinute)));
+    return ['words' => $words, 'minutes' => $minutes];
+}
+
+/**
+ * Trim and clamp a description to ~160 chars on a word boundary.
+ */
+function wps_trim_description(string $text, int $max = 158): string
+{
+    $text = trim(preg_replace('/\s+/', ' ', $text) ?? '');
+    if ($text === '' || mb_strlen($text) <= $max) {
+        return $text;
+    }
+    $cut = mb_substr($text, 0, $max);
+    $space = mb_strrpos($cut, ' ');
+    if ($space !== false && $space > $max - 30) {
+        $cut = mb_substr($cut, 0, $space);
+    }
+    return rtrim($cut, " ,.;:") . '…';
+}
+
+/**
+ * Best-effort word count of the rendered body, used as a fallback when
+ * the meta.description is missing.
+ */
+function wps_auto_meta_description(string $html, int $max = 158): string
+{
+    if ($html === '') {
+        return '';
+    }
+    // Drop nav links, FAQ headings, etc. by keeping only paragraph text.
+    if (preg_match_all('#<p[^>]*>(.+?)</p>#is', $html, $matches) && !empty($matches[1])) {
+        $text = strip_tags(implode(' ', $matches[1]));
+    } else {
+        $text = strip_tags($html);
+    }
+    $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return wps_trim_description($text, $max);
+}
+
+/**
+ * Append UTM parameters to known booking-channel destination URLs.
+ * Leaves placeholders and non-http URLs alone. Idempotent: skips URLs
+ * that already include utm_source.
+ */
+function wps_append_utm(string $url, string $campaign, string $source = 'blog', string $medium = 'cta'): string
+{
+    if ($url === '' || !preg_match('#^https?://#i', $url)) {
+        return $url;
+    }
+    if (stripos($url, 'utm_source=') !== false) {
+        return $url;
+    }
+    $campaign = $campaign === '' ? 'wps' : preg_replace('/[^A-Za-z0-9_-]+/', '-', $campaign);
+    $separator = (strpos($url, '?') === false) ? '?' : '&';
+    return $url
+        . $separator
+        . 'utm_source=' . rawurlencode($source)
+        . '&utm_medium=' . rawurlencode($medium)
+        . '&utm_campaign=' . rawurlencode($campaign);
+}
+
+/**
+ * Return a list of unique host names that should be preconnected for
+ * a given rendered HTML blob. Used by post.php to emit <link rel="preconnect">
+ * hints for booking CTAs (Viator, TripAdvisor, GetYourGuide, etc.).
+ */
+function wps_preconnect_hosts_from_html(string $html): array
+{
+    if ($html === '' || !preg_match_all('#href="https?://([^/"]+)/?[^"]*"#i', $html, $matches)) {
+        return [];
+    }
+    $allow = ['viator.com', 'www.viator.com', 'tripadvisor.com', 'www.tripadvisor.com', 'getyourguide.com', 'www.getyourguide.com', 'booking.com', 'www.booking.com'];
+    $out = [];
+    foreach ($matches[1] as $host) {
+        $host = strtolower($host);
+        foreach ($allow as $candidate) {
+            if ($host === $candidate || str_ends_with($host, '.' . $candidate)) {
+                $out[$host] = true;
+                break;
+            }
+        }
+    }
+    return array_keys($out);
+}
+
+/**
+ * Render <link rel="preconnect"> tags for analytics + booking CTAs.
+ * Always emits googletagmanager + google-analytics when GA4 is enabled.
+ */
+function wps_render_preconnect(array $settings, string $html = ''): string
+{
+    $hosts = [];
+    if (!empty($settings['ga4_measurement_id'])) {
+        $hosts['www.googletagmanager.com'] = true;
+        $hosts['www.google-analytics.com'] = true;
+    }
+    foreach (wps_preconnect_hosts_from_html($html) as $host) {
+        $hosts[$host] = true;
+    }
+    if (empty($hosts)) {
+        return '';
+    }
+    $out = '';
+    foreach (array_keys($hosts) as $host) {
+        $safe = wps_h($host);
+        $out .= '<link rel="preconnect" href="https://' . $safe . '" crossorigin>'
+              . '<link rel="dns-prefetch" href="https://' . $safe . '">';
+    }
+    return $out;
+}
+
+/**
+ * GA4 + Google/Bing Search Console verification tags. Output is empty
+ * when no GA4 id and no verification tokens are configured.
+ *
+ * @param string $where 'head' for verification meta tags, 'body' for the
+ *                       deferred gtag.js loader.
+ */
+function wps_render_analytics(array $settings, string $where = 'body'): string
+{
+    if ($where === 'head') {
+        $out = '';
+        $g = trim((string) ($settings['google_site_verification'] ?? ''));
+        if ($g !== '') {
+            $out .= '<meta name="google-site-verification" content="' . wps_h($g) . '">';
+        }
+        $b = trim((string) ($settings['bing_site_verification'] ?? ''));
+        if ($b !== '') {
+            $out .= '<meta name="msvalidate.01" content="' . wps_h($b) . '">';
+        }
+        return $out;
+    }
+
+    $id = trim((string) ($settings['ga4_measurement_id'] ?? ''));
+    if ($id === '' || !preg_match('/^G-[A-Z0-9]{4,}$/i', $id)) {
+        return '';
+    }
+    $safeId = wps_h($id);
+    return <<<HTML
+<script async src="https://www.googletagmanager.com/gtag/js?id={$safeId}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{$safeId}',{'anonymize_ip':true});</script>
+HTML;
+}
+
+/**
+ * Critical CSS for above-the-fold paint. Tiny subset that mirrors theme.css
+ * for the article + archive header. Loaded inline; the full stylesheet is
+ * fetched non-blocking via media-swap trick.
+ */
+function wps_critical_css(): string
+{
+    return '*,*::before,*::after{box-sizing:border-box}'
+         . 'html{-webkit-font-smoothing:antialiased}'
+         . 'body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f2f5f9;color:#0e1c2e;line-height:1.65;font-size:16px}'
+         . 'a{color:#1a6bc4;text-decoration:none}'
+         . '.wrap{max-width:880px;padding:32px 16px;margin:0 auto}'
+         . '.card{background:#fff;border:1px solid #d5dde8;border-radius:12px;box-shadow:0 1px 3px rgba(14,28,46,.07)}'
+         . 'h1{font-size:30px;line-height:1.2;letter-spacing:-.02em;font-weight:800;margin-top:0}'
+         . 'h2{font-size:22px;font-weight:700;letter-spacing:-.01em}'
+         . '.muted{color:#536070}'
+         . 'img{max-width:100%;height:auto}'
+         . '.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}'
+         . '.skip-link:focus{position:fixed;left:8px;top:8px;width:auto;height:auto;padding:8px 12px;background:#1a6bc4;color:#fff;border-radius:6px;z-index:9999}';
+}
+
+/**
+ * Build a markup string that loads a stylesheet without blocking the
+ * first paint. Falls back to a synchronous <link> inside <noscript> so
+ * non-JS clients still get the design.
+ */
+function wps_render_deferred_stylesheet(string $href): string
+{
+    $safe = wps_h($href);
+    return '<link rel="preload" href="' . $safe . '" as="style">'
+         . '<link rel="stylesheet" href="' . $safe . '" media="print" onload="this.media=\'all\';this.onload=null">'
+         . '<noscript><link rel="stylesheet" href="' . $safe . '"></noscript>';
+}
+
+/**
+ * Pick up to $limit related posts for the given post record. Scores by
+ * shared primary_keyword (3 pts), shared funnel_stage (1 pt), and shared
+ * cluster_parent (2 pts). Filters out the current post.
+ */
+function wps_related_posts(array $current, array $allRecords, int $limit = 4): array
+{
+    $currentSlug = (string) ($current['public_slug'] ?? $current['slug'] ?? '');
+    $currentKw   = strtolower(trim((string) ($current['primary_keyword'] ?? '')));
+    $currentFun  = (string) ($current['funnel_stage'] ?? '');
+    $currentParent = (string) ($current['cluster_parent'] ?? $current['variant_of'] ?? '');
+
+    $scored = [];
+    foreach ($allRecords as $rec) {
+        $slug = (string) ($rec['public_slug'] ?? '');
+        if ($slug === '' || $slug === $currentSlug) {
+            continue;
+        }
+        $score = 0;
+        $kw = strtolower(trim((string) ($rec['primary_keyword'] ?? '')));
+        if ($kw !== '' && $currentKw !== '' && $kw === $currentKw) {
+            $score += 3;
+        } elseif ($kw !== '' && $currentKw !== '' && (str_contains($kw, $currentKw) || str_contains($currentKw, $kw))) {
+            $score += 1;
+        }
+        if ($currentFun !== '' && ($rec['funnel_stage'] ?? '') === $currentFun) {
+            $score += 1;
+        }
+        $parent = (string) ($rec['cluster_parent'] ?? '');
+        if ($currentParent !== '' && $parent !== '' && $parent === $currentParent) {
+            $score += 2;
+        }
+        if ($score > 0) {
+            $scored[] = ['score' => $score, 'record' => $rec];
+        }
+    }
+
+    usort($scored, fn($a, $b) => $b['score'] <=> $a['score']);
+    return array_slice(array_map(fn($s) => $s['record'], $scored), 0, $limit);
 }
 
 function wps_render_footer(): void

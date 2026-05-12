@@ -134,6 +134,7 @@ function wps_apply_post_override(array $post): array
     if (!$override) {
         $post['public_slug'] = $baseSlug;
         $post['has_local_edits'] = false;
+        $post['legacy_slugs'] = [];
         return $post;
     }
 
@@ -147,6 +148,11 @@ function wps_apply_post_override(array $post): array
     $post['public_slug'] = $publicSlug !== '' ? $publicSlug : $baseSlug;
     $post['has_local_edits'] = true;
     $post['local_override'] = $override;
+
+    $legacy = $override['legacy_slugs'] ?? [];
+    $post['legacy_slugs'] = is_array($legacy)
+        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $legacy)))
+        : [];
 
     return $post;
 }
@@ -166,7 +172,11 @@ function wps_find_post_by_public_or_base_slug(array $settings, string $requested
     foreach ($postsResult['posts'] as $post) {
         $post = wps_apply_post_override($post);
         if (($post['base_slug'] ?? '') === $requestedSlug || ($post['public_slug'] ?? '') === $requestedSlug) {
-            return ['ok' => true, 'error' => '', 'post' => $post];
+            return ['ok' => true, 'error' => '', 'post' => $post, 'matched_via' => 'current'];
+        }
+        if (in_array($requestedSlug, $post['legacy_slugs'] ?? [], true)) {
+            // Legacy slug hit — the caller should 301 to the current public slug.
+            return ['ok' => true, 'error' => '', 'post' => $post, 'matched_via' => 'legacy'];
         }
     }
 

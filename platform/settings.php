@@ -34,6 +34,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $settings['organization_logo_url'] = $rawLogo;
     }
 
+    $rawArchiveOg = trim((string) ($_POST['archive_og_image_url'] ?? ''));
+    if ($rawArchiveOg === '' || filter_var($rawArchiveOg, FILTER_VALIDATE_URL)) {
+        $settings['archive_og_image_url'] = $rawArchiveOg;
+    }
+
+    $settings['default_author_name'] = trim((string) ($_POST['default_author_name'] ?? ''));
+    $rawAuthorUrl = trim((string) ($_POST['default_author_url'] ?? ''));
+    if ($rawAuthorUrl === '' || filter_var($rawAuthorUrl, FILTER_VALIDATE_URL)) {
+        $settings['default_author_url'] = $rawAuthorUrl;
+    }
+
+    $rawGa4 = trim((string) ($_POST['ga4_measurement_id'] ?? ''));
+    if ($rawGa4 === '' || preg_match('/^G-[A-Z0-9]{4,}$/i', $rawGa4)) {
+        $settings['ga4_measurement_id'] = strtoupper($rawGa4);
+    }
+
+    $settings['google_site_verification'] = trim((string) ($_POST['google_site_verification'] ?? ''));
+    $settings['bing_site_verification']   = trim((string) ($_POST['bing_site_verification'] ?? ''));
+
+    $rawTwitter = ltrim(trim((string) ($_POST['twitter_handle'] ?? '')), '@');
+    if ($rawTwitter === '' || preg_match('/^[A-Za-z0-9_]{1,15}$/', $rawTwitter)) {
+        $settings['twitter_handle'] = $rawTwitter;
+    }
+
     if (wps_save_settings($settings)) {
         wps_ensure_archive_alias($settings);
         $success = 'Settings saved.';
@@ -114,6 +138,46 @@ wps_render_header('Settings');
         <label class="full">
             Organization logo URL (used in JSON-LD)
             <input type="url" name="organization_logo_url" value="<?php echo wps_h((string) ($settings['organization_logo_url'] ?? '')); ?>" placeholder="https://example.com/logo.png" autocomplete="off">
+        </label>
+
+        <label class="full">
+            Archive social share image (og:image for /blog/)
+            <input type="url" name="archive_og_image_url" value="<?php echo wps_h((string) ($settings['archive_og_image_url'] ?? '')); ?>" placeholder="https://example.com/og/archive.jpg" autocomplete="off">
+            <small>Recommended size: 1200&times;630. Shown on social cards when sharing the archive.</small>
+        </label>
+
+        <label>
+            Default author name (E-E-A-T byline)
+            <input type="text" name="default_author_name" value="<?php echo wps_h((string) ($settings['default_author_name'] ?? '')); ?>" placeholder="Editorial Team" autocomplete="off">
+            <small>Used when meta.json does not declare an author.</small>
+        </label>
+
+        <label>
+            Default author profile URL
+            <input type="url" name="default_author_url" value="<?php echo wps_h((string) ($settings['default_author_url'] ?? '')); ?>" placeholder="https://example.com/about" autocomplete="off">
+        </label>
+
+        <label>
+            Google Analytics 4 Measurement ID
+            <input type="text" name="ga4_measurement_id" value="<?php echo wps_h((string) ($settings['ga4_measurement_id'] ?? '')); ?>" placeholder="G-XXXXXXXXXX" autocomplete="off" pattern="G-[A-Za-z0-9]{4,}">
+            <small>Leave empty to disable analytics. IP anonymization is applied automatically.</small>
+        </label>
+
+        <label>
+            Twitter / X handle (without @)
+            <input type="text" name="twitter_handle" value="<?php echo wps_h((string) ($settings['twitter_handle'] ?? '')); ?>" placeholder="MilanoAdventures" autocomplete="off" pattern="[A-Za-z0-9_]{1,15}">
+            <small>Adds twitter:site to Twitter Cards.</small>
+        </label>
+
+        <label class="full">
+            Google Search Console verification token
+            <input type="text" name="google_site_verification" value="<?php echo wps_h((string) ($settings['google_site_verification'] ?? '')); ?>" placeholder="abc123..." autocomplete="off">
+            <small>The "content" value from Search Console's HTML-tag verification method.</small>
+        </label>
+
+        <label class="full">
+            Bing Webmaster Tools verification token
+            <input type="text" name="bing_site_verification" value="<?php echo wps_h((string) ($settings['bing_site_verification'] ?? '')); ?>" placeholder="abc123..." autocomplete="off">
         </label>
 
         <label>

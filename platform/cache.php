@@ -15,7 +15,7 @@ require_once __DIR__ . '/content-loader.php';
 require_once __DIR__ . '/post-overrides.php';
 
 const WPS_ARCHIVE_INDEX_FILE   = WPS_DATA_DIR . '/archive-index.json';
-const WPS_RENDER_CACHE_VERSION = 'r2';
+const WPS_RENDER_CACHE_VERSION = 'r3';
 
 /**
  * Returns the publishable archive index, building it from disk if the
@@ -122,6 +122,18 @@ function wps_archive_index_rebuild(array $settings): array
     return $payload;
 }
 
+/**
+ * Subset of the archive index suitable for indexing. Only posts whose
+ * publish_status === 'published' are returned, so the sitemap and any
+ * canonical-only surface never expose review-state copy to crawlers.
+ */
+function wps_published_records(array $records): array
+{
+    return array_values(array_filter($records, function ($r) {
+        return is_array($r) && (string) ($r['publish_status'] ?? '') === 'published';
+    }));
+}
+
 function wps_archive_index_invalidate(): void
 {
     if (is_file(WPS_ARCHIVE_INDEX_FILE)) {
@@ -173,7 +185,9 @@ function wps_cached_render_markdown(string $sourcePath): string
     if (!function_exists('wps_render_markdown')) {
         require_once __DIR__ . '/markdown.php';
     }
-    $html = wps_render_markdown($markdown);
+    // Pass the source folder so relative image paths resolve on disk and
+    // the renderer can attach width/height attributes (CLS prevention).
+    $html = wps_render_markdown($markdown, dirname($sourcePath));
 
     // Best-effort: cache may fail to write on read-only hosts, that's fine.
     @file_put_contents($cachePath, $html);
