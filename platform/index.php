@@ -11,18 +11,12 @@ $postsResult = wps_get_posts($settings);
 $registryResult = wps_load_cluster_registry();
 $clusters = array_values(array_filter(($registryResult['registry']['clusters'] ?? []), 'is_array'));
 
-$clusterIndex = wps_index_tour_clusters();
 $postsBySlug = [];
-$postsByFolder = [];
 if ($postsResult['ok']) {
     foreach ($postsResult['posts'] as $post) {
         $slug = (string) ($post['slug'] ?? '');
         if ($slug !== '') {
             $postsBySlug[$slug] = $post;
-        }
-        $folder = (string) ($post['folder_name'] ?? '');
-        if ($folder !== '') {
-            $postsByFolder[$folder] = $post;
         }
     }
 }
@@ -57,7 +51,7 @@ if ($postsResult['ok']) {
     }
 }
 
-function wps_asset_next_action(string $status, string $notes = ''): string
+function wps_asset_next_action(string $status): string
 {
     switch ($status) {
         case 'published':
