@@ -157,3 +157,4 @@ _No resolved items yet._
 - Risk if ignored:
   Ongoing confusion between draft readiness and published state.
 - Implementation note:
+- 2026-05-12 | cinque-terre-full-day-tour-from-milan | Follow-up: add direct website booking URL and update CTA priority.
