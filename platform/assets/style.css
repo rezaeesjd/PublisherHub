@@ -499,6 +499,23 @@ button:active { transform: translateY(0); box-shadow: none; }
     letter-spacing: 0.06em;
 }
 
+.cluster-asset-list {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+}
+.cluster-asset-list li {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border: 1px solid #e6ecf2;
+    border-radius: 8px;
+    background: #fbfcfe;
+}
+.cluster-asset-list li .qa-pill {
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
 /* ─── Auth panel ─────────────────────────────────────── */
 
 .auth-panel {
