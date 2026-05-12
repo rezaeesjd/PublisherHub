@@ -558,6 +558,18 @@ function wps_ensure_archive_alias(array $settings): void
     file_put_contents($aliasDir . '/.wps-archive-alias', "managed-by=WebPublisherSystem\n");
     file_put_contents($aliasDir . '/index.php', "<?php\nrequire_once __DIR__ . '/" . $up . "blog/index.php';\n");
     file_put_contents($aliasDir . '/post.php', "<?php\nrequire_once __DIR__ . '/" . $up . "blog/post.php';\n");
+
+    // Mirror the blog rewrite behavior so clean URLs like
+    // /<archive-slug>/post/<public-slug>/ resolve for custom archive aliases.
+    $aliasHtaccess = <<<HTACCESS
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^post/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [QSA,L]
+    RewriteRule ^page/([0-9]+)/?$ index.php?page=$1 [QSA,L]
+</IfModule>
+HTACCESS;
+    file_put_contents($aliasDir . '/.htaccess', $aliasHtaccess . "\n");
 }
 
 function wps_redirect_legacy_blog_path_if_needed(array $settings): void
