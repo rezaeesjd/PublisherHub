@@ -1,17 +1,13 @@
 # Lake Como and Lugano Full Day Trip from Milan
 
-> **Holding notice — public copy on hold.** This package cannot publish yet because critical operational details are missing from the source intake (no booking permalink, no price band, no schedule start time or operating days). See `source-facts.md` and the QA report for blocking clarifications.
+## Main Product Content
+- Full-day tour from Milan to Como and Lugano with guided support.
+- Includes Lake Como boat cruise and free time in Como and Lugano.
+- Roundtrip transport by GT coach/minivan.
+- Meeting point: Largo Cairoli 18, Milan (Milan Visitor Centre corner).
+- Duration: about 10 to 11 hours.
+- Language: English.
+- Group format (not private), up to 22 participants.
 
-The package is registered in the Lake Como cluster as a sister BOFU to the All-in-One Lake Como, Bellagio & Lugano tour, with an itinerary focused on Como and Lugano. Once the operator confirms a booking permalink, price, and schedule, the public draft will be generated.
-
-## Confirmed today
-- Run by **Milano Adventures** as a 10–11 hour day trip.
-- Departs Largo Cairoli 18 (Milan Visitor Centre, MM1 Cairoli / MM2 Lanza).
-- Itinerary covers Como historic centre, a panoramic Lake Como cruise, and Lugano.
-- Maximum 22 travelers; 15 per booking; English-language guidance.
-
-## Pending before publish
-- Booking permalink (Viator / TripAdvisor / website).
-- Retail price per traveler.
-- Operating days and start time.
-- Cancellation policy and lead time.
+## Notes for Backend Usage
+This file is intentionally reduced to core product content for dashboard listing and content-generation workflows.
