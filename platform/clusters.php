@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/content-loader.php';
 
 wps_require_auth();
 
@@ -102,7 +103,8 @@ wps_render_header('Cluster Registry');
                                 $assetTarget = (string) ($asset['next_step_link_target'] ?? '');
                                 $assetIsPrimary = $assetSlug !== '' && $assetSlug === $primarySlug;
                                 $isExistingPackage = $assetSlug !== ''
-                                    && is_dir(__DIR__ . '/../content-system/tours/' . $assetSlug);
+                                    && preg_match('/^[a-z0-9][a-z0-9-]*$/', $assetSlug)
+                                    && is_dir(WPS_LOCAL_CONTENT_DIR . '/' . $assetSlug);
                                 ?>
                                 <li>
                                     <span class="qa-pill qa-pill-muted"><?php echo wps_h($assetType ?: 'asset'); ?></span>

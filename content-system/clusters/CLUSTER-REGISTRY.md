@@ -140,7 +140,7 @@ Copy this section for each new tour cluster.
 
 > **Canonical source:** `content-system/clusters/cluster-registry.json`. The list below mirrors that JSON for human readers. If they disagree, the JSON wins — regenerate this section from it.
 
-_Last regenerated: 2026-05-12 from `cluster-registry.json` (4 clusters, 18 declared assets, 6 generated tour packages)._
+_Last regenerated: 2026-05-12 from `cluster-registry.json` (3 clusters, 14 declared assets, 5 generated tour packages)._
 
 ---
 
@@ -162,27 +162,6 @@ _Last regenerated: 2026-05-12 from `cluster-registry.json` (4 clusters, 18 decla
 | Yes | MOFU | `comparison-post` | Cinque Terre guided tour vs DIY by train from Milan | `cinque-terre-full-day-tour-from-milan-vs-diy` | planned | `cinque-terre-full-day-tour-from-milan` |
 | Yes | TOFU | `destination-guide` | Best day trips from Milan (overview) | `best-day-trips-from-milan` | planned | `cinque-terre-full-day-tour-from-milan` |
 | Yes | FAQ | `faq-support-post` | Cinque Terre from Milan: practical FAQs | `cinque-terre-from-milan-faq` | planned | `cinque-terre-full-day-tour-from-milan` |
-
----
-
-# Cluster: Pisa Day Trips from Florence
-
-- Cluster parent slug: `pisa-from-florence`
-- Primary conversion asset: `pisa-afternoon-tour-from-florence`
-- Website booking URL: `{{WebsiteLink}}`
-- Viator URL: https://www.viator.com/tours/Florence/Premier-Pisa-Afternoon-Tour-from-Florence-Skip-the-Line-Access/d519-187808P50
-- TripAdvisor URL: https://www.tripadvisor.com/AttractionProductReview-g187895-d27742572-Pisa_Afternoon_Tour_from_Florence_Skip_the_Line_Access-Florence_Tuscany.html
-- Last updated: 2026-05-12
-- Next recommended generation: MOFU comparison-post — Pisa from Florence guided vs DIY by train
-
-## Asset inventory
-
-| Required | Funnel stage | Cluster role | Target angle/title | Package slug | Status | Next step link target |
-| --- | --- | --- | --- | --- | --- | --- |
-| Yes | BOFU | `main-booking-post` | Pisa Afternoon Tour from Florence + Skip-the-Line Access | `pisa-afternoon-tour-from-florence` | ready_for_review | viator |
-| Yes | MOFU | `comparison-post` | Pisa from Florence: guided tour vs DIY by train | `pisa-from-florence-guided-vs-diy` | planned | `pisa-afternoon-tour-from-florence` |
-| Yes | TOFU | `destination-guide` | Best day trips from Florence (overview) | `best-day-trips-from-florence` | planned | `pisa-afternoon-tour-from-florence` |
-| Yes | FAQ | `faq-support-post` | Climbing the Leaning Tower: rules, ages, what to expect | `leaning-tower-pisa-faq` | planned | `pisa-afternoon-tour-from-florence` |
 
 ---
 

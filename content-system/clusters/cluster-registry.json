@@ -119,64 +119,6 @@
       ]
     },
     {
-      "cluster_parent": "pisa-from-florence",
-      "title": "Pisa Day Trips from Florence",
-      "destination": "Pisa, Tuscany",
-      "origin_city": "Florence",
-      "primary_conversion_asset": "pisa-afternoon-tour-from-florence",
-      "viator_url": "https://www.viator.com/tours/Florence/Premier-Pisa-Afternoon-Tour-from-Florence-Skip-the-Line-Access/d519-187808P50",
-      "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187895-d27742572-Pisa_Afternoon_Tour_from_Florence_Skip_the_Line_Access-Florence_Tuscany.html",
-      "website_url": "{{WebsiteLink}}",
-      "next_recommended_generation": "MOFU comparison-post: Pisa from Florence guided vs DIY by train",
-      "last_updated": "2026-05-12",
-      "assets": [
-        {
-          "required": true,
-          "cluster_type": "BOFU",
-          "cluster_role": "main-booking-post",
-          "package_slug": "pisa-afternoon-tour-from-florence",
-          "public_slug": "pisa-afternoon-tour-from-florence-skip-the-line",
-          "title": "Pisa Afternoon Tour from Florence + Skip-the-Line Access",
-          "status": "ready_for_review",
-          "next_step_link_target": "viator",
-          "notes": "Main conversion asset. Warnings: cancellation unit; accessibility limitations disclosed."
-        },
-        {
-          "required": true,
-          "cluster_type": "MOFU",
-          "cluster_role": "comparison-post",
-          "package_slug": "pisa-from-florence-guided-vs-diy",
-          "public_slug": "",
-          "title": "Pisa from Florence: guided tour vs DIY by train",
-          "status": "planned",
-          "next_step_link_target": "pisa-afternoon-tour-from-florence",
-          "notes": "Decision-support asset."
-        },
-        {
-          "required": true,
-          "cluster_type": "TOFU",
-          "cluster_role": "destination-guide",
-          "package_slug": "best-day-trips-from-florence",
-          "public_slug": "",
-          "title": "Best day trips from Florence (overview)",
-          "status": "planned",
-          "next_step_link_target": "pisa-afternoon-tour-from-florence",
-          "notes": "Discovery asset."
-        },
-        {
-          "required": true,
-          "cluster_type": "FAQ",
-          "cluster_role": "faq-support-post",
-          "package_slug": "leaning-tower-pisa-faq",
-          "public_slug": "",
-          "title": "Climbing the Leaning Tower: rules, ages, what to expect",
-          "status": "planned",
-          "next_step_link_target": "pisa-afternoon-tour-from-florence",
-          "notes": "Objection removal: minimum age, accessibility, what to wear."
-        }
-      ]
-    },
-    {
       "cluster_parent": "lake-como-and-lugano-from-milan",
       "title": "Lake Como & Lugano Day Trips from Milan",
       "destination": "Lake Como (Lombardy) and Lugano (Canton Ticino, Switzerland)",
