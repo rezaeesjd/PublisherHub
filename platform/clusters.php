@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/functions.php';
+require_once __DIR__ . '/content-loader.php';
 
 wps_require_auth();
 
@@ -69,9 +70,11 @@ wps_render_header('Cluster Registry');
                 $clusterStatus = wps_cluster_status_label($cluster);
                 $clusterName = (string) ($cluster['title'] ?? $cluster['cluster_parent'] ?? 'Untitled Cluster');
                 $parentSlug = (string) ($cluster['cluster_parent'] ?? '');
+                $primarySlug = (string) ($cluster['primary_conversion_asset'] ?? $parentSlug);
                 $nextGeneration = (string) ($cluster['next_recommended_generation'] ?? 'Review missing required assets');
+                $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
                 ?>
-                <article class="post-card">
+                <article class="post-card" id="cluster-<?php echo wps_h($parentSlug); ?>">
                     <p class="post-label">Cluster</p>
                     <h3><?php echo wps_h($clusterName); ?></h3>
 
@@ -81,9 +84,52 @@ wps_render_header('Cluster Registry');
                         <span><?php echo (int) $score['published']; ?> published</span>
                     </div>
 
-                    <p><strong>Primary conversion asset:</strong><br><?php echo wps_h((string) ($cluster['primary_conversion_asset'] ?? $parentSlug)); ?></p>
+                    <p><strong>Primary conversion asset:</strong><br>
+                        <a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($primarySlug); ?></a>
+                    </p>
 
                     <p><strong>Next recommended generation:</strong><br><?php echo wps_h($nextGeneration); ?></p>
+
+                    <?php if (!empty($clusterAssets)): ?>
+                        <p><strong>Cluster assets and relations:</strong></p>
+                        <ul class="cluster-asset-list">
+                            <?php foreach ($clusterAssets as $asset): ?>
+                                <?php
+                                $assetSlug = (string) ($asset['package_slug'] ?? '');
+                                $assetTitle = (string) ($asset['title'] ?? $assetSlug);
+                                $assetStatus = (string) ($asset['status'] ?? 'not_started');
+                                $assetType = (string) ($asset['cluster_type'] ?? '');
+                                $assetRole = (string) ($asset['cluster_role'] ?? '');
+                                $assetTarget = (string) ($asset['next_step_link_target'] ?? '');
+                                $assetIsPrimary = $assetSlug !== '' && $assetSlug === $primarySlug;
+                                $isExistingPackage = $assetSlug !== ''
+                                    && preg_match('/^[a-z0-9][a-z0-9-]*$/', $assetSlug)
+                                    && is_dir(WPS_LOCAL_CONTENT_DIR . '/' . $assetSlug);
+                                ?>
+                                <li>
+                                    <span class="qa-pill qa-pill-muted"><?php echo wps_h($assetType ?: 'asset'); ?></span>
+                                    <strong>
+                                        <?php if ($isExistingPackage): ?>
+                                            <a href="edit-post.php?slug=<?php echo rawurlencode($assetSlug); ?>"><?php echo wps_h($assetTitle); ?></a>
+                                        <?php else: ?>
+                                            <?php echo wps_h($assetTitle); ?>
+                                        <?php endif; ?>
+                                    </strong>
+                                    <?php if ($assetIsPrimary): ?> <em>· primary conversion</em><?php endif; ?>
+                                    <br>
+                                    <small class="muted">
+                                        role=<?php echo wps_h($assetRole); ?> · status=<?php echo wps_h($assetStatus); ?>
+                                        <?php if ($assetTarget !== ''): ?>
+                                            · links to <?php echo wps_h($assetTarget); ?>
+                                        <?php endif; ?>
+                                        <?php if (!$isExistingPackage && $assetSlug !== ''): ?>
+                                            · <em>not yet generated</em>
+                                        <?php endif; ?>
+                                    </small>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
 
                     <?php if (!empty($score['missing_required'])): ?>
                         <p><strong>Missing required:</strong></p>
@@ -95,7 +141,7 @@ wps_render_header('Cluster Registry');
                     <?php endif; ?>
 
                     <div class="card-actions">
-                        <span class="muted"><?php echo wps_h($parentSlug); ?></span>
+                        <span class="muted">parent: <?php echo wps_h($parentSlug); ?></span>
                     </div>
                 </article>
             <?php endforeach; ?>

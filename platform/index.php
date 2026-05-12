@@ -8,6 +8,7 @@ wps_require_auth();
 $settings = wps_load_settings();
 $connection = wps_test_github_connection($settings);
 $postsResult = wps_get_posts($settings);
+$clusterIndex = wps_index_tour_clusters();
 $workflowCounts = ['Published' => 0, 'Needs Review' => 0, 'Revision Required' => 0, 'Blocked' => 0, 'Draft' => 0];
 $workflowRows = [];
 if ($postsResult['ok']) {
@@ -28,15 +29,32 @@ if ($postsResult['ok']) {
             $nextAction = 'Resolve clarifications before continuing';
         }
 
+        $slug = (string) ($post['slug'] ?? '');
+        $clusterMembership = $clusterIndex['by_package_slug'][$slug] ?? null;
+        $clusterTitle = '';
+        $clusterParent = '';
+        $clusterRole = '';
+        $clusterIsParent = false;
+        if (is_array($clusterMembership)) {
+            $clusterTitle = (string) ($clusterMembership['cluster']['title'] ?? '');
+            $clusterParent = (string) ($clusterMembership['cluster']['cluster_parent'] ?? '');
+            $clusterRole = (string) ($clusterMembership['asset']['cluster_role'] ?? '');
+            $clusterIsParent = ((string) ($clusterMembership['cluster']['primary_conversion_asset'] ?? '')) === $slug;
+        }
+
         $workflowRows[] = [
             'title' => (string) ($post['title'] ?? 'Untitled'),
-            'slug' => (string) ($post['slug'] ?? ''),
+            'slug' => $slug,
             'publish_status' => (string) ($post['publish_status'] ?? 'draft'),
             'qa_status' => (string) ($post['qa_status'] ?? 'pending'),
             'status_label' => $status['label'],
             'status_tone' => (string) ($status['tone'] ?? 'muted'),
             'status_reason' => wps_status_reason($post),
             'next_action' => $nextAction,
+            'cluster_title' => $clusterTitle,
+            'cluster_parent' => $clusterParent,
+            'cluster_role' => $clusterRole,
+            'cluster_is_parent' => $clusterIsParent,
         ];
     }
 }
@@ -98,6 +116,7 @@ wps_render_header($settings['archive_title']);
                 <thead>
                     <tr>
                         <th>Package</th>
+                        <th>Cluster</th>
                         <th>Status</th>
                         <th>Why this status</th>
                         <th>Next action</th>
@@ -109,6 +128,14 @@ wps_render_header($settings['archive_title']);
                             <td>
                                 <strong><a href="edit-post.php?slug=<?php echo rawurlencode($row['slug']); ?>"><?php echo wps_h($row['title']); ?></a></strong><br>
                                 <small class="muted"><?php echo wps_h($row['slug']); ?></small>
+                            </td>
+                            <td>
+                                <?php if ($row['cluster_title'] !== ''): ?>
+                                    <a href="clusters.php#cluster-<?php echo wps_h(rawurlencode($row['cluster_parent'])); ?>"><?php echo wps_h($row['cluster_title']); ?></a><br>
+                                    <small class="muted"><?php echo wps_h($row['cluster_role']); ?><?php echo $row['cluster_is_parent'] ? ' · cluster parent' : ''; ?></small>
+                                <?php else: ?>
+                                    <small class="muted">Not yet linked to a cluster</small>
+                                <?php endif; ?>
                             </td>
                             <td><span class="qa-pill qa-pill-<?php echo wps_h($row['status_tone']); ?>"><?php echo wps_h($row['status_label']); ?></span></td>
                             <td>

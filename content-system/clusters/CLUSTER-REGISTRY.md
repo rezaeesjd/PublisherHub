@@ -138,4 +138,71 @@ Copy this section for each new tour cluster.
 
 # Active clusters
 
-_No clusters registered yet. Add the first cluster when the first content package is generated._
+> **Canonical source:** `content-system/clusters/cluster-registry.json`. The list below mirrors that JSON for human readers. If they disagree, the JSON wins — regenerate this section from it.
+
+_Last regenerated: 2026-05-12 from `cluster-registry.json` (3 clusters, 14 declared assets, 5 generated tour packages)._
+
+---
+
+# Cluster: Cinque Terre Day Trips from Milan
+
+- Cluster parent slug: `cinque-terre-from-milan`
+- Primary conversion asset: `cinque-terre-full-day-tour-from-milan`
+- Website booking URL: `{{WebsiteLink}}`
+- Viator URL: https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82
+- TripAdvisor URL: https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html
+- Last updated: 2026-05-12
+- Next recommended generation: MOFU comparison-post — Cinque Terre guided tour vs DIY by train from Milan
+
+## Asset inventory
+
+| Required | Funnel stage | Cluster role | Target angle/title | Package slug | Status | Next step link target |
+| --- | --- | --- | --- | --- | --- | --- |
+| Yes | BOFU | `main-booking-post` | Cinque Terre Full-Day Tour from Milan | `cinque-terre-full-day-tour-from-milan` | ready_for_review | viator |
+| Yes | MOFU | `comparison-post` | Cinque Terre guided tour vs DIY by train from Milan | `cinque-terre-full-day-tour-from-milan-vs-diy` | planned | `cinque-terre-full-day-tour-from-milan` |
+| Yes | TOFU | `destination-guide` | Best day trips from Milan (overview) | `best-day-trips-from-milan` | planned | `cinque-terre-full-day-tour-from-milan` |
+| Yes | FAQ | `faq-support-post` | Cinque Terre from Milan: practical FAQs | `cinque-terre-from-milan-faq` | planned | `cinque-terre-full-day-tour-from-milan` |
+
+---
+
+# Cluster: Lake Como & Lugano Day Trips from Milan
+
+- Cluster parent slug: `lake-como-and-lugano-from-milan`
+- Primary conversion asset: `all-in-one-lake-como-bellagio-and-lugano-from-milan`
+- Website booking URL: `{{WebsiteLink}}`
+- Viator URL: https://www.viator.com/tours/Milan/All-in-one-Lake-Como-Bellagio-and-Lugano-from-Milan-Scenic-Cruise/d512-187808P57
+- TripAdvisor URL: https://www.tripadvisor.com/AttractionProductReview-g187849-d33353135-All_in_One_Lake_Como_Bellagio_Lugano_from_Milan_Scenic_Cruise-Milan_Lombardy.html
+- Last updated: 2026-05-12
+- Next recommended generation: Resolve clarifications on the two sister BOFU posts (private + lake-only) so all three lake variants can publish together
+
+## Asset inventory
+
+| Required | Funnel stage | Cluster role | Target angle/title | Package slug | Status | Next step link target |
+| --- | --- | --- | --- | --- | --- | --- |
+| Yes | BOFU | `main-booking-post` | All-in-One Lake Como, Bellagio & Lugano from Milan + Scenic Cruise | `all-in-one-lake-como-bellagio-and-lugano-from-milan` | ready_for_review | viator |
+| No | MOFU | `comparison-post` | Lake Como and Lugano Full Day Trip from Milan (lake-only sister) | `lake-como-and-lugano-full-day-trip-from-milan` | needs_clarification | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
+| No | MOFU | `comparison-post` | Private Full Day Trip to Lake Como from Milan | `private-full-day-trip-to-lake-como-from-milan` | needs_clarification | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
+| Yes | MOFU | `comparison-post` | Lake Como private vs group day tour from Milan | `lake-como-private-vs-group-from-milan` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
+| Yes | TOFU | `destination-guide` | Lake Como travel guide for first-time visitors | `lake-como-travel-guide` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
+| Yes | FAQ | `faq-support-post` | Lake Como from Milan: pickup, passports, timing FAQ | `lake-como-from-milan-faq` | planned | `all-in-one-lake-como-bellagio-and-lugano-from-milan` |
+
+---
+
+# Cluster: Milan Cooking Classes
+
+- Cluster parent slug: `milan-cooking-classes`
+- Primary conversion asset: `pizza-and-gelato-cooking-class-in-milan`
+- Website booking URL: `{{WebsiteLink}}`
+- Viator URL: https://www.viator.com/tours/Milan/Pizza-and-Gelato-Cooking-Class-in-Milan-Small-Group-Only/d512-187808P65
+- TripAdvisor URL: https://www.tripadvisor.com/AttractionProductReview-g187849-d28041866-Pizza_and_Gelato_Cooking_Class_in_Milan_Small_Group_Only-Milan_Lombardy.html
+- Last updated: 2026-05-12
+- Next recommended generation: MOFU comparison-post — Cooking class vs food tour in Milan
+
+## Asset inventory
+
+| Required | Funnel stage | Cluster role | Target angle/title | Package slug | Status | Next step link target |
+| --- | --- | --- | --- | --- | --- | --- |
+| Yes | BOFU | `main-booking-post` | Pizza and Gelato Cooking Class in Milan - Small Group Only | `pizza-and-gelato-cooking-class-in-milan` | ready_for_review | viator |
+| Yes | MOFU | `comparison-post` | Milan: cooking class vs food tour — which to choose | `milan-cooking-class-vs-food-tour` | planned | `pizza-and-gelato-cooking-class-in-milan` |
+| Yes | TOFU | `destination-guide` | Best things to do in Milan in the evening | `best-things-to-do-in-milan-evening` | planned | `pizza-and-gelato-cooking-class-in-milan` |
+| Yes | FAQ | `faq-support-post` | What to expect from a small-group cooking class in Milan | `milan-cooking-class-faq` | planned | `pizza-and-gelato-cooking-class-in-milan` |

@@ -289,6 +289,45 @@ function wps_cluster_status_label(array $cluster): string
 }
 
 /**
+ * Build a lookup of which cluster each tour package belongs to. Returns:
+ *   ['by_package_slug' => [slug => ['cluster' => $cluster, 'asset' => $asset]],
+ *    'by_parent'       => [parent_slug => $cluster]]
+ *
+ * The cluster registry is the source of truth — this just indexes it for
+ * fast O(1) lookup from the dashboard rows. Tour-side `cluster_parent` in
+ * meta.json is treated as a hint; the registry's package_slug membership wins.
+ */
+function wps_index_tour_clusters(): array
+{
+    $result = wps_load_cluster_registry();
+    $clusters = $result['registry']['clusters'] ?? [];
+    $byPackage = [];
+    $byParent = [];
+
+    foreach ($clusters as $cluster) {
+        if (!is_array($cluster)) {
+            continue;
+        }
+        $parent = (string) ($cluster['cluster_parent'] ?? '');
+        if ($parent !== '') {
+            $byParent[$parent] = $cluster;
+        }
+        foreach (($cluster['assets'] ?? []) as $asset) {
+            if (!is_array($asset)) {
+                continue;
+            }
+            $slug = trim((string) ($asset['package_slug'] ?? ''));
+            if ($slug === '') {
+                continue;
+            }
+            $byPackage[$slug] = ['cluster' => $cluster, 'asset' => $asset];
+        }
+    }
+
+    return ['by_package_slug' => $byPackage, 'by_parent' => $byParent];
+}
+
+/**
  * Write file contents atomically with an exclusive lock. Writes to a
  * temp sibling first, fsyncs, then renames into place. Prevents
  * concurrent writers from corrupting the JSON store.
