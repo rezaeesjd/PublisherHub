@@ -219,7 +219,8 @@
         "needs_fix",
         "ready_for_sync",
         "needs_live_verification",
-        "published"
+        "published",
+        "archived"
       ]
     },
     "human_review_required": { "type": "boolean" },
