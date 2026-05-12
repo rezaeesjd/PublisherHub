@@ -19,9 +19,9 @@
   "duration_text": "13 hours 30 minutes",
   "start_time": "07:00",
   "meeting_point": "Piazza IV Novembre, 20124 Milano MI, Italy",
-  "qa_status": "passing",
-  "publish_status": "archived",
-  "public_copy_state": "not_started",
+  "qa_status": "warning",
+  "publish_status": "ready_for_review",
+  "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
   "clarify_phase_completed": true,
@@ -74,8 +74,5 @@
   "cta_primary": "Book on Viator",
   "human_review_required": true,
   "canonical_title_status": "unconfirmed",
-  "can_generate_public_copy": true,
-  "notes": [
-    "Single generated blog intentionally disabled; package retained as tour-content source for dashboard and future cluster content generation."
-  ]
+  "can_generate_public_copy": true
 }
