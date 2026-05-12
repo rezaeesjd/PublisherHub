@@ -104,3 +104,56 @@ Priority definitions:
 ## Resolved items
 
 _No resolved items yet._
+
+### SYSQA-20260511-002: Missing per-run process QA artifact linkage
+- Date added: 2026-05-11
+- Added after run/package: `cinque-terre-full-day-tour-from-milan`
+- Priority: P1
+- Owner agent: Cross-functional
+- Area: qa-rule
+- Status: open
+- Problem:
+  A package can ship with content QA (`qa-report.md`) but without an explicit system/process QA report connected to that run.
+- Why it matters:
+  Process defects can repeat across tours, reducing automation quality and governance traceability.
+- Recommended fix:
+  Require one `WPS:PROCESS_QA` report per generation run and require package-level linkage to that report.
+- Files likely affected:
+  - `content-system/WORKFLOW.md`
+  - `content-system/COMMANDS.md`
+  - `content-system/QA-CHECKLIST.md`
+- Implementation steps:
+  1. Add process QA artifact requirement to generation completion gate.
+  2. Define report naming/location convention.
+  3. Add QA checklist item validating report existence and linkability.
+- Acceptance criteria:
+  - Every new package has a corresponding process QA report.
+  - QA checklist fails when report is missing.
+- Risk if ignored:
+  System-level process regressions remain invisible while content appears compliant.
+- Implementation note:
+
+### SYSQA-20260511-003: Enforce generation/publish/live status separation in process reports
+- Date added: 2026-05-11
+- Added after run/package: `cinque-terre-full-day-tour-from-milan`
+- Priority: P2
+- Owner agent: Cross-functional
+- Area: docs
+- Status: open
+- Problem:
+  Stakeholders can misread package completion as publication because process QA summaries are not consistently standardized.
+- Why it matters:
+  Incorrect status communication can trigger premature business actions.
+- Recommended fix:
+  Add a required status triad block (generation, publish, live verification) in process QA templates/checklists.
+- Files likely affected:
+  - `content-system/QA-CHECKLIST.md`
+  - `content-system/WORKFLOW.md`
+- Implementation steps:
+  1. Update checklist with triad-status requirement.
+  2. Add template snippet for process reports.
+- Acceptance criteria:
+  - New process QA reports contain the triad status block.
+- Risk if ignored:
+  Ongoing confusion between draft readiness and published state.
+- Implementation note:

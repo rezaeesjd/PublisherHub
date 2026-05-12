@@ -119,7 +119,9 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 
 ## Content vs System Boundary
 
-- [ ] **[manual]** if this PR was created by `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE` / `WPS:FIX_PACKAGE` / `WPS:PUBLISH_BLOG`, the diff touches only files under `content-system/tours/<slug>/`. System rule changes belong in a separate `WPS:IMPROVE_SYSTEM_WORKFLOW` PR.
+- [ ] **[manual]** if this PR was created by `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE` / `WPS:FIX_PACKAGE` / `WPS:PUBLISH_BLOG`, the diff touches only files under `content-system/tours/<slug>/`, **except** the automatic process-QA artifacts allowed for generation runs:
+  - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+  - append-only updates to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
 - [ ] **[manual]** if this PR was created by `WPS:IMPROVE_SYSTEM_WORKFLOW` / `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`, the diff does **not** touch files under `content-system/tours/<slug>/`.
 
 ## Publish Path Status
@@ -138,6 +140,14 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] generation readiness separated from publish readiness
 - [ ] missing user input separated from generation mistakes
 - [ ] issues classified by type
+
+## Automatic Process-QA Artifacts (Generation Runs)
+
+- [ ] **[machine]** for `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE`, a process report exists at `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+- [ ] **[manual]** `content-system/system-qa/SYSTEM-QA-BACKLOG.md` includes an append for the run (action item(s) or explicit `none found`)
+- [ ] **[manual]** linkage target is present by state:
+  - `public_copy_state` = `final|provisional` → report path exists in `automation-notes.md`
+  - `public_copy_state` = `holding_notice` → `automation-notes.md` remains exact deferred stub and report path exists in `qa-report.md`
 
 ## Issue Categories (PROCESS_QA)
 
