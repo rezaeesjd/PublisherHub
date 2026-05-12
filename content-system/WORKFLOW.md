@@ -24,7 +24,8 @@
    - run a `WPS:PROCESS_QA`-equivalent pass automatically (no extra user command)
    - write `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
    - append system-level findings (or `none found`) to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
-   - link the process report path in package `automation-notes.md`
+   - link the process report path in package `automation-notes.md` when `public_copy_state` is `final` or `provisional`
+   - if `public_copy_state` is `holding_notice`, keep `automation-notes.md` as the required deferred stub and place the process-report reference in `qa-report.md` instead
 10. Open or update the PR. PR description must mirror both `qa-report.md` and process-QA findings.
 11. Human review resolves any open clarifications and any QA findings.
 12. Publish workflow (`WPS:PUBLISH_BLOG`) validates package.

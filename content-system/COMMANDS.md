@@ -19,8 +19,11 @@
 
 - **Purpose:** Generate a tour content package from a structured intake JSON validated against `structures/intake-form.schema.json`.
 - **Should do:** Validate intake, write source-facts and meta.json directly from the structured fields, then run the same clarify gate as `WPS:GENERATE_CONTENT`. If validation passes and no blocking ambiguity remains, generate full final copy without a clarification round.
+- **Should do (automatic system QA):** Run the same internal end-of-run `WPS:PROCESS_QA` pass used by `WPS:GENERATE_CONTENT` and write the per-run process report under `content-system/system-qa/reports/`.
 - **Must not do:** Generate copy from a partial intake without running the clarify gate.
-- **Allowed file changes:** package folder files.
+- **Allowed file changes:** package folder files plus automatic process-QA artifacts:
+  - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+  - append-only updates to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
 - **Final expected status:** Same as `WPS:GENERATE_CONTENT`.
 
 ## WPS:CLARIFY

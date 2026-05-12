@@ -1245,7 +1245,9 @@ Minimum required artifacts:
 2. One append to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`:
    - either concrete action item(s), or
    - explicit `none found` note for that run
-3. One reference line in package `automation-notes.md` pointing to the process QA report path
+3. Process-report linkage rule:
+   - if `public_copy_state` is `final` or `provisional`: add one reference line in package `automation-notes.md` pointing to the process QA report path
+   - if `public_copy_state` is `holding_notice`: keep `automation-notes.md` as the exact deferred stub and place the process-QA report reference in `qa-report.md` instead
 
 Generation is incomplete if these artifacts are missing.
 

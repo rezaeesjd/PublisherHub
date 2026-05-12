@@ -141,6 +141,14 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] missing user input separated from generation mistakes
 - [ ] issues classified by type
 
+## Automatic Process-QA Artifacts (Generation Runs)
+
+- [ ] **[machine]** for `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE`, a process report exists at `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+- [ ] **[manual]** `content-system/system-qa/SYSTEM-QA-BACKLOG.md` includes an append for the run (action item(s) or explicit `none found`)
+- [ ] **[manual]** linkage target is present by state:
+  - `public_copy_state` = `final|provisional` → report path exists in `automation-notes.md`
+  - `public_copy_state` = `holding_notice` → `automation-notes.md` remains exact deferred stub and report path exists in `qa-report.md`
+
 ## Issue Categories (PROCESS_QA)
 
 - [ ] System instruction gap
