@@ -11,8 +11,110 @@ const WPS_CLUSTER_REGISTRY_FILE = __DIR__ . '/../content-system/clusters/cluster
 function wps_ensure_data_dir(): void
 {
     if (!is_dir(WPS_DATA_DIR)) {
-        mkdir(WPS_DATA_DIR, 0755, true);
+        mkdir(WPS_DATA_DIR, 0700, true);
     }
+    wps_ensure_data_dir_guard();
+}
+
+/**
+ * Drop a deny-all .htaccess + index stub inside platform/data so even a
+ * misconfigured docroot will not expose auth.json / github-imports.json /
+ * .secret-key. Safe to call on every request — writes are skipped when the
+ * files already exist.
+ */
+function wps_ensure_data_dir_guard(): void
+{
+    $htaccess = WPS_DATA_DIR . '/.htaccess';
+    if (!is_file($htaccess)) {
+        @file_put_contents(
+            $htaccess,
+            "# WebPublisherSystem: deny all access to this folder.\n"
+            . "Require all denied\n"
+            . "<IfModule !mod_authz_core.c>\n"
+            . "    Order allow,deny\n"
+            . "    Deny from all\n"
+            . "</IfModule>\n"
+        );
+        @chmod($htaccess, 0644);
+    }
+
+    $indexStub = WPS_DATA_DIR . '/index.html';
+    if (!is_file($indexStub)) {
+        @file_put_contents($indexStub, '');
+        @chmod($indexStub, 0644);
+    }
+
+    // Best-effort tighten permissions on sensitive files if they exist.
+    foreach (['auth.json', 'github-imports.json', '.secret-key', 'auth-attempts.json'] as $sensitive) {
+        $path = WPS_DATA_DIR . '/' . $sensitive;
+        if (is_file($path)) {
+            @chmod($path, 0600);
+        }
+    }
+}
+
+/**
+ * Returns true when the current request is over HTTPS. Honors common
+ * reverse-proxy headers in addition to $_SERVER['HTTPS'].
+ */
+function wps_request_is_https(): bool
+{
+    if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+        return true;
+    }
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+        return true;
+    }
+    if (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Force-redirect plain HTTP requests to HTTPS when the operator has opted
+ * in via settings. When the request is already HTTPS, set HSTS so future
+ * loads come back over TLS.
+ */
+function wps_enforce_https(): void
+{
+    $settings = wps_load_settings();
+    if (empty($settings['force_https'])) {
+        return;
+    }
+
+    if (!wps_request_is_https()) {
+        $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+        $uri  = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        if ($host !== '' && PHP_SAPI !== 'cli') {
+            header('Location: https://' . $host . $uri, true, 301);
+            exit;
+        }
+        return;
+    }
+
+    if (PHP_SAPI !== 'cli' && !headers_sent()) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
+}
+
+/**
+ * Resolve the email allowed to sign in as admin. Reads from settings;
+ * falls back to the legacy install email so existing deployments do not
+ * lose access during the migration.
+ */
+function wps_admin_email(): string
+{
+    $settings = wps_load_settings();
+    $email = strtolower(trim((string) ($settings['admin_email'] ?? '')));
+    if ($email !== '') {
+        return $email;
+    }
+    if (defined('WPS_LEGACY_ADMIN_EMAIL') && WPS_LEGACY_ADMIN_EMAIL !== '') {
+        return strtolower(trim((string) WPS_LEGACY_ADMIN_EMAIL));
+    }
+    // No admin email configured — first-run setup will write one.
+    return '';
 }
 
 function wps_default_settings(): array
@@ -29,6 +131,10 @@ function wps_default_settings(): array
         'website_link' => '{{WebsiteLink}}',
         'tripadvisor_link' => '{{TripAdvisorLink}}',
         'viator_link' => '{{ViatorLink}}',
+        'admin_email' => '',
+        'force_https' => false,
+        'archive_page_size' => 20,
+        'organization_logo_url' => '',
         'updated_at' => gmdate('c'),
     ];
 }

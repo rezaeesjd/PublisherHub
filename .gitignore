@@ -1,0 +1,11 @@
+# Per-install secrets and runtime state. These must never be committed —
+# .secret-key in particular is the AES-256-GCM key for everything stored
+# encrypted (currently GitHub PATs).
+platform/data/.secret-key
+platform/data/auth-attempts.json
+platform/data/github-imports.json
+
+# Generated caches, rebuilt on demand.
+platform/data/archive-index.json
+content-system/tours/**/*.cache.html
+content-system/tours/**/*.cache.stamp

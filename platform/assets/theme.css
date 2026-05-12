@@ -1,0 +1,82 @@
+/* Public-blog theme. Imports the admin stylesheet so cards/typography
+   match, then layers public-only overrides (FAQ accordion, pagination,
+   article body type scale). */
+
+@import url("./style.css");
+
+.wrap { display: block; }
+.wrap > header h1 { margin-top: 0; }
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin: 0 0 6px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+article.card { font-size: 1.05rem; }
+article.card h1 { margin-top: 0; }
+article.card h2 { margin-top: 1.5em; }
+article.card a { text-decoration: underline; }
+
+.cta-button-booking {
+    display: inline-block;
+    background: var(--brand);
+    color: #fff !important;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-decoration: none !important;
+    margin: 8px 0;
+}
+.cta-button-booking:hover { background: var(--brand-dark); }
+
+/* FAQ accordion */
+.faq-block h2 { margin-top: 0; }
+.faq-item {
+    border-top: 1px solid var(--border);
+    padding: 12px 0;
+}
+.faq-item:first-of-type { border-top: none; }
+.faq-item > summary {
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    padding: 6px 24px 6px 0;
+    position: relative;
+    color: var(--text);
+}
+.faq-item > summary::-webkit-details-marker { display: none; }
+.faq-item > summary::after {
+    content: "+";
+    position: absolute;
+    right: 4px;
+    top: 6px;
+    font-weight: 400;
+    font-size: 1.25rem;
+    color: var(--muted);
+    transition: transform var(--duration) var(--ease);
+}
+.faq-item[open] > summary::after { content: "−"; }
+.faq-item .faq-answer { color: var(--text); padding: 4px 0 8px; }
+.faq-item .faq-answer p:first-child { margin-top: 4px; }
+
+/* Pagination */
+.archive-pagination a {
+    text-decoration: none;
+    font-weight: 600;
+}
+.archive-pagination a:hover { text-decoration: underline; }
+
+/* Reduce-motion users get instant transitions */
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+}

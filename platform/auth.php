@@ -10,7 +10,9 @@
 require_once __DIR__ . '/functions.php';
 
 const WPS_AUTH_FILE = WPS_DATA_DIR . '/auth.json';
-const WPS_SINGLE_ADMIN_EMAIL = 'bardiaa.rz@gmail.com';
+// Legacy fallback used only when settings.admin_email is empty — preserves
+// access on installs that predate the per-install admin-email setting.
+const WPS_LEGACY_ADMIN_EMAIL = 'bardiaa.rz@gmail.com';
 const WPS_AUTH_FAILED_LOGIN_LIMIT = 8;
 const WPS_AUTH_FAILED_LOGIN_WINDOW_SECONDS = 600;
 
@@ -24,7 +26,7 @@ function wps_session_start(): void
         'lifetime' => 0,
         'path' => '/',
         'domain' => '',
-        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'secure' => wps_request_is_https(),
         'httponly' => true,
         'samesite' => 'Lax',
     ];
@@ -84,7 +86,8 @@ function wps_login(string $email): void
 function wps_is_allowed_admin_email(string $email): bool
 {
     $normalized = strtolower(trim($email));
-    return $normalized !== '' && hash_equals(WPS_SINGLE_ADMIN_EMAIL, $normalized);
+    $allowed = wps_admin_email();
+    return $normalized !== '' && $allowed !== '' && hash_equals($allowed, $normalized);
 }
 
 function wps_logout(): void
@@ -122,6 +125,8 @@ function wps_setup_url(): string
 
 function wps_require_auth(): void
 {
+    wps_enforce_https();
+
     if (!wps_auth_is_configured()) {
         header('Location: ' . wps_setup_url());
         exit;

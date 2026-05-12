@@ -3,12 +3,28 @@ const WPS_ASSET_BASE   = '.';
 const WPS_SETTINGS_URL = 'settings.php';
 
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/secrets.php';
+require_once __DIR__ . '/cache.php';
 require_once __DIR__ . '/github-import-engine.php';
 
 wps_require_auth();
 
 $localRoot   = realpath(__DIR__ . '/..');
 $connections = ghimport_load_connections();
+
+// Migrate any plaintext tokens to encrypted form on first read.
+$tokenMigrationNeeded = false;
+foreach ($connections as $i => $c) {
+    $stored = (string) ($c['token'] ?? '');
+    if ($stored !== '' && !wps_secret_is_encrypted($stored)) {
+        $connections[$i]['token'] = wps_secret_encrypt($stored);
+        $tokenMigrationNeeded = true;
+    }
+}
+if ($tokenMigrationNeeded) {
+    ghimport_save_connections($connections);
+    wps_secret_harden_path(GHIMPORT_CONNECTIONS_FILE);
+}
 
 $error       = '';
 $success     = '';
@@ -49,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'branch'           => $branchOvr !== '' ? $branchOvr : $parsed['branch'],
                 'content_path'     => $contentPath !== '' ? $contentPath : $parsed['content_path'],
                 'local_path'       => $localPath,
-                'token'            => $token,
+                'token'            => wps_secret_encrypt($token),
                 'enabled'          => true,
                 'added_at'         => gmdate('c'),
                 'last_synced_at'   => null,
@@ -127,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 ghimport_save_connections($connections);
+                wps_archive_index_invalidate();
 
                 $written = $summary['created'] + $summary['updated'];
                 if ($summary['status'] === 'ok') {
@@ -170,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             ghimport_save_connections($connections);
+            wps_archive_index_invalidate();
 
             if ($ranCount === 0) {
                 $success = 'No enabled connections to sync.';
@@ -473,7 +491,7 @@ if (!empty($connections)): ?>
         <label class="full">
             Access token <span class="muted" style="font-weight:400;">(optional)</span>
             <input type="password" name="token" placeholder="ghp_…" autocomplete="new-password" spellcheck="false">
-            <small>Required for private repos. Also increases API rate limits for public repos. Stored in <code>platform/data/github-imports.json</code> — keep that file protected.</small>
+            <small>Required for private repos. Also increases API rate limits for public repos. Encrypted with AES-256-GCM at rest in <code>platform/data/github-imports.json</code>; the encryption key lives in <code>platform/data/.secret-key</code> (excluded from sync, never committed).</small>
         </label>
 
         <div class="full actions">

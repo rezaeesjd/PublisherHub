@@ -210,6 +210,14 @@ main.container { padding-top: 32px; padding-bottom: 56px; }
 .compact-grid { gap: 14px; }
 .full { grid-column: 1 / -1; }
 
+label.checkbox-row {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    column-gap: 10px;
+}
+label.checkbox-row input[type="checkbox"] { grid-row: span 2; }
+label.checkbox-row small { grid-column: 2; color: var(--muted); }
+
 label {
     display: grid;
     gap: 7px;

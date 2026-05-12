@@ -197,7 +197,116 @@ function wps_qa_run_all(string $toursRoot): array
         $reports[] = wps_qa_run_for_tour($path);
     }
 
+    // Cross-package checks. These attach findings to individual reports
+    // so the existing per-tour UI doesn't need a separate code path.
+    wps_qa_apply_cross_package_findings($reports);
+
     return $reports;
+}
+
+/**
+ * Stale freshness threshold for published content, in days. Travel content
+ * decays fast (prices, hours, seasonal info), so anything older than this
+ * is flagged for refresh on the dashboard and downgraded to qa_status=stale.
+ */
+const WPS_QA_FRESHNESS_THRESHOLD_DAYS = 90;
+
+function wps_qa_apply_cross_package_findings(array &$reports): void
+{
+    if (empty($reports)) {
+        return;
+    }
+
+    // -- S7: keyword cannibalization across the same cluster ----------------
+    // Two published/ready posts that share the same primary_keyword and live
+    // in the same cluster (variant_of chain) will compete in SERPs.
+    $byKeywordCluster = [];
+    foreach ($reports as $i => $report) {
+        $meta = $report['meta'] ?? [];
+        if (!is_array($meta)) {
+            continue;
+        }
+        $keyword = strtolower(trim((string) ($meta['primary_keyword'] ?? '')));
+        $cluster = strtolower(trim((string) ($meta['variant_of'] ?? $meta['slug'] ?? $report['tour'] ?? '')));
+        $status  = (string) ($meta['publish_status'] ?? 'draft');
+        $isLive  = in_array($status, ['ready_for_review', 'ready_for_sync', 'needs_live_verification', 'published'], true);
+
+        if ($keyword === '' || !$isLive) {
+            continue;
+        }
+        $key = $cluster . '||' . $keyword;
+        $byKeywordCluster[$key][] = $i;
+    }
+
+    foreach ($byKeywordCluster as $key => $indexes) {
+        if (count($indexes) < 2) {
+            continue;
+        }
+        [, $keyword] = explode('||', $key, 2);
+        $siblings = [];
+        foreach ($indexes as $i) {
+            $siblings[] = (string) ($reports[$i]['tour'] ?? '');
+        }
+        $sibList = implode(', ', array_values(array_filter($siblings)));
+        foreach ($indexes as $i) {
+            $self = (string) ($reports[$i]['tour'] ?? '');
+            $others = implode(', ', array_values(array_filter($siblings, fn($s) => $s !== $self)));
+            $reports[$i]['findings'][] = wps_qa_finding(
+                'warn',
+                'keyword-cannibalization',
+                "primary_keyword '{$keyword}' also targeted by sibling(s) in cluster: {$others}. These posts will compete in SERPs — diversify modifiers or merge."
+            );
+            if ($reports[$i]['overall'] === 'pass') {
+                $reports[$i]['overall'] = 'warning';
+            }
+        }
+        unset($sibList);
+    }
+
+    // -- S11: freshness pass for published packages -------------------------
+    $today = new DateTimeImmutable('today', new DateTimeZone('UTC'));
+    foreach ($reports as $i => $report) {
+        $meta = $report['meta'] ?? [];
+        if (!is_array($meta)) {
+            continue;
+        }
+        if ((string) ($meta['publish_status'] ?? '') !== 'published') {
+            continue;
+        }
+        // Freshness anchors on last_content_refresh_at (set when copy is
+        // actually rewritten) and falls back to first_published_at, so a
+        // passive QA stamp does not reset the staleness clock.
+        $anchor = (string) ($meta['last_content_refresh_at']
+            ?? $meta['first_published_at']
+            ?? $meta['last_qa_date']
+            ?? '');
+        if ($anchor === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $anchor)) {
+            $reports[$i]['findings'][] = wps_qa_finding(
+                'warn',
+                'freshness-unknown',
+                'Published package has no first_published_at / last_content_refresh_at; cannot evaluate freshness.'
+            );
+            if ($reports[$i]['overall'] === 'pass') {
+                $reports[$i]['overall'] = 'warning';
+            }
+            continue;
+        }
+        $lastDate = DateTimeImmutable::createFromFormat('!Y-m-d', $anchor, new DateTimeZone('UTC'));
+        if ($lastDate === false) {
+            continue;
+        }
+        $ageDays = (int) $today->diff($lastDate)->days;
+        if ($ageDays > WPS_QA_FRESHNESS_THRESHOLD_DAYS) {
+            $reports[$i]['findings'][] = wps_qa_finding(
+                'warn',
+                'content-stale',
+                "Published content is {$ageDays} days old (threshold: " . WPS_QA_FRESHNESS_THRESHOLD_DAYS . " days). Refresh prices, hours, seasonal claims and re-run QA."
+            );
+            if ($reports[$i]['overall'] === 'pass') {
+                $reports[$i]['overall'] = 'warning';
+            }
+        }
+    }
 }
 
 /**
@@ -345,13 +454,29 @@ function wps_qa_stamp_meta(string $tourDir, array $report): ?array
         'fail' => 'needs_fix',
     ];
 
-    $meta['qa_status'] = $statusMap[$report['overall']] ?? 'pending';
+    $resolvedStatus = $statusMap[$report['overall']] ?? 'pending';
+
+    // If freshness was the only thing keeping the report at 'warning',
+    // surface that as qa_status='stale' so the dashboard can show a
+    // distinct refresh CTA instead of a generic warning.
+    if ($report['overall'] === 'warning') {
+        $codes = array_column($report['findings'] ?? [], 'code');
+        if (in_array('content-stale', $codes, true)) {
+            $resolvedStatus = 'stale';
+        }
+    }
+
+    $meta['qa_status'] = $resolvedStatus;
     $meta['last_qa_date'] = gmdate('Y-m-d');
 
     file_put_contents(
         $metaPath,
         json_encode($meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . "\n"
     );
+
+    if (function_exists('wps_archive_index_invalidate')) {
+        wps_archive_index_invalidate();
+    }
 
     return $meta;
 }
