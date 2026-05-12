@@ -32,6 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!wps_auth_save($email, password_hash($password, PASSWORD_DEFAULT))) {
         $error = 'Could not write platform/data/auth.json. Make sure platform/data/ is writable.';
     } else {
+        // Persist the admin email into settings so wps_admin_email() works
+        // for this install without falling back to the legacy constant.
+        $settings = wps_load_settings();
+        $settings['admin_email'] = strtolower($email);
+        wps_save_settings($settings);
         wps_login($email);
         header('Location: settings.php');
         exit;

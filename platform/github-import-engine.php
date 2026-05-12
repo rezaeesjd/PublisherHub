@@ -36,6 +36,22 @@ if (!defined('GHIMPORT_CONNECTIONS_FILE')) {
     define('GHIMPORT_CONNECTIONS_FILE', GHIMPORT_DATA_DIR . '/github-imports.json');
 }
 
+// Decrypt-at-rest helper. When the secrets module is loaded (PublisherHub
+// context), stored tokens are AES-256-GCM ciphertexts; standalone use keeps
+// plaintext for backward compatibility.
+if (!function_exists('ghimport_token_for_use')) {
+    function ghimport_token_for_use(string $stored): string
+    {
+        if ($stored === '') {
+            return '';
+        }
+        if (function_exists('wps_secret_decrypt') && function_exists('wps_secret_is_encrypted')) {
+            return wps_secret_is_encrypted($stored) ? wps_secret_decrypt($stored) : $stored;
+        }
+        return $stored;
+    }
+}
+
 // Paths (relative to GHIMPORT_LOCAL_ROOT) that are never overwritten during sync.
 if (!defined('GHIMPORT_PROTECTED_PATHS')) {
     define('GHIMPORT_PROTECTED_PATHS', ['platform/data']);
@@ -428,7 +444,7 @@ function ghimport_test_connection(array $conn): array
     $repo   = trim($conn['repo'] ?? '');
     $branch = trim($conn['branch'] ?? 'main');
     $path   = trim($conn['content_path'] ?? '', '/');
-    $token  = $conn['token'] ?? '';
+    $token  = ghimport_token_for_use((string) ($conn['token'] ?? ''));
 
     if ($owner === '' || $repo === '') {
         return ['ok' => false, 'message' => 'Missing owner or repo.', 'items' => []];
@@ -695,7 +711,7 @@ function ghimport_sync_via_zip(array $conn, string $localRoot, array &$results):
     $branch      = $conn['branch'] ?? 'main';
     $contentPath = trim($conn['content_path'] ?? '', '/');
     $localPath   = trim($conn['local_path'] ?? '', '/');
-    $token       = $conn['token'] ?? '';
+    $token       = ghimport_token_for_use((string) ($conn['token'] ?? ''));
 
     $zipUrl = 'https://codeload.github.com/'
         . rawurlencode($owner) . '/' . rawurlencode($repo)
@@ -780,7 +796,7 @@ function ghimport_sync_via_api(array $conn, string $localRoot, array &$results, 
     $branch      = $conn['branch'] ?? 'main';
     $contentPath = trim($conn['content_path'] ?? '', '/');
     $localPath   = trim($conn['local_path'] ?? '', '/');
-    $token       = $conn['token'] ?? '';
+    $token       = ghimport_token_for_use((string) ($conn['token'] ?? ''));
 
     // On the first call, start at content_path
     if ($apiPath === '') {

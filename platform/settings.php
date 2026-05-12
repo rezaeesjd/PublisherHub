@@ -19,6 +19,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cleanArchiveSlug = wps_sanitize_archive_slug($rawArchiveSlug);
     $settings['archive_base_url'] = $cleanArchiveSlug === '' ? 'blog' : $cleanArchiveSlug;
 
+    $rawAdminEmail = strtolower(trim((string) ($_POST['admin_email'] ?? '')));
+    if ($rawAdminEmail !== '' && filter_var($rawAdminEmail, FILTER_VALIDATE_EMAIL)) {
+        $settings['admin_email'] = $rawAdminEmail;
+    }
+
+    $settings['force_https'] = !empty($_POST['force_https']);
+
+    $pageSize = (int) ($_POST['archive_page_size'] ?? $settings['archive_page_size'] ?? 20);
+    $settings['archive_page_size'] = max(5, min(100, $pageSize));
+
+    $rawLogo = trim((string) ($_POST['organization_logo_url'] ?? ''));
+    if ($rawLogo === '' || filter_var($rawLogo, FILTER_VALIDATE_URL)) {
+        $settings['organization_logo_url'] = $rawLogo;
+    }
+
     if (wps_save_settings($settings)) {
         wps_ensure_archive_alias($settings);
         $success = 'Settings saved.';
@@ -89,6 +104,29 @@ wps_render_header('Settings');
                 <a class="button-secondary" href="<?php echo wps_h(wps_archive_url()); ?>" target="_blank" rel="noopener">Open Blog Archive in New Tab</a>
             </div>
         </div>
+
+        <label class="full">
+            Admin email (used to sign in)
+            <input type="email" name="admin_email" value="<?php echo wps_h((string) ($settings['admin_email'] ?? '')); ?>" autocomplete="off">
+            <small>The single email permitted to sign in. Leave blank to keep the current value.</small>
+        </label>
+
+        <label class="full">
+            Organization logo URL (used in JSON-LD)
+            <input type="url" name="organization_logo_url" value="<?php echo wps_h((string) ($settings['organization_logo_url'] ?? '')); ?>" placeholder="https://example.com/logo.png" autocomplete="off">
+        </label>
+
+        <label>
+            Archive page size
+            <input type="number" name="archive_page_size" min="5" max="100" value="<?php echo (int) ($settings['archive_page_size'] ?? 20); ?>">
+            <small>How many posts to show per archive page.</small>
+        </label>
+
+        <label class="full checkbox-row">
+            <input type="checkbox" name="force_https" value="1" <?php echo !empty($settings['force_https']) ? 'checked' : ''; ?>>
+            Force HTTPS (301-redirect HTTP requests and emit HSTS)
+            <small>Disable on localhost or pre-TLS staging hosts.</small>
+        </label>
 
         <div class="full actions">
             <button type="submit">Save Settings</button>
