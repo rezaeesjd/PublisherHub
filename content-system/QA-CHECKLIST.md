@@ -119,7 +119,9 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 
 ## Content vs System Boundary
 
-- [ ] **[manual]** if this PR was created by `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE` / `WPS:FIX_PACKAGE` / `WPS:PUBLISH_BLOG`, the diff touches only files under `content-system/tours/<slug>/`. System rule changes belong in a separate `WPS:IMPROVE_SYSTEM_WORKFLOW` PR.
+- [ ] **[manual]** if this PR was created by `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE` / `WPS:FIX_PACKAGE` / `WPS:PUBLISH_BLOG`, the diff touches only files under `content-system/tours/<slug>/`, **except** the automatic process-QA artifacts allowed for generation runs:
+  - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+  - append-only updates to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
 - [ ] **[manual]** if this PR was created by `WPS:IMPROVE_SYSTEM_WORKFLOW` / `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`, the diff does **not** touch files under `content-system/tours/<slug>/`.
 
 ## Publish Path Status

@@ -897,6 +897,12 @@ Required behavior:
 - do not generate or rewrite package content
 - produce a structured QA/process report with findings and recommendations
 
+Automatic-generation exception:
+- During `WPS:GENERATE_CONTENT`, the agent must execute a built-in process QA pass automatically (no extra user command required) and may write/update:
+  - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+  - `content-system/system-qa/SYSTEM-QA-BACKLOG.md` (append-only update)
+  - package `automation-notes.md` to store the process report path
+
 ### `WPS:FIX_PACKAGE`
 Use this to repair one existing tour package under `content-system/tours/<tour-folder>/`.
 
@@ -928,6 +934,11 @@ Required behavior:
 
 ## Strict content vs system boundary
 `WPS:GENERATE_CONTENT`, `WPS:GENERATE_CONTENT_FROM_INTAKE`, `WPS:FIX_PACKAGE`, and `WPS:PUBLISH_BLOG` produce **content-only** PRs. Their commits and PRs must touch only files under `content-system/tours/<slug>/`.
+
+Exception for automatic process QA during generation:
+- `WPS:GENERATE_CONTENT` and `WPS:GENERATE_CONTENT_FROM_INTAKE` may also touch:
+  - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+  - `content-system/system-qa/SYSTEM-QA-BACKLOG.md` (append-only)
 
 System rule changes — `AGENTS.md`, `COMMANDS.md`, `WORKFLOW.md`, `QA-CHECKLIST.md`, `templates/`, `structures/`, `meta.schema.json`, and `platform/` — belong in a separate PR routed through `WPS:IMPROVE_SYSTEM_WORKFLOW` or `WPS:IMPLEMENT_GENERATION_PROCESS_IMPROVEMENTS`.
 
@@ -1224,6 +1235,19 @@ Every PROCESS_QA report must begin with `## Tour Identity Confirmation` and incl
 - Viator URL status
 - package created/updated date (if known)
 - whether the report covers generation, publishing, or live verification
+
+### Automatic process QA on generation (hard rule)
+
+For every `WPS:GENERATE_CONTENT` and `WPS:GENERATE_CONTENT_FROM_INTAKE` run, the agent must automatically execute a process QA pass at the end of generation, even if the user did not invoke `WPS:PROCESS_QA`.
+
+Minimum required artifacts:
+1. `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+2. One append to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`:
+   - either concrete action item(s), or
+   - explicit `none found` note for that run
+3. One reference line in package `automation-notes.md` pointing to the process QA report path
+
+Generation is incomplete if these artifacts are missing.
 
 
 ## Direct-booking follow-up (required when OTA fallback is primary)
