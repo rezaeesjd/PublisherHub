@@ -3,11 +3,24 @@ require_once __DIR__ . '/functions.php';
 
 const WPS_LOCAL_CONTENT_DIR = __DIR__ . '/../content-system/tours';
 
-function wps_replace_placeholders(string $content, array $settings): string
+function wps_replace_placeholders(string $content, array $settings, string $campaign = ''): string
 {
+    $website = (string) ($settings['website_link'] ?? '{{WebsiteLink}}');
+    $trip    = (string) ($settings['tripadvisor_link'] ?? '{{TripAdvisorLink}}');
+    $viator  = (string) ($settings['viator_link'] ?? '{{ViatorLink}}');
+
+    // Append UTM parameters to real http(s) destinations so booking
+    // clicks show up as attributable traffic in GA4. Placeholders are
+    // left untouched.
+    if (function_exists('wps_append_utm') && $campaign !== '') {
+        $website = wps_append_utm($website, $campaign, 'blog', 'cta');
+        $trip    = wps_append_utm($trip, $campaign, 'blog', 'cta-tripadvisor');
+        $viator  = wps_append_utm($viator, $campaign, 'blog', 'cta-viator');
+    }
+
     return str_replace(
         ['{{WebsiteLink}}', '{{TripAdvisorLink}}', '{{ViatorLink}}'],
-        [$settings['website_link'] ?? '{{WebsiteLink}}', $settings['tripadvisor_link'] ?? '{{TripAdvisorLink}}', $settings['viator_link'] ?? '{{ViatorLink}}'],
+        [$website, $trip, $viator],
         $content
     );
 }

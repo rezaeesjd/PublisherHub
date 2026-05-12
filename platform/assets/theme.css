@@ -76,6 +76,93 @@ article.card a { text-decoration: underline; }
 }
 .archive-pagination a:hover { text-decoration: underline; }
 
+/* Skip-link for keyboard users (WCAG 2.4.1). Hidden until focused. */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+.skip-link:focus {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    width: auto;
+    height: auto;
+    padding: 10px 14px;
+    background: var(--brand);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    z-index: 9999;
+    box-shadow: var(--shadow-md);
+}
+
+/* Visible focus ring for keyboard navigation (WCAG 2.4.7). */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+.faq-item > summary:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Related posts module. */
+.related-posts {
+    margin-top: 32px;
+    padding: 20px;
+}
+.related-posts h2 { margin-top: 0; }
+.related-posts ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+.related-posts li {
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: #fbfcfe;
+}
+.related-posts li a {
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+}
+.related-posts li a:hover { color: var(--brand); text-decoration: underline; }
+.related-posts li p { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+
+/* Article byline + reading time. */
+.post-byline {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 8px 0 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.post-byline .byline-author { font-weight: 600; color: var(--text); }
+.post-byline .byline-author a { color: inherit; }
+
+/* TL;DR summary block for AI overview eligibility. */
+.post-summary {
+    margin: 16px 0 24px;
+    padding: 14px 18px;
+    background: var(--brand-light);
+    border-left: 4px solid var(--brand);
+    border-radius: var(--radius-sm);
+}
+.post-summary strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-dark); margin-bottom: 4px; }
+.post-summary p { margin: 0; color: var(--text); }
+
 /* Reduce-motion users get instant transitions */
 @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }

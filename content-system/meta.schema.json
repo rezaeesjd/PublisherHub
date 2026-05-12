@@ -124,6 +124,20 @@
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
     },
+    "legacy_slugs": {
+      "type": "array",
+      "description": "Older public slugs this post was previously served at. Public requests to these slugs are 301-redirected to the current public_slug.",
+      "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$" },
+      "uniqueItems": true
+    },
+    "author": {
+      "type": "string",
+      "description": "Author name shown in the visible byline and emitted in Article.author JSON-LD (E-E-A-T signal). Falls back to settings.default_author_name when empty."
+    },
+    "author_url": {
+      "type": "string",
+      "description": "Optional URL to the author's profile or about page."
+    },
     "meta_description": { "type": "string", "minLength": 50, "maxLength": 200 },
     "primary_keyword": { "type": "string", "minLength": 1 },
     "funnel_stage": { "type": "string", "enum": ["TOFU", "MOFU", "BOFU"] },

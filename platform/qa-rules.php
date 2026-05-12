@@ -88,16 +88,108 @@ function wps_qa_run_for_tour(string $tourDir): array
             }
         }
 
-        $h1Count = preg_match_all('/^#\s+/m', $blogContent);
+        $h1Count = preg_match_all('/^#\s+(.+?)\s*#*\s*$/m', $blogContent, $h1Matches);
         if ($h1Count === 0) {
             $findings[] = wps_qa_finding('fail', 'h1-missing', 'blog-post.md has no top-level H1.');
         } elseif ($h1Count > 1) {
             $findings[] = wps_qa_finding('warn', 'h1-multiple', "blog-post.md has {$h1Count} H1 lines; expected exactly one.");
         }
 
+        // H1 ↔ page_title parity. Google de-duplicates conflicting signals
+        // so a major mismatch dilutes the topical signal. Warn when normalized
+        // forms diverge more than the 60% similarity threshold.
+        $pageTitle = trim((string) ($meta['page_title'] ?? ''));
+        if ($h1Count >= 1 && $pageTitle !== '' && isset($h1Matches[1][0])) {
+            $firstH1 = trim($h1Matches[1][0]);
+            $normalize = function (string $s): string {
+                $s = mb_strtolower($s);
+                $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
+                return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
+            };
+            $a = $normalize($firstH1);
+            $b = $normalize($pageTitle);
+            similar_text($a, $b, $percent);
+            if ($percent < 60) {
+                $findings[] = wps_qa_finding(
+                    'warn',
+                    'title-h1-mismatch',
+                    "blog-post.md H1 '{$firstH1}' diverges from meta.page_title '{$pageTitle}' (similarity " . round($percent) . '%). Align them for a consistent ranking signal.'
+                );
+            }
+        }
+
+        // Title length. Google currently shows up to ~60 chars before
+        // truncating; titles > 65 chars almost always get rewritten.
+        if ($pageTitle !== '' && mb_strlen($pageTitle) > 65) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'title-too-long',
+                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: ≤ 60). Google will truncate.'
+            );
+        }
+        if ($pageTitle !== '' && mb_strlen($pageTitle) < 25) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'title-too-short',
+                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters; usually too short to communicate intent.'
+            );
+        }
+
         $brandName = (string) ($meta['brand'] ?? '');
         if ($brandName !== '' && stripos($blogContent, $brandName) === false) {
             $findings[] = wps_qa_finding('warn', 'brand-missing', "blog-post.md does not mention the active brand '{$brandName}'.");
+        }
+
+        // Broken images: ![alt](path) where path is relative + missing on disk.
+        if (preg_match_all('/!\[([^\]]*)\]\(([^)\s]+)/', $blogContent, $imgMatches, PREG_SET_ORDER)) {
+            foreach ($imgMatches as $im) {
+                $alt = trim((string) $im[1]);
+                $src = trim((string) $im[2]);
+                if ($alt === '') {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'image-alt-missing',
+                        "Image without alt text: {$src}. Alt text is required for accessibility and image SEO."
+                    );
+                }
+                if ($src !== '' && !preg_match('#^(https?:)?//#i', $src) && !str_starts_with($src, 'data:')) {
+                    $resolved = $tourDir . '/' . ltrim($src, '/');
+                    if (!is_file($resolved)) {
+                        $findings[] = wps_qa_finding(
+                            'warn',
+                            'image-missing',
+                            "Image referenced but missing on disk: {$src}"
+                        );
+                    }
+                }
+            }
+        }
+
+        // Broken internal anchors / generic anchor text. Detect ambiguous
+        // anchor text — "click here", "read more", "here", "book now"
+        // (when not pointing at a known booking domain).
+        if (preg_match_all('/\[([^\]]+)\]\(([^)\s]+)\)/', $blogContent, $linkMatches, PREG_SET_ORDER)) {
+            $generic = ['click here', 'read more', 'here', 'this link', 'learn more', 'more'];
+            foreach ($linkMatches as $lm) {
+                $label = trim(strip_tags($lm[1]));
+                $href  = trim($lm[2]);
+                $labelLower = strtolower($label);
+                if (in_array($labelLower, $generic, true)) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'link-generic-anchor',
+                        "Generic anchor text '{$label}' → {$href}. Use descriptive anchor text that includes the destination topic."
+                    );
+                }
+                // Internal links that look like raw filesystem references.
+                if (preg_match('/\.md(?:[?#].*)?$/i', $href)) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'link-raw-markdown',
+                        "Link points to a raw markdown file: {$href}. Convert to a public URL or relative slug."
+                    );
+                }
+            }
         }
     }
 

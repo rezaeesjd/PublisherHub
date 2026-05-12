@@ -11,9 +11,15 @@ require_once __DIR__ . '/../platform/cache.php';
 
 $settings = wps_load_settings();
 wps_enforce_https();
+wps_emit_public_headers();
 
 $index = wps_archive_index($settings);
-$records = is_array($index['posts'] ?? null) ? $index['posts'] : [];
+$allRecords = is_array($index['posts'] ?? null) ? $index['posts'] : [];
+
+// Crawlers must only see content gated to publish_status === 'published'.
+// Review-state copy is intentionally excluded — accessible via direct URL
+// (with X-Robots-Tag: noindex) but never advertised in the sitemap.
+$records = wps_published_records($allRecords);
 
 $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
 
@@ -33,7 +39,7 @@ foreach ($records as $record) {
     if ($slug === '') {
         continue;
     }
-    $url = $archiveUrl . 'post.php?slug=' . rawurlencode($slug);
+    $url = wps_public_post_url($slug);
     $lastmod = (string) ($record['last_qa_date'] ?? $record['published_date'] ?? '');
     $funnel = (string) ($record['funnel_stage'] ?? '');
     $priority = $funnel === 'BOFU' ? '0.9' : ($funnel === 'MOFU' ? '0.8' : '0.7');

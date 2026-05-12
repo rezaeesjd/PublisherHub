@@ -5,6 +5,7 @@ require_once __DIR__ . '/../platform/cache.php';
 
 $settings = wps_load_settings();
 wps_enforce_https();
+wps_emit_public_headers();
 
 $slug = trim((string) ($_GET['slug'] ?? ''));
 if ($slug === '') {
@@ -22,7 +23,26 @@ if (!$postResult['ok'] || !is_array($postResult['post'])) {
 
 $post = $postResult['post'];
 $folderPath = (string) ($post['folder_path'] ?? '');
+$folderName = (string) ($post['folder_name'] ?? '');
 $meta = is_array($post['meta'] ?? null) ? $post['meta'] : [];
+
+$publicSlug = (string) ($post['public_slug'] ?? $post['slug'] ?? $slug);
+
+// G2A.10: legacy slug 301-redirects to the current public URL.
+if (($postResult['matched_via'] ?? '') === 'legacy' && $publicSlug !== $slug) {
+    if (PHP_SAPI !== 'cli' && !headers_sent()) {
+        header('Location: ' . wps_public_post_url($publicSlug), true, 301);
+        exit;
+    }
+}
+
+// G1.2: noindex non-published content even when accessed via direct URL.
+$publishStatus = (string) ($post['publish_status'] ?? 'draft');
+wps_emit_noindex_if_unpublished($publishStatus);
+
+// G2A.9: tag CTA destinations with utm_campaign=<public_slug> so booking
+// clicks attribute back to the right article in GA4.
+$utmCampaign = $publicSlug !== '' ? $publicSlug : (string) ($post['slug'] ?? 'post');
 
 // Cached rendering of blog-post.md and faq.md (sibling .cache.html files
 // invalidated by source mtime + renderer version).
@@ -31,12 +51,14 @@ $faqMarkdown = '';
 if ($folderPath !== '') {
     $blogHtml = wps_replace_placeholders(
         wps_cached_render_markdown($folderPath . '/blog-post.md'),
-        $settings
+        $settings,
+        $utmCampaign
     );
     if (is_file($folderPath . '/faq.md')) {
         $faqMarkdown = wps_replace_placeholders(
             (string) @file_get_contents($folderPath . '/faq.md'),
-            $settings
+            $settings,
+            $utmCampaign
         );
     }
 }
@@ -50,26 +72,43 @@ if ($blogHtml === '') {
 $faqPairs = $faqMarkdown !== '' ? wps_parse_faq_pairs($faqMarkdown) : [];
 
 $title = (string) ($post['title'] ?? $slug);
-$description = (string) ($post['meta_description'] ?? '');
-$publicSlug = (string) ($post['public_slug'] ?? $post['slug'] ?? $slug);
+
+// G1.3: fall back to an auto-generated description when meta has none,
+// trimmed on a word boundary at ~158 chars.
+$description = trim((string) ($post['meta_description'] ?? ''));
+if ($description === '') {
+    $description = wps_auto_meta_description($blogHtml);
+} else {
+    $description = wps_trim_description($description, 200);
+}
+
 $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
-$canonical  = $archiveUrl . 'post.php?slug=' . rawurlencode($publicSlug);
+$canonical  = wps_public_post_url($publicSlug);
 $systemBase = rtrim(wps_system_url_base(), '/') . '/';
 $siteName   = (string) ($settings['site_name'] ?? '');
+$twitterHandle = trim((string) ($settings['twitter_handle'] ?? ''));
 
 $dateModified  = (string) ($meta['last_qa_date'] ?? $post['published_date'] ?? '');
 $datePublished = (string) ($meta['first_published_at'] ?? $dateModified);
-$heroImage     = (string) ($meta['hero_image'] ?? '');
-if ($heroImage !== '' && !preg_match('#^https?://#i', $heroImage)) {
-    $heroImage = $archiveUrl . 'post.php?slug=' . rawurlencode($publicSlug) . '#hero';
-    // local hero images are not yet rendered to public URLs; suppress to avoid bad JSON-LD.
-    $heroImage = '';
-}
+
+// G1.11: resolve local hero images to real public URLs so og:image,
+// twitter:image and Article.image actually fire.
+$heroImage = wps_resolve_hero_image_url((string) ($meta['hero_image'] ?? ''), $folderName);
 
 $cssVersion = @filemtime(__DIR__ . '/../platform/assets/theme.css') ?: time();
 $themeCssUrl = rtrim(wps_system_url_base(), '/') . '/platform/assets/theme.css?v=' . rawurlencode((string) $cssVersion);
 
 $archiveTitle = trim((string) ($settings['archive_title'] ?? 'Blog'));
+
+// G1.7: E-E-A-T author. Read from meta.json (per-post) and fall back to
+// the site-wide default. Empty author means we omit the byline entirely
+// rather than emit weak signals.
+$authorName = trim((string) ($meta['author'] ?? $meta['author_name'] ?? $settings['default_author_name'] ?? ''));
+$authorUrl  = trim((string) ($meta['author_url'] ?? $settings['default_author_url'] ?? ''));
+
+// G2A.7: reading time + word count for engagement + SEO depth signal.
+$reading = wps_reading_time($blogHtml);
+
 $breadcrumb = [
     '@context'        => 'https://schema.org',
     '@type'           => 'BreadcrumbList',
@@ -91,11 +130,12 @@ if ($orgLogo !== '') {
 }
 
 $article = [
-    '@context'      => 'https://schema.org',
-    '@type'         => 'Article',
-    'headline'      => $title,
+    '@context'         => 'https://schema.org',
+    '@type'            => 'Article',
+    'headline'         => $title,
     'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
-    'publisher'     => $organization,
+    'publisher'        => $organization,
+    'wordCount'        => $reading['words'],
 ];
 if ($description !== '') {
     $article['description'] = $description;
@@ -108,6 +148,13 @@ if ($dateModified !== '') {
 }
 if ($heroImage !== '') {
     $article['image'] = [$heroImage];
+}
+if ($authorName !== '') {
+    $authorNode = ['@type' => 'Person', 'name' => $authorName];
+    if ($authorUrl !== '') {
+        $authorNode['url'] = $authorUrl;
+    }
+    $article['author'] = $authorNode;
 }
 
 $faqLd = null;
@@ -145,6 +192,9 @@ if ($priceFrom !== '' && preg_match('/^\s*([A-Z]{3})\s*([\d,.]+)/', $priceFrom, 
     $amount = (float) str_replace([',', ' '], ['', ''], $m[2]);
     if ($amount > 0) {
         $ctaLink = (string) ($meta['cta_primary_link'] ?? '');
+        if (function_exists('wps_append_utm') && $ctaLink !== '') {
+            $ctaLink = wps_append_utm($ctaLink, $utmCampaign, 'blog', 'cta-schema');
+        }
         $offer = [
             '@type'         => 'Offer',
             'price'         => number_format($amount, 2, '.', ''),
@@ -179,6 +229,25 @@ if (in_array((string) ($meta['funnel_stage'] ?? ''), ['BOFU', 'MOFU'], true) || 
     }
 }
 
+// G2A.5: related posts from the same cluster / keyword.
+$archiveIndex = wps_archive_index($settings);
+$relatedRecords = wps_related_posts(
+    [
+        'public_slug'     => $publicSlug,
+        'primary_keyword' => (string) ($post['primary_keyword'] ?? ''),
+        'funnel_stage'    => (string) ($post['funnel_stage'] ?? ''),
+        'variant_of'      => (string) ($meta['variant_of'] ?? ''),
+    ],
+    is_array($archiveIndex['posts'] ?? null) ? $archiveIndex['posts'] : [],
+    4
+);
+
+// G2A.6: preconnect to CTA destinations we know we'll link to + analytics.
+$preconnect = wps_render_preconnect($settings, $blogHtml);
+
+$analyticsHead = wps_render_analytics($settings, 'head');
+$analyticsBody = wps_render_analytics($settings, 'body');
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -187,44 +256,61 @@ if (in_array((string) ($meta['funnel_stage'] ?? ''), ['BOFU', 'MOFU'], true) || 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?php echo wps_h($title); ?></title>
   <?php if ($description !== ''): ?><meta name="description" content="<?php echo wps_h($description); ?>"><?php endif; ?>
+  <meta name="robots" content="<?php echo $publishStatus === 'published' ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, nofollow'; ?>">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="<?php echo wps_h($canonical); ?>">
+  <?php echo $analyticsHead; ?>
+  <?php echo $preconnect; ?>
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="<?php echo wps_h($siteName); ?>">
   <meta property="og:title" content="<?php echo wps_h($title); ?>">
   <?php if ($description !== ''): ?><meta property="og:description" content="<?php echo wps_h($description); ?>"><?php endif; ?>
   <meta property="og:url" content="<?php echo wps_h($canonical); ?>">
-  <?php if ($heroImage !== ''): ?><meta property="og:image" content="<?php echo wps_h($heroImage); ?>"><?php endif; ?>
+  <?php if ($heroImage !== ''): ?>
+  <meta property="og:image" content="<?php echo wps_h($heroImage); ?>">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <?php endif; ?>
   <?php if ($datePublished !== ''): ?><meta property="article:published_time" content="<?php echo wps_h($datePublished); ?>"><?php endif; ?>
   <?php if ($dateModified !== ''): ?><meta property="article:modified_time" content="<?php echo wps_h($dateModified); ?>"><?php endif; ?>
+  <?php if ($authorName !== ''): ?><meta property="article:author" content="<?php echo wps_h($authorName); ?>"><?php endif; ?>
   <meta name="twitter:card" content="<?php echo $heroImage !== '' ? 'summary_large_image' : 'summary'; ?>">
+  <?php if ($twitterHandle !== ''): ?><meta name="twitter:site" content="@<?php echo wps_h($twitterHandle); ?>"><?php endif; ?>
   <meta name="twitter:title" content="<?php echo wps_h($title); ?>">
   <?php if ($description !== ''): ?><meta name="twitter:description" content="<?php echo wps_h($description); ?>"><?php endif; ?>
   <?php if ($heroImage !== ''): ?><meta name="twitter:image" content="<?php echo wps_h($heroImage); ?>"><?php endif; ?>
-  <link rel="stylesheet" href="<?php echo wps_h($themeCssUrl); ?>">
-  <script type="application/ld+json"><?php echo json_encode($breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
-  <script type="application/ld+json"><?php echo json_encode($article, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
-  <?php if ($faqLd !== null): ?>
-  <script type="application/ld+json"><?php echo json_encode($faqLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
-  <?php endif; ?>
-  <?php if ($touristTrip !== null): ?>
-  <script type="application/ld+json"><?php echo json_encode($touristTrip, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
-  <?php endif; ?>
+  <style><?php echo wps_critical_css(); ?></style>
+  <?php echo wps_render_deferred_stylesheet($themeCssUrl); ?>
 </head>
 <body>
-  <main class="wrap" style="max-width: 880px; padding: 32px 16px; margin: 0 auto;">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main id="main-content" class="wrap" style="max-width: 880px; padding: 32px 16px; margin: 0 auto;">
     <nav aria-label="Breadcrumb" class="muted" style="margin-bottom: 8px;">
-      <a href="./">&larr; Back to <?php echo wps_h($archiveTitle !== '' ? $archiveTitle : 'archive'); ?></a>
+      <a href="<?php echo wps_h($archiveUrl); ?>">&larr; Back to <?php echo wps_h($archiveTitle !== '' ? $archiveTitle : 'archive'); ?></a>
     </nav>
-    <?php if ($dateModified !== ''): ?>
-      <p class="muted"><small>
-        <?php if ($datePublished !== '' && $datePublished !== $dateModified): ?>
-          Published <time datetime="<?php echo wps_h($datePublished); ?>"><?php echo wps_h($datePublished); ?></time>
-          &middot;
+    <?php if ($authorName !== '' || $dateModified !== '' || $reading['minutes'] > 0): ?>
+      <p class="post-byline">
+        <?php if ($authorName !== ''): ?>
+          <span class="byline-author">By <?php if ($authorUrl !== ''): ?><a href="<?php echo wps_h($authorUrl); ?>" rel="author"><?php echo wps_h($authorName); ?></a><?php else: ?><?php echo wps_h($authorName); ?><?php endif; ?></span>
         <?php endif; ?>
-        Updated <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h($dateModified); ?></time>
-      </small></p>
+        <?php if ($dateModified !== ''): ?>
+          <span>
+            <?php if ($datePublished !== '' && $datePublished !== $dateModified): ?>
+              Published <time datetime="<?php echo wps_h($datePublished); ?>"><?php echo wps_h($datePublished); ?></time> &middot;
+            <?php endif; ?>
+            Updated <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h($dateModified); ?></time>
+          </span>
+        <?php endif; ?>
+        <span><?php echo (int) $reading['minutes']; ?> min read</span>
+      </p>
     <?php endif; ?>
-    <article class="card" style="padding: 20px;">
+    <?php if ($description !== ''): ?>
+      <aside class="post-summary" role="doc-abstract" aria-label="Article summary">
+        <strong>Summary</strong>
+        <p><?php echo wps_h($description); ?></p>
+      </aside>
+    <?php endif; ?>
+    <article class="card content-body" style="padding: 20px;">
       <?php echo $blogHtml; ?>
     </article>
     <?php if (!empty($faqPairs)): ?>
@@ -239,6 +325,33 @@ if (in_array((string) ($meta['funnel_stage'] ?? ''), ['BOFU', 'MOFU'], true) || 
         <?php endforeach; ?>
       </section>
     <?php endif; ?>
+    <?php if (!empty($relatedRecords)): ?>
+      <aside class="card related-posts" aria-labelledby="related-heading">
+        <h2 id="related-heading">Related reading</h2>
+        <ul>
+          <?php foreach ($relatedRecords as $rec): ?>
+            <?php $relSlug = (string) ($rec['public_slug'] ?? ''); if ($relSlug === '') continue; ?>
+            <li>
+              <a href="<?php echo wps_h(wps_public_post_url($relSlug)); ?>"><?php echo wps_h((string) ($rec['title'] ?? $relSlug)); ?></a>
+              <?php if (!empty($rec['meta_description'])): ?>
+                <p><?php echo wps_h(wps_trim_description((string) $rec['meta_description'], 110)); ?></p>
+              <?php endif; ?>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </aside>
+    <?php endif; ?>
   </main>
+
+  <?php // G1.10: all JSON-LD emitted after main so it never blocks LCP. ?>
+  <script type="application/ld+json"><?php echo json_encode($breadcrumb, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <script type="application/ld+json"><?php echo json_encode($article, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <?php if ($faqLd !== null): ?>
+  <script type="application/ld+json"><?php echo json_encode($faqLd, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <?php endif; ?>
+  <?php if ($touristTrip !== null): ?>
+  <script type="application/ld+json"><?php echo json_encode($touristTrip, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?></script>
+  <?php endif; ?>
+  <?php echo $analyticsBody; ?>
 </body>
 </html>

@@ -130,10 +130,20 @@ function wps_apply_post_override(array $post): array
     $baseSlug = wps_post_safe_slug((string) ($post['slug'] ?? ''));
     $post['base_slug'] = $baseSlug;
 
+    // Legacy slugs can be declared in two places: directly in meta.json
+    // (authored alongside content) or in the platform/data override file
+    // (edited via the dashboard). Both sources are merged so either path
+    // works for operators.
+    $metaLegacy = ($post['meta']['legacy_slugs'] ?? null);
+    $metaLegacy = is_array($metaLegacy)
+        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $metaLegacy)))
+        : [];
+
     $override = wps_load_post_override($baseSlug);
     if (!$override) {
         $post['public_slug'] = $baseSlug;
         $post['has_local_edits'] = false;
+        $post['legacy_slugs'] = array_values(array_unique($metaLegacy));
         return $post;
     }
 
@@ -147,6 +157,13 @@ function wps_apply_post_override(array $post): array
     $post['public_slug'] = $publicSlug !== '' ? $publicSlug : $baseSlug;
     $post['has_local_edits'] = true;
     $post['local_override'] = $override;
+
+    $overrideLegacy = $override['legacy_slugs'] ?? [];
+    $overrideLegacy = is_array($overrideLegacy)
+        ? array_values(array_filter(array_map(fn($s) => wps_post_safe_slug((string) $s), $overrideLegacy)))
+        : [];
+
+    $post['legacy_slugs'] = array_values(array_unique(array_merge($metaLegacy, $overrideLegacy)));
 
     return $post;
 }
@@ -166,7 +183,11 @@ function wps_find_post_by_public_or_base_slug(array $settings, string $requested
     foreach ($postsResult['posts'] as $post) {
         $post = wps_apply_post_override($post);
         if (($post['base_slug'] ?? '') === $requestedSlug || ($post['public_slug'] ?? '') === $requestedSlug) {
-            return ['ok' => true, 'error' => '', 'post' => $post];
+            return ['ok' => true, 'error' => '', 'post' => $post, 'matched_via' => 'current'];
+        }
+        if (in_array($requestedSlug, $post['legacy_slugs'] ?? [], true)) {
+            // Legacy slug hit — the caller should 301 to the current public slug.
+            return ['ok' => true, 'error' => '', 'post' => $post, 'matched_via' => 'legacy'];
         }
     }
 
