@@ -29,7 +29,7 @@
 | canonical tour title | Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &… | User input | inferred | Trailing ellipsis removed; broader canonical title used |
 | product/reference code | 187808P109 | User input | confirmed | Non-OTA code treated as primary |
 | channel product codes | Viator: 187808P82; TripAdvisor: 33344981; Supplier: 187808P109 | User input + URLs | confirmed | Channel-specific mapping |
-| website booking URL | not provided | User input | missing | No issue: other valid permalinks are present |
+| website booking URL | https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/ | User input | confirmed | Direct booking URL provided and used as primary CTA |
 | TripAdvisor URL | provided | User input | confirmed | Secondary trust/alternate booking |
 | Viator URL | provided | User input | confirmed | Valid permalink |
 | price | Adult 275 EUR; Child 157 EUR; Infant 0 EUR | User input | confirmed | Per person |
