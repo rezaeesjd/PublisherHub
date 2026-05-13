@@ -140,7 +140,7 @@
     },
     "meta_description": { "type": "string", "minLength": 50, "maxLength": 200 },
     "primary_keyword": { "type": "string", "minLength": 1 },
-    "funnel_stage": { "type": "string", "enum": ["TOFU", "MOFU", "BOFU"] },
+    "funnel_stage": { "type": "string", "enum": ["TOFU", "MOFU", "BOFU", "FAQ"] },
     "cta_primary": { "type": "string", "minLength": 1 },
     "cta_primary_link": { "type": "string", "minLength": 1 },
     "website_link": { "type": "string", "minLength": 1 },

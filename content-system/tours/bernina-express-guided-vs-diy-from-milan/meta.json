@@ -22,7 +22,7 @@
   "meeting_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
   "languages": ["English"],
   "max_travelers": 20,
-  "qa_status": "passing",
+  "qa_status": "warning",
   "publish_status": "ready_for_review",
   "public_copy_state": "final",
   "generation_phase_completed": true,
