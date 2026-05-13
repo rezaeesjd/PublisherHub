@@ -4,24 +4,30 @@
 - cinque terre full day tour from milan
 
 ## Long-tail booking-intent keywords
-- guided cinque terre day trip from milan
-- milan to cinque terre tour with train tickets
-- cinque terre tour from milan by coach
-- riomaggiore and manarola tour from milan
-- book cinque terre excursion from milan
-- full day cinque terre villages tour
+- book cinque terre day trip from milan
+- guided cinque terre tour from milan with transfers
+- cinque terre villages tour from milan
+- milan to cinque terre full day excursion
+- cinque terre group tour from milan meeting point
+- cinque terre day tour from milan availability
+- riomaggiore manarola tour from milan
+- best cinque terre guided day trip from milan
 
 ## Informational keywords
-- best way to visit cinque terre from milan in one day
-- how long is a cinque terre day trip from milan
-- what to wear for cinque terre day tour
+- how to visit cinque terre from milan in one day
+- what to pack for cinque terre day trip from milan
+- how long is a cinque terre tour from milan
+- best season for cinque terre day tours
 
 ## Comparison keywords
-- cinque terre tour from milan vs self guided
-- private vs group cinque terre day trip from milan
+- cinque terre tour from milan vs self guided train trip
+- group vs private cinque terre day trip from milan
+- viator vs direct booking cinque terre tours
 
 ## Title variations
-- Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola & More
-- Milan to Cinque Terre Day Trip: Visit the Five Villages
-- Guided Cinque Terre Excursion from Milan (Full-Day)
-- One-Day Cinque Terre Tour from Milan with Scenic Transfers
+- Cinque Terre Full-Day Tour from Milan: Five Villages, One Easy Itinerary
+- Milan to Cinque Terre Day Trip Guide: What to Expect Before You Book
+- Guided Cinque Terre Tour from Milan: Logistics, Timing, and Booking Links
+- Best Cinque Terre Day Tour from Milan for First-Time Visitors
+- Cinque Terre Villages Tour from Milan: Riomaggiore, Manarola & More
+- One-Day Cinque Terre Itinerary from Milan (Guided Option)
