@@ -33,11 +33,11 @@ Best for: first-time visitors to the Bernina route, travellers who want the full
 
 ## What a DIY trip looks like
 
-Doing the Bernina Express independently from Milan means solving a sequence of logistics yourself. First, you need to reach Tirano — roughly two hours by regional train from Milan Centrale or three-plus hours if you drive. From Tirano, you buy your own Bernina Express ticket (advance booking is recommended in high season) and choose your own departure time and onward stops. The return follows the same route.
+Doing the Bernina Express independently from Milan means solving a sequence of logistics yourself. First, you need to reach Tirano — around 2.5 hours by regional train from Milan Centrale (changing at Lecco and again at Sondrio). From Tirano, you buy your own Bernina Express ticket (advance booking is recommended in high season) and choose your own departure time and onward stops. The return follows the same route.
 
 The appeal is flexibility: you choose your pace at each stop, can add or skip locations, and are not tied to a group schedule. For experienced travellers familiar with Swiss rail booking, DIY is straightforward.
 
-The challenges: the journey requires crossing the Swiss border, so a passport is still required for everyone regardless of how you travel. Alpine route planning takes time. Bernina Express seats sell out on busy days. And the total cost — Milan to Tirano transport, Bernina Express tickets, lunch in St Moritz, and any other stops — can equal or exceed the cost of the guided tour when itemised.
+The challenges: the journey requires crossing the Swiss border, so a passport is still required for everyone regardless of how you travel. Alpine route planning takes time. Bernina Express seats sell out on busy days.
 
 Best for: experienced independent travellers who have time to research the route, value full flexibility over any particular stop, and are comfortable with Swiss rail booking.
 

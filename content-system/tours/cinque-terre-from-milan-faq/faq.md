@@ -24,5 +24,8 @@ Monday, Wednesday, and Saturday.
 ## What languages does the guide speak?
 English and Spanish.
 
+## What is the cancellation policy?
+Free cancellation up to 24 hours before departure. Cancellations within 24 hours are non-refundable.
+
 ## Can I book directly with the operator?
 Yes — direct booking via Milano Adventures is the primary option. Viator and TripAdvisor listings are also available.

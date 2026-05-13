@@ -36,7 +36,6 @@
   "conversion_blockers": [],
   "clarifications_needed": [],
   "warnings": [
-    "Cancellation value provided as bare number '15' with no unit; excluded from specific policy claims.",
     "Wheelchair accessibility not provided; omitted from public copy."
   ],
   "clarify_decisions": [

@@ -30,7 +30,7 @@
 | traveler cap | 22 | Inherited from base package | confirmed | |
 | itinerary stops | Riomaggiore, Manarola, Corniglia, Vernazza, Monterosso al Mare | Inherited from base package | confirmed | All 5 villages |
 | ferry weather note | Ferry may not operate due to sea/weather conditions | Inherited from base package | confirmed | |
-| cancellation policy | Specific window not stated; see booking page | Inherited from base package | needs_human_review | Unit unspecified; excluded from public claims |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours |
 
 ## Provenance matrix — DIY comparison facts (general knowledge)
 

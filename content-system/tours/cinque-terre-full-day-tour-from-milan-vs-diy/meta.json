@@ -23,12 +23,12 @@
   "languages": ["English", "Spanish"],
   "max_travelers": 22,
   "qa_status": "warning",
-  "publish_status": "ready_for_review",
+  "publish_status": "ready_for_sync",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
   "clarify_phase_completed": true,
-  "publish_phase_completed": false,
+  "publish_phase_completed": true,
   "live_verification_completed": false,
   "intake_questions_resolved": true,
   "clarification_questions_presented": false,
@@ -39,7 +39,6 @@
   "conversion_blockers": [],
   "clarifications_needed": [],
   "warnings": [
-    "Cancellation unit unspecified (inherited non-blocking); specific policy excluded from public copy.",
     "Accessibility not provided (inherited non-blocking).",
     "DIY comparison facts are inferred from general destination knowledge; not operator-sourced."
   ],

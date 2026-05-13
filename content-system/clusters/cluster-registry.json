@@ -90,9 +90,9 @@
           "package_slug": "cinque-terre-full-day-tour-from-milan-vs-diy",
           "public_slug": "cinque-terre-guided-tour-vs-diy-by-train-from-milan",
           "title": "Cinque Terre guided tour vs DIY by train from Milan",
-          "status": "ready_for_review",
+          "status": "ready_for_sync",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "MOFU comparison post generated 2026-05-13. DIY facts inferred; human review recommended before publish."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
         },
         {
           "required": true,
@@ -112,9 +112,9 @@
           "package_slug": "cinque-terre-from-milan-faq",
           "public_slug": "cinque-terre-from-milan-faq-practical-guide",
           "title": "Cinque Terre from Milan: practical FAQs",
-          "status": "ready_for_review",
+          "status": "ready_for_sync",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "FAQ support post generated 2026-05-13. Objection removal: ferry weather, train, pickup, languages, group size."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
         }
       ]
     },

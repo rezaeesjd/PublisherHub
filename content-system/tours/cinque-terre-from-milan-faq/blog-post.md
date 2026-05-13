@@ -40,7 +40,7 @@ Monday, Wednesday, and Saturday. If your travel dates don't align with these day
 
 ## What is the cancellation policy?
 
-The operator has a cancellation policy in place; the specific terms are stated at checkout. We recommend reviewing them carefully before completing the booking, as day trip policies vary.
+Free cancellation is available up to 24 hours before departure. This policy applies across all Milano Adventures tours. If you cancel within 24 hours of departure, the booking is non-refundable.
 
 ## Can I book directly on the operator's website?
 

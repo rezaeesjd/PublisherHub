@@ -6,7 +6,7 @@ Planning a full-day Swiss Alps trip from Milan raises a lot of practical questio
 
 ## Do I need a passport for this tour?
 
-Yes. A valid passport is required. The Bernina route crosses the Italian–Swiss border between Tirano and the Swiss canton of Graubünden, so every traveller must carry a full passport. EU identity cards are not a substitute for this tour. Check your passport expiry before booking.
+Yes. A valid passport is required for every traveller. The Bernina route crosses the Italian–Swiss border between Tirano and the Swiss canton of Graubünden. Check your passport expiry before booking.
 
 ## What is the cancellation policy?
 

@@ -31,7 +31,7 @@
 | traveler cap | 22 | Inherited from base package | confirmed | |
 | itinerary stops | Riomaggiore, Manarola, Monterosso al Mare, Vernazza, Corniglia | Inherited from base package | confirmed | All five Cinque Terre villages |
 | ferry weather note | Ferry may not operate due to sea/weather conditions | Inherited from base package | confirmed | Must be disclosed |
-| cancellation policy | Bare numeric "15" with no unit; specific policy excluded from public claims | Inherited from base package | needs_human_review | Advise travellers to check booking page |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours |
 | accessibility | Not provided | Inherited from base package | missing | Omitted from public claims |
 | review rating | none provided | Inherited from base package | missing | No rating claim allowed |
 | missing critical inputs | none blocking (website + OTA links present) | Derived | not_applicable | |
