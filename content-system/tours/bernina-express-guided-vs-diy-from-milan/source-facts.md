@@ -24,7 +24,7 @@
 | inclusions | Bernina Express 2nd-class ticket; roundtrip GT coach; expert English-speaking tour leader; free time in St Moritz | Inherited from base package | confirmed | |
 | itinerary stops | Tirano → Bernina Express crossing → Alp Grüm → Diavolezza → Pontresina → St Moritz → Lake St Moritz → return | Inherited from base package | confirmed | |
 | accessibility | Not suitable for wheelchairs or impaired mobility | Inherited from base package | confirmed | |
-| cancellation policy | All sales final — non-refundable | Inherited from base package | confirmed | |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours |
 | passport requirement | Valid passport required (Swiss border crossing) | Inherited from base package | confirmed | |
 | group cap | 20 travellers | Inherited from base package | confirmed | |
 | operating days | Daily | Inherited from base package | confirmed | |

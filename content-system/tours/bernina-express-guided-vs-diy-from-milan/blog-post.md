@@ -25,7 +25,7 @@ An English-speaking tour leader accompanies the group (maximum 20 travellers) th
 
 The guided tour removes every logistical decision from your day. You do not need to research the Tirano connection from Milan, buy train tickets separately, understand Swiss border procedures, or work out St Moritz logistics on your own. Because a passport is required to cross from Italy into Switzerland, having a tour leader who manages the group at the border is practically useful for first-time visitors.
 
-The tour also runs daily, which removes schedule dependency on specific Bernina Express timetables, and the non-refundable booking policy means once you commit, the day is locked in — which is actually useful if you are building an Italy itinerary around fixed dates.
+The tour also runs daily, which removes schedule dependency on specific Bernina Express timetables, and free cancellation is available up to 24 hours before departure, which gives flexibility while still letting you plan confidently around fixed dates.
 
 Best for: first-time visitors to the Bernina route, travellers who want the full St Moritz and alpine stop experience structured into a single day, and anyone who does not want to spend planning time on Swiss rail booking and logistics.
 
@@ -54,7 +54,7 @@ Best for: experienced independent travellers who have time to research the route
 | **Border crossing** | Managed with tour leader | Self-managed (passport required either way) |
 | **Flexibility** | Fixed itinerary, structured stops | Full flexibility on pace and stops |
 | **Booking complexity** | One booking, one price | Multiple bookings, variable total cost |
-| **Cancellation** | All sales final | Depends on individual ticket terms |
+| **Cancellation** | Free up to 24h before departure | Depends on individual ticket terms |
 
 ---
 

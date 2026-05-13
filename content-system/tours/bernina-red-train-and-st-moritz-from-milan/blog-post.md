@@ -2,7 +2,7 @@
 
 If you want one dramatic Swiss Alps day trip from Milan without planning every transfer yourself, this Bernina Red Train and St Moritz tour is the simplest way to do it. With Milano Adventures, you travel with an expert tour leader, cross the Alps on the UNESCO-recognized Bernina railway, and still get free time in St Moritz before returning to Milan the same day.
 
-> **Important before booking:** A valid passport is required for this itinerary, and this tour is non-refundable (all sales final).
+> **Important before booking:** A valid passport is required for this itinerary, and this tour has free cancellation up to 24 hours before departure.
 
 ## Why this tour works for a one-day Alps escape
 
@@ -20,7 +20,7 @@ If you want one dramatic Swiss Alps day trip from Milan without planning every t
 - **End point:** Returns to Largo Cairoli 18, Milan
 - **Guide language:** English
 - **Max group size:** 20 travelers
-- **Cancellation policy:** All sales final (non-refundable)
+- **Cancellation policy:** Free cancellation up to 24 hours before departure; non-refundable within 24h
 
 ## Route highlights
 

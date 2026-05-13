@@ -10,7 +10,7 @@ Yes. A valid passport is required for every traveller. The Bernina route crosses
 
 ## What is the cancellation policy?
 
-All bookings are non-refundable — the operator's policy is "all sales final." There is no free cancellation window. Confirm your travel dates before completing the booking, and factor this into any travel insurance decision you make.
+Free cancellation is available up to 24 hours before departure. If you cancel within 24 hours, the booking is non-refundable. Confirm your travel dates before completing the booking.
 
 ## How long is the tour and when does it leave?
 

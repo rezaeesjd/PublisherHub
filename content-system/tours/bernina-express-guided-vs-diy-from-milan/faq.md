@@ -10,10 +10,10 @@ The guided tour price (from EUR 113.85) includes roundtrip GT coach transport be
 Yes — the guided tour operates daily, Monday through Sunday.
 
 ## Can I do the Bernina Express from Milan in one day without a tour?
-Yes, but it requires planning: getting to Tirano from Milan (approx. 2 hours), booking Bernina Express tickets in advance (especially in high season), and managing returns. Total logistics time is significant.
+Yes, but it requires planning: getting to Tirano from Milan (around 2.5 hours by regional train via Lecco and Sondrio), booking Bernina Express tickets in advance (especially in high season), and managing returns. Total logistics time is significant.
 
 ## What is the guided tour cancellation policy?
-All bookings are non-refundable — all sales final. Confirm your dates before booking.
+Free cancellation is available up to 24 hours before departure. Cancellations within 24 hours are non-refundable.
 
 ## How big is the guided tour group?
 Maximum 20 travellers.

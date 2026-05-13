@@ -217,9 +217,9 @@
           "package_slug": "bernina-express-guided-vs-diy-from-milan",
           "public_slug": "bernina-express-guided-tour-vs-diy-from-milan",
           "title": "Bernina Express guided tour from Milan vs DIY from Tirano",
-          "status": "ready_for_review",
+          "status": "ready_for_sync",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "MOFU comparison post generated 2026-05-13. DIY facts inferred; human review recommended before publish."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
         },
         {
           "required": true,
@@ -239,9 +239,9 @@
           "package_slug": "bernina-st-moritz-from-milan-faq",
           "public_slug": "bernina-express-st-moritz-from-milan-faq",
           "title": "Bernina Express + St Moritz from Milan: passport, weather and timing FAQ",
-          "status": "ready_for_review",
+          "status": "ready_for_sync",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "FAQ support post generated 2026-05-13. Objection removal: passport requirement, non-refundable policy, accessibility, last-minute booking rules."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
         },
         {
           "required": false,

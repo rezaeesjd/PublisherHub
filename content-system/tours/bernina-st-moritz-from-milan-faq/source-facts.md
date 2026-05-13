@@ -18,7 +18,7 @@
 | canonical tour title | Full Day Tour in Bernina Red Train and St Moritz from Milan | Inherited from base package | confirmed | |
 | website booking URL | https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/ | Inherited from base package | confirmed | Primary CTA target |
 | passport requirement | "A VALID PASSPORT IS REQUIRED to join this tour" | Inherited from base package source-facts | confirmed | Swiss border crossing |
-| cancellation policy | All sales final — non-refundable | Inherited from base package | confirmed | Must be prominently disclosed |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours |
 | accessibility | Not suitable for guests with wheelchairs or impaired mobility | Inherited from base package | confirmed | |
 | last-minute booking note | Bookings < 12 hours before departure cannot be guaranteed; valid email + active phone required | Inherited from base package | confirmed | |
 | duration | 12 to 13 hours | Inherited from base package | confirmed | |

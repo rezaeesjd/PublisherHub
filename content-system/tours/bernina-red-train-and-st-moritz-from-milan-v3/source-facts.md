@@ -52,7 +52,7 @@
 | accessibility | Wheelchair: No; Stroller: No; Service Animals: No; Public transport access: Yes; Infants on laps: No; Infant seats: Yes | User input | confirmed | Source notes "not suitable for guests with wheelchairs or impaired mobility" |
 | traveler cap / group size | 20 | User input | confirmed | |
 | min travelers to operate | not provided | User input | missing | |
-| cancellation policy | All sales final | User input | confirmed | Non-refundable |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours; source data was incorrect |
 | seasonal/weather notes | Winter-season pricing valid from January 9, 2027; alpine route susceptible to weather disruption (implied, not stated in source) | User input | inferred | |
 | review rating | none provided | User input | missing | |
 | review count | none provided | User input | missing | |

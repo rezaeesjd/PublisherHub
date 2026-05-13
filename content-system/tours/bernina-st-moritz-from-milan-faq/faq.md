@@ -4,7 +4,7 @@
 Yes. The tour crosses the Italian-Swiss border. A full valid passport is required for every traveller.
 
 ## What is the cancellation policy?
-All sales are final. The booking is non-refundable with no free cancellation window.
+Free cancellation up to 24 hours before departure. Cancellations within 24 hours are non-refundable.
 
 ## What time does the tour depart?
 07:15 from Largo Cairoli 18, Milan (MM1 Cairoli / MM2 Lanza). Look for fuchsia-shirted staff.
