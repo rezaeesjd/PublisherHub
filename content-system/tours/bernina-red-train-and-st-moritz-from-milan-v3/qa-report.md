@@ -8,10 +8,13 @@
 - PASS: all 9 required files present.
 
 ## Status
-- qa_status: `passing`
-- publish_status: `draft`
+- qa_status: `warning`
+- publish_status: `ready_for_review`
 - public_copy_state: `final`
 
-## Notes
-- This is a MOFU variant for the Bernina cluster.
-- Inherited non-blocking gaps unchanged: product code and exclusions.
+## Open inherited items
+- Product reference code is still missing (treated as non-blocking metadata gap per current workflow intent).
+- Exclusions list missing in source.
+- Min travelers to operate missing.
+- Viator and TripAdvisor links missing (non-blocking).
+- Base package operational warnings inherited and tracked in `meta.json.inherited_warnings`.

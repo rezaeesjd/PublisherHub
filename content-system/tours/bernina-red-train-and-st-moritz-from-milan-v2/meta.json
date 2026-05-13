@@ -26,8 +26,8 @@
   ],
   "max_travelers": 20,
   "max_travelers_per_booking": 15,
-  "qa_status": "passing",
-  "publish_status": "draft",
+  "qa_status": "warning",
+  "publish_status": "ready_for_review",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
@@ -90,13 +90,48 @@
   "variant_index": 2,
   "inherited_warnings": [
     {
+      "field": "warning",
+      "base_value": "Cancellation policy is 'All sales final' \u2014 non-refundable; surface prominently in public copy.",
+      "decision": "inherit"
+    },
+    {
+      "field": "warning",
+      "base_value": "Source mandates 'A VALID PASSPORT IS REQUIRED' \u2014 must appear in FAQ and pre-booking notes.",
+      "decision": "inherit"
+    },
+    {
+      "field": "warning",
+      "base_value": "Tour explicitly not suitable for guests with wheelchairs or impaired mobility.",
+      "decision": "inherit"
+    },
+    {
+      "field": "warning",
+      "base_value": "Last-minute bookings under 12 hours cannot be guaranteed; require valid email + active phone.",
+      "decision": "inherit"
+    },
+    {
       "field": "product_reference_code",
-      "base_value": "",
+      "base_value": "pending clarification",
       "decision": "inherit"
     },
     {
       "field": "exclusions",
       "base_value": "not provided",
+      "decision": "inherit"
+    },
+    {
+      "field": "min_travelers_to_operate",
+      "base_value": "not provided",
+      "decision": "inherit"
+    },
+    {
+      "field": "tripadvisor_link",
+      "base_value": "missing",
+      "decision": "inherit"
+    },
+    {
+      "field": "viator_link",
+      "base_value": "missing",
       "decision": "inherit"
     }
   ]

@@ -2,7 +2,7 @@
 - Requested command: `WPS:GENERATE_CONTENT`
 - Actual package folder: `content-system/tours/bernina-red-train-and-st-moritz-from-milan-v3/`
 - Canonical tour title: Full Day Tour in Bernina Red Train and St Moritz from Milan
-- Product/reference code: missing
+- Product/reference code: missing (non-blocking warning in this run)
 - Active brand: Milano Adventures
 - Website URL status: provided
 - TripAdvisor URL status: missing
@@ -13,7 +13,8 @@
 ## Process QA Findings
 - PASS: Required files present.
 - PASS: Source-facts present before copy.
-- WARNING: Product code/exclusions still missing in source.
+- WARNING: Inherited gaps tracked in `inherited_warnings` (product code, exclusions, min travelers, missing OTA links, and base warnings).
 
 ## Verdict
-Generation readiness: draft variant ready for review.
+Generation readiness: ready_for_review with warnings.
+Publish readiness: not yet verified.
