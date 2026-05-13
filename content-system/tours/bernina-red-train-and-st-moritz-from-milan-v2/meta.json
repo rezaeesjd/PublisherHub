@@ -1,8 +1,8 @@
 {
   "canonical_tour_title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
-  "slug": "bernina-red-train-and-st-moritz-from-milan",
-  "public_slug": "bernina-red-train-and-st-moritz-from-milan",
-  "variant_angle": "BOFU Swiss Alps day trip: Bernina Express UNESCO railway + St Moritz",
+  "slug": "bernina-red-train-and-st-moritz-from-milan-v2",
+  "public_slug": "bernina-express-route-guide-from-milan-to-st-moritz",
+  "variant_angle": "TOFU scenic route guide",
   "product_reference_code": "",
   "channel_product_codes": {
     "viator": "",
@@ -27,7 +27,7 @@
   "max_travelers": 20,
   "max_travelers_per_booking": 15,
   "qa_status": "passing",
-  "publish_status": "ready_for_review",
+  "publish_status": "draft",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
@@ -74,17 +74,30 @@
   ],
   "last_qa_date": "2026-05-13",
   "brand": "Milano Adventures",
-  "page_title": "Bernina Red Train & St Moritz Day Trip from Milan: Swiss Alps",
+  "page_title": "Understand the full Bernina route from Milan before you choose how to travel.",
   "meta_description": "Full-day Swiss Alps tour from Milan with the UNESCO Bernina Express, Alp Gr\u00fcm and Diavolezza views, Pontresina, and free time in St Moritz.",
-  "primary_keyword": "bernina red train st moritz tour from milan",
-  "funnel_stage": "BOFU",
+  "primary_keyword": "bernina express route from milan to st moritz",
+  "funnel_stage": "TOFU",
   "cta_primary": "Book on Milano Adventures",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
   "can_generate_public_copy": true,
   "notes": [
-    "Completed first full BOFU blog asset for the bernina-focused swiss-alps-from-milan cluster.",
-    "Primary CTA uses Milano Adventures website booking URL.",
-    "Process QA report generated for this run."
+    "Variant package for TOFU intent in Bernina cluster.",
+    "Inherited unresolved non-blocking gaps unchanged from base package."
+  ],
+  "variant_of": "bernina-red-train-and-st-moritz-from-milan",
+  "variant_index": 2,
+  "inherited_warnings": [
+    {
+      "field": "product_reference_code",
+      "base_value": "",
+      "decision": "inherit"
+    },
+    {
+      "field": "exclusions",
+      "base_value": "not provided",
+      "decision": "inherit"
+    }
   ]
 }

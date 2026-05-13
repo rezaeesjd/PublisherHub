@@ -80,3 +80,11 @@
 - Start time derived from Excel time fraction 0.3020833 = 07:15.
 - Pricing-valid-from date derived from Excel serial 46396 = January 9, 2027.
 - Funnel stage classified as BOFU because this is the only conversion asset planned for the `swiss-alps-from-milan` cluster at intake.
+
+
+## Variant context
+
+- Variant of: `bernina-red-train-and-st-moritz-from-milan`
+- Variant index: 2
+- Variant angle: TOFU scenic route guide
+- Inherited warnings decision: unchanged (inherit).
