@@ -1,0 +1,82 @@
+{
+  "canonical_tour_title": "Lake Como and Lugano Full Day Trip from Milan",
+  "slug": "lake-como-and-lugano-full-day-trip-from-milan",
+  "public_slug": "lake-como-and-lugano-full-day-trip-from-milan",
+  "variant_angle": "MOFU two-lake variant: Como historic centre + Lake Como cruise + Lugano, no Bellagio",
+  "product_reference_code": "187808P95",
+  "channel_product_codes": {
+    "viator": "187808P95",
+    "tripadvisor": "33960421",
+    "supplier": "101"
+  },
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33960421-Lake_Como_and_Lugano_Full_Day_Trip_from_Milan-Milan_Lombardy.html",
+  "viator_link": "https://www.viator.com/tours/Milan/Lake-Como-and-Lugano-Full-Day-Trip-from-Milan/d512-187808P95",
+  "cta_primary_link": "https://www.viator.com/tours/Milan/Lake-Como-and-Lugano-Full-Day-Trip-from-Milan/d512-187808P95",
+  "cta_primary_channel": "viator",
+  "direct_booking_followup_required": false,
+  "price_from": "EUR 175",
+  "duration_text": "10 to 11 hours",
+  "start_time": "08:30",
+  "operating_days": "Mon, Wed, Fri, Sat",
+  "meeting_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
+  "end_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
+  "languages": [
+    "English"
+  ],
+  "max_travelers": 22,
+  "max_travelers_per_booking": 15,
+  "qa_status": "passing",
+  "publish_status": "archived",
+  "public_copy_state": "not_started",
+  "generation_phase_completed": true,
+  "clarify_phase_required": false,
+  "clarify_phase_completed": true,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "intake_questions_resolved": true,
+  "clarification_questions_presented": false,
+  "clarification_questions_presented_at": "2026-05-13",
+  "clarification_mode_selected": "auto_resolved",
+  "provisional_mode": false,
+  "blocking_issues": [],
+  "conversion_blockers": [],
+  "clarifications_needed": [],
+  "warnings": [
+    "Exclusions list left blank in source; cannot make negative inclusion claims.",
+    "Minimum travelers to operate not provided.",
+    "Switzerland border crossing: source does not specify passport vs national ID; flag for FAQ."
+  ],
+  "clarify_decisions": [
+    {
+      "field": "operating_days",
+      "raw_value": "Mon;Wed; Fri;Sat",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "Stray whitespace before 'Fri' normalized to comma-separated list.",
+      "resolved_value": "Mon, Wed, Fri, Sat"
+    },
+    {
+      "field": "website_link",
+      "raw_value": "missing",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "At least one permalink is present; channel links are equal priority.",
+      "resolved_value": "permalink_present=true"
+    }
+  ],
+  "last_qa_date": "2026-05-13",
+  "brand": "Milano Adventures",
+  "page_title": "Lake Como & Lugano Full Day Trip from Milan: Cruise + Switzerland",
+  "meta_description": "Full-day guided day trip from Milan with a Lake Como cruise, free time in Como, and an afternoon in Lugano, Switzerland.",
+  "primary_keyword": "lake como and lugano full day trip from milan",
+  "funnel_stage": "MOFU",
+  "cta_primary": "Book on Viator",
+  "human_review_required": true,
+  "canonical_title_status": "confirmed",
+  "can_generate_public_copy": true,
+  "notes": [
+    "Single generated blog intentionally disabled; package retained as tour-content source for dashboard and future cluster content generation.",
+    "Sits in `lake-como-and-lugano-from-milan` cluster as a MOFU comparison variant against the All-in-One Como + Bellagio + Lugano BOFU asset."
+  ]
+}

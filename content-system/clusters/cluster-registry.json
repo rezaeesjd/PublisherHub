@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "last_updated": "2026-05-12",
+  "last_updated": "2026-05-13",
   "source_of_truth": true,
   "description": "Machine-readable cluster registry used by both AI agents and the WebPublisherSystem dashboard. Do not maintain separate cluster status sources.",
   "default_required_assets": [
@@ -128,7 +128,7 @@
       "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33353135-All_in_One_Lake_Como_Bellagio_Lugano_from_Milan_Scenic_Cruise-Milan_Lombardy.html",
       "website_url": "{{WebsiteLink}}",
       "next_recommended_generation": "Generate the private-vs-group MOFU comparison post.",
-      "last_updated": "2026-05-12",
+      "last_updated": "2026-05-13",
       "assets": [
         {
           "required": true,
@@ -140,6 +140,17 @@
           "status": "ready_for_review",
           "next_step_link_target": "viator",
           "notes": "Cluster parent / primary conversion asset."
+        },
+        {
+          "required": true,
+          "cluster_type": "MOFU",
+          "cluster_role": "comparison-post",
+          "package_slug": "lake-como-and-lugano-full-day-trip-from-milan",
+          "public_slug": "lake-como-and-lugano-full-day-trip-from-milan",
+          "title": "Lake Como and Lugano Full Day Trip from Milan",
+          "status": "archived",
+          "next_step_link_target": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
+          "notes": "Two-lake variant (no Bellagio). Source-only intake from spreadsheet sheet 3; blog-post.md intentionally omitted."
         },
         {
           "required": true,
@@ -173,6 +184,64 @@
           "status": "planned",
           "next_step_link_target": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
           "notes": "Objection removal including the Switzerland border crossing for Lugano."
+        }
+      ]
+    },
+    {
+      "cluster_parent": "swiss-alps-from-milan",
+      "title": "Swiss Alps Day Trips from Milan",
+      "destination": "Bernina Express route + St Moritz (Canton of Graubünden, Switzerland)",
+      "origin_city": "Milan",
+      "primary_conversion_asset": "bernina-red-train-and-st-moritz-from-milan",
+      "viator_url": "",
+      "tripadvisor_url": "",
+      "website_url": "{{WebsiteLink}}",
+      "next_recommended_generation": "Supply a booking permalink for the Bernina + St Moritz tour, then generate the MOFU comparison post (guided tour vs DIY Bernina Express from Tirano).",
+      "last_updated": "2026-05-13",
+      "assets": [
+        {
+          "required": true,
+          "cluster_type": "BOFU",
+          "cluster_role": "main-booking-post",
+          "package_slug": "bernina-red-train-and-st-moritz-from-milan",
+          "public_slug": "bernina-red-train-and-st-moritz-from-milan",
+          "title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
+          "status": "needs_clarification",
+          "next_step_link_target": "pending",
+          "notes": "Source-only intake from spreadsheet sheet 4. Blocked: no booking permalink supplied. Mandatory disclosures: valid passport, 'All sales final', not wheelchair-accessible, late-booking < 12 h not guaranteed."
+        },
+        {
+          "required": true,
+          "cluster_type": "MOFU",
+          "cluster_role": "comparison-post",
+          "package_slug": "bernina-express-guided-vs-diy-from-milan",
+          "public_slug": "",
+          "title": "Bernina Express guided tour from Milan vs DIY from Tirano",
+          "status": "planned",
+          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
+          "notes": "Decision-support asset; not yet generated."
+        },
+        {
+          "required": true,
+          "cluster_type": "TOFU",
+          "cluster_role": "destination-guide",
+          "package_slug": "swiss-alps-from-milan-guide",
+          "public_slug": "",
+          "title": "Swiss Alps from Milan: Bernina Express route guide",
+          "status": "planned",
+          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
+          "notes": "Discovery asset covering the UNESCO Bernina Express, Tirano, Alp Grüm, Diavolezza, Pontresina, and St Moritz."
+        },
+        {
+          "required": true,
+          "cluster_type": "FAQ",
+          "cluster_role": "faq-support-post",
+          "package_slug": "bernina-st-moritz-from-milan-faq",
+          "public_slug": "",
+          "title": "Bernina Express + St Moritz from Milan: passport, weather and timing FAQ",
+          "status": "planned",
+          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
+          "notes": "Objection removal: passport requirement, non-refundable policy, accessibility, last-minute booking rules."
         }
       ]
     },
