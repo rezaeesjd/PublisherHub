@@ -157,3 +157,11 @@ _No resolved items yet._
 - Risk if ignored:
   Ongoing confusion between draft readiness and published state.
 - Implementation note:
+
+- 2026-05-13 | bernina-red-train-and-st-moritz-from-milan | WPS:GENERATE_CONTENT | action items: add product reference code and exclusions list when available.
+
+- 2026-05-13 | bernina-red-train-and-st-moritz-from-milan-v2 | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps.
+
+- 2026-05-13 | bernina-red-train-and-st-moritz-from-milan-v3 | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps.
+
+- 2026-05-13 | bernina-red-train-and-st-moritz-from-milan-v4 | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps.
