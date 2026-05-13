@@ -9,12 +9,12 @@
     "tripadvisor": "",
     "supplier": ""
   },
-  "website_link": "{{WebsiteLink}}",
+  "website_link": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
   "tripadvisor_link": "",
   "viator_link": "",
-  "cta_primary_link": "",
-  "cta_primary_channel": "pending",
-  "direct_booking_followup_required": true,
+  "cta_primary_link": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
+  "cta_primary_channel": "website",
+  "direct_booking_followup_required": false,
   "price_from": "EUR 113.85",
   "duration_text": "12 to 13 hours",
   "start_time": "07:15",
@@ -26,31 +26,22 @@
   ],
   "max_travelers": 20,
   "max_travelers_per_booking": 15,
-  "qa_status": "blocked",
-  "publish_status": "needs_clarification",
+  "qa_status": "passing",
+  "publish_status": "archived",
   "public_copy_state": "not_started",
   "generation_phase_completed": true,
   "clarify_phase_required": true,
-  "clarify_phase_completed": false,
+  "clarify_phase_completed": true,
   "publish_phase_completed": false,
   "live_verification_completed": false,
-  "intake_questions_resolved": false,
+  "intake_questions_resolved": true,
   "clarification_questions_presented": false,
   "clarification_questions_presented_at": "2026-05-13",
-  "clarification_mode_selected": "pending",
-  "provisional_mode": true,
-  "blocking_issues": [
-    "No booking permalink in source (Viator, TripAdvisor, and supplier website all missing). At least one real link must be supplied before public copy can drive a CTA."
-  ],
-  "conversion_blockers": [
-    "No booking permalink available"
-  ],
+  "clarification_mode_selected": "auto_resolved",
+  "provisional_mode": false,
+  "blocking_issues": [],
+  "conversion_blockers": [],
   "clarifications_needed": [
-    {
-      "field": "booking_permalink",
-      "question": "Which booking link (Viator, TripAdvisor, or supplier website) should be the primary CTA for the Bernina + St Moritz tour?",
-      "blocking": true
-    },
     {
       "field": "product_reference_code",
       "question": "What is the internal product reference code for the Bernina + St Moritz tour?",
@@ -71,6 +62,14 @@
       "decision": "auto_resolved",
       "reason": "Capitalization normalized: 'Bernina red train' → 'Bernina Red Train'.",
       "resolved_value": "Full Day Tour in Bernina Red Train and St Moritz from Milan"
+    },
+    {
+      "field": "booking_permalink",
+      "raw_value": "missing",
+      "blocking": true,
+      "decision": "resolved",
+      "reason": "Milano Adventures website permalink supplied; adopted as primary CTA.",
+      "resolved_value": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/"
     }
   ],
   "last_qa_date": "2026-05-13",
@@ -79,13 +78,13 @@
   "meta_description": "Full-day Swiss Alps tour from Milan with the UNESCO Bernina Express, Alp Grüm and Diavolezza views, Pontresina, and free time in St Moritz.",
   "primary_keyword": "bernina red train st moritz tour from milan",
   "funnel_stage": "BOFU",
-  "cta_primary": "Booking link pending",
+  "cta_primary": "Book on Milano Adventures",
   "human_review_required": true,
   "canonical_title_status": "confirmed",
-  "can_generate_public_copy": false,
+  "can_generate_public_copy": true,
   "notes": [
     "Single generated blog intentionally disabled at this stage; source-only intake per user instruction.",
     "Opens a new cluster: `swiss-alps-from-milan`. Other cluster assets (MOFU comparison, TOFU destination guide, FAQ) are planned-not-started.",
-    "`can_generate_public_copy` set to false until a real booking permalink is supplied."
+    "Primary CTA points to the Milano Adventures website permalink; Viator/TripAdvisor channels remain unset."
   ]
 }
