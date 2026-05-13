@@ -10,7 +10,7 @@ Milan Visitor Centre at Largo Cairoli 18, on the corner of Via Cusani and Largo 
 Yes. The source explicitly states "A VALID PASSPORT IS REQUIRED to join this tour" because the route crosses into Switzerland.
 
 ## What's the cancellation policy?
-"All sales final" per the source — bookings are non-refundable. Please confirm dates before booking.
+Free cancellation is available up to 24 hours before departure. Cancellations within 24 hours are non-refundable.
 
 ## Is this tour wheelchair accessible?
 No. The source states the tour is not suitable for guests with wheelchairs or impaired mobility.

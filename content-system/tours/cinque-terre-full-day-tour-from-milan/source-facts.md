@@ -44,7 +44,7 @@
 | languages | English, Spanish | User input | confirmed | Guide/service languages listed |
 | accessibility | not provided | User input | missing | Omitted from public claim |
 | traveler cap / group size | 22 | User input | confirmed | Max travelers |
-| cancellation policy | 15 | User input | needs_human_review | Unit unspecified; excluded from public specifics |
+| cancellation policy | Free cancellation up to 24 hours before departure; within 24 hours non-refundable | User input (confirmed 2026-05-13) | confirmed | Applies across all Milano Adventures tours |
 | seasonal/weather notes | Ferry may not operate due to sea/weather conditions | User input | confirmed | Must be disclosed |
 | review rating | none provided | User input | missing | No rating claim allowed |
 | review count | none provided | User input | missing | No review count claim allowed |

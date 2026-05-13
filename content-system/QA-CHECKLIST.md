@@ -144,10 +144,24 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 ## Automatic Process-QA Artifacts (Generation Runs)
 
 - [ ] **[machine]** for `WPS:GENERATE_CONTENT` / `WPS:GENERATE_CONTENT_FROM_INTAKE`, a process report exists at `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+- [ ] **[machine]** process report contains a non-empty status triad block with all three fields: `Generation`, `Publish`, `Live verification` — this is a completion gate; `generation_phase_completed` may not be `true` without it
+- [ ] **[machine]** linkage gate — `public_copy_state` = `final|provisional` → report path exists in `automation-notes.md`; `generation_phase_completed` must not be `true` until linkage is present
+- [ ] **[machine]** linkage gate — `public_copy_state` = `holding_notice` → `automation-notes.md` remains exact deferred stub and report path exists in `qa-report.md`
 - [ ] **[manual]** `content-system/system-qa/SYSTEM-QA-BACKLOG.md` includes an append for the run (action item(s) or explicit `none found`)
-- [ ] **[manual]** linkage target is present by state:
-  - `public_copy_state` = `final|provisional` → report path exists in `automation-notes.md`
-  - `public_copy_state` = `holding_notice` → `automation-notes.md` remains exact deferred stub and report path exists in `qa-report.md`
+
+## Status Triad Block (required in every process QA report)
+
+Every process QA report (whether written by a generation run or as a standalone `WPS:PROCESS_QA`) must include the following block before the Outcome section. Stakeholders must not read generation-complete as published.
+
+```md
+## Status
+- Generation: complete | incomplete
+- Publish: not yet verified | verified | needs_fix
+- Live verification: not yet verified | verified
+```
+
+- [ ] **[machine]** status triad block present and all three fields populated
+- [ ] **[manual]** status triad values accurately reflect actual phase completion markers in `meta.json`
 
 ## Issue Categories (PROCESS_QA)
 

@@ -68,9 +68,9 @@
       "primary_conversion_asset": "cinque-terre-full-day-tour-from-milan",
       "viator_url": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
       "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
-      "website_url": "{{WebsiteLink}}",
-      "next_recommended_generation": "MOFU comparison-post: Cinque Terre guided tour vs DIY by train from Milan",
-      "last_updated": "2026-05-12",
+      "website_url": "https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/",
+      "next_recommended_generation": "Generate TOFU destination guide (best day trips from Milan overview) as the next cluster asset.",
+      "last_updated": "2026-05-13",
       "assets": [
         {
           "required": true,
@@ -80,7 +80,7 @@
           "public_slug": "cinque-terre-full-day-tour-from-milan-five-villages",
           "title": "Cinque Terre Full-Day Tour from Milan",
           "status": "ready_for_review",
-          "next_step_link_target": "viator",
+          "next_step_link_target": "website",
           "notes": "Main conversion asset. Warnings: cancellation unit; accessibility not provided."
         },
         {
@@ -88,11 +88,11 @@
           "cluster_type": "MOFU",
           "cluster_role": "comparison-post",
           "package_slug": "cinque-terre-full-day-tour-from-milan-vs-diy",
-          "public_slug": "",
+          "public_slug": "cinque-terre-guided-tour-vs-diy-by-train-from-milan",
           "title": "Cinque Terre guided tour vs DIY by train from Milan",
-          "status": "planned",
+          "status": "ready_for_sync",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "Decision-support asset; not yet generated."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
         },
         {
           "required": true,
@@ -110,11 +110,11 @@
           "cluster_type": "FAQ",
           "cluster_role": "faq-support-post",
           "package_slug": "cinque-terre-from-milan-faq",
-          "public_slug": "",
+          "public_slug": "cinque-terre-from-milan-faq-practical-guide",
           "title": "Cinque Terre from Milan: practical FAQs",
-          "status": "planned",
+          "status": "ready_for_sync",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "Objection removal: ferry weather, train, pickup, languages."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
         }
       ]
     },
@@ -195,8 +195,8 @@
       "primary_conversion_asset": "bernina-red-train-and-st-moritz-from-milan",
       "viator_url": "",
       "tripadvisor_url": "",
-      "website_url": "{{WebsiteLink}}",
-      "next_recommended_generation": "Supply a booking permalink for the Bernina + St Moritz tour, then generate the MOFU comparison post (guided tour vs DIY Bernina Express from Tirano).",
+      "website_url": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
+      "next_recommended_generation": "Generate TOFU destination guide: Swiss Alps from Milan — Bernina Express route guide (swiss-alps-from-milan-guide).",
       "last_updated": "2026-05-13",
       "assets": [
         {
@@ -215,11 +215,11 @@
           "cluster_type": "MOFU",
           "cluster_role": "comparison-post",
           "package_slug": "bernina-express-guided-vs-diy-from-milan",
-          "public_slug": "",
+          "public_slug": "bernina-express-guided-tour-vs-diy-from-milan",
           "title": "Bernina Express guided tour from Milan vs DIY from Tirano",
-          "status": "planned",
+          "status": "ready_for_sync",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "Decision-support asset; not yet generated."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
         },
         {
           "required": true,
@@ -237,11 +237,11 @@
           "cluster_type": "FAQ",
           "cluster_role": "faq-support-post",
           "package_slug": "bernina-st-moritz-from-milan-faq",
-          "public_slug": "",
+          "public_slug": "bernina-express-st-moritz-from-milan-faq",
           "title": "Bernina Express + St Moritz from Milan: passport, weather and timing FAQ",
-          "status": "planned",
+          "status": "ready_for_sync",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "Objection removal: passport requirement, non-refundable policy, accessibility, last-minute booking rules."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
         },
         {
           "required": false,

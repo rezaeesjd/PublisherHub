@@ -111,7 +111,7 @@ _No resolved items yet._
 - Priority: P1
 - Owner agent: Cross-functional
 - Area: qa-rule
-- Status: open
+- Status: resolved
 - Problem:
   A package can ship with content QA (`qa-report.md`) but without an explicit system/process QA report connected to that run.
 - Why it matters:
@@ -132,6 +132,7 @@ _No resolved items yet._
 - Risk if ignored:
   System-level process regressions remain invisible while content appears compliant.
 - Implementation note:
+  2026-05-13: WORKFLOW.md step 9 upgraded to hard completion gate — `generation_phase_completed` may not be `true` until process report exists with non-empty status triad block and linkage is present in `automation-notes.md`. COMMANDS.md WPS:GENERATE_CONTENT and WPS:GENERATE_CONTENT_FROM_INTAKE changed from "Should do" to "Must do (completion gate)". QA-CHECKLIST.md "Automatic Process-QA Artifacts" section strengthened: linkage checks promoted from `[manual]` to `[machine]`, status triad block added as machine-checkable gate.
 
 ### SYSQA-20260511-003: Enforce generation/publish/live status separation in process reports
 - Date added: 2026-05-11
@@ -139,7 +140,7 @@ _No resolved items yet._
 - Priority: P2
 - Owner agent: Cross-functional
 - Area: docs
-- Status: open
+- Status: resolved
 - Problem:
   Stakeholders can misread package completion as publication because process QA summaries are not consistently standardized.
 - Why it matters:
@@ -157,6 +158,7 @@ _No resolved items yet._
 - Risk if ignored:
   Ongoing confusion between draft readiness and published state.
 - Implementation note:
+  2026-05-13: QA-CHECKLIST.md — added "Status Triad Block" section with machine-checkable requirement for all process QA reports. WORKFLOW.md step 9 — added required status triad format block. Both changes prevent stakeholders from misreading generation-complete as published.
 
 - 2026-05-13 | bernina-red-train-and-st-moritz-from-milan | WPS:GENERATE_CONTENT | action items: add product reference code and exclusions list when available.
 
@@ -168,3 +170,7 @@ _No resolved items yet._
 
 - 2026-05-13 | cinque-terre-full-day-tour-from-milan | none found (non-blocking: cancellation unit + accessibility data still user-input gaps)
 - 2026-05-13 | bernina+cinque cluster audit | WPS:PROCESS_QA | action items: sync Bernina registry website_url + publish FAQ-first for both clusters.
+- 2026-05-13 | bernina-st-moritz-from-milan-faq | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps (product code, exclusions, OTA links).
+- 2026-05-13 | cinque-terre-from-milan-faq | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps (cancellation unit, accessibility).
+- 2026-05-13 | bernina-express-guided-vs-diy-from-milan | WPS:GENERATE_CONTENT | note: DIY comparison facts inferred from general destination knowledge; human review of comparison table recommended before publish.
+- 2026-05-13 | cinque-terre-full-day-tour-from-milan-vs-diy | WPS:GENERATE_CONTENT | note: DIY comparison facts inferred from general destination knowledge; human review of comparison table recommended before publish.
