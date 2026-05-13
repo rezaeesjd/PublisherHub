@@ -20,12 +20,18 @@
    - **Clarify mode (blocking clarifications open):** generate `source-facts.md`, `meta.json`, `qa-report.md`, `blog-post.md` (holding notice), and create blocked-state stubs for `brief.md`, `keywords.md`, `faq.md`, `internal-links.md`, `automation-notes.md` with a one-line deferred marker.
    - **Hard fail condition:** if any of the 9 required files is missing in clarify mode, generation is incomplete and must not be reported as structurally ready.
 8. Generate/update `qa-report.md` and run the QA checklist.
-9. **Automatic system/process QA pass (always-on for generation):**
+9. **Automatic system/process QA pass (always-on for generation) — completion gate:**
    - run a `WPS:PROCESS_QA`-equivalent pass automatically (no extra user command)
-   - write `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
+   - **[hard gate]** write `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md` — generation is **not complete** until this file exists with a non-empty status triad block (see § Process report status triad below)
    - append system-level findings (or `none found`) to `content-system/system-qa/SYSTEM-QA-BACKLOG.md`
-   - link the process report path in package `automation-notes.md` when `public_copy_state` is `final` or `provisional`
+   - **[hard gate]** link the process report path in package `automation-notes.md` when `public_copy_state` is `final` or `provisional` — the `generation_phase_completed` flag must not be set to `true` until this linkage is present
    - if `public_copy_state` is `holding_notice`, keep `automation-notes.md` as the required deferred stub and place the process-report reference in `qa-report.md` instead
+   - the process report must include a status triad block in this exact format:
+     ```
+     - Generation: complete | incomplete
+     - Publish: not yet verified | verified | needs_fix
+     - Live verification: not yet verified | verified
+     ```
 10. Open or update the PR. PR description must mirror both `qa-report.md` and process-QA findings.
 11. Human review resolves any open clarifications and any QA findings.
 12. Publish workflow (`WPS:PUBLISH_BLOG`) validates package.
