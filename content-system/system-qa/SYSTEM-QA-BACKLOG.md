@@ -165,3 +165,5 @@ _No resolved items yet._
 - 2026-05-13 | bernina-red-train-and-st-moritz-from-milan-v3 | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps.
 
 - 2026-05-13 | bernina-red-train-and-st-moritz-from-milan-v4 | WPS:GENERATE_CONTENT | none found beyond inherited non-blocking source gaps.
+
+- 2026-05-13 | cinque-terre-full-day-tour-from-milan | none found (non-blocking: cancellation unit + accessibility data still user-input gaps)
