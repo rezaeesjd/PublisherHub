@@ -40,7 +40,7 @@ function wps_publish_status_allowed_transitions(): array
     return [
         'draft'                   => ['draft', 'needs_clarification', 'ready_for_review', 'needs_fix'],
         'needs_clarification'     => ['needs_clarification', 'draft', 'ready_for_review'],
-        'ready_for_review'        => ['ready_for_review', 'needs_fix', 'ready_for_sync', 'draft'],
+        'ready_for_review'        => ['ready_for_review', 'needs_fix', 'published', 'draft'],
         'needs_fix'               => ['needs_fix', 'draft', 'ready_for_review'],
         'ready_for_sync'          => ['ready_for_sync', 'needs_live_verification', 'needs_fix', 'ready_for_review'],
         'needs_live_verification' => ['needs_live_verification', 'published', 'needs_fix', 'ready_for_review'],

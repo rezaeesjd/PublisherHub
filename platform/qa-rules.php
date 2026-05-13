@@ -72,7 +72,7 @@ function wps_qa_run_for_tour(string $tourDir): array
     }
 
     $publishStatus = (string) ($meta['publish_status'] ?? 'draft');
-    $isPublished = in_array($publishStatus, ['published', 'ready_for_sync', 'needs_live_verification'], true);
+    $isPublished = ($publishStatus === 'published');
 
     foreach (wps_clarifications_findings($meta, $isPublished) as $f) {
         $findings[] = $f;
@@ -516,7 +516,7 @@ function wps_clarifications_findings(array $meta, bool $isPublished): array
         }
         $field = (string) ($item['field'] ?? "clarification[{$i}]");
         $blocking = $item['blocking'] ?? true;
-        $severity = ($isPublished || $blocking) ? 'fail' : 'warn';
+        $severity = $blocking ? 'fail' : 'warn';
         $question = (string) ($item['question'] ?? 'unresolved clarification');
         $findings[] = wps_qa_finding($severity, 'clarification-pending', "Pending WPS:CLARIFY for meta.{$field}: {$question}");
     }
