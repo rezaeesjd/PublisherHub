@@ -20,7 +20,7 @@
   "start_time": "07:00",
   "meeting_point": "Piazza IV Novembre, 20124 Milano MI, Italy",
   "qa_status": "warning",
-  "publish_status": "ready_for_sync",
+  "publish_status": "published",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
