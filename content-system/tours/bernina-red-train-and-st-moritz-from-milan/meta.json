@@ -1,0 +1,91 @@
+{
+  "canonical_tour_title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
+  "slug": "bernina-red-train-and-st-moritz-from-milan",
+  "public_slug": "bernina-red-train-and-st-moritz-from-milan",
+  "variant_angle": "BOFU Swiss Alps day trip: Bernina Express UNESCO railway + St Moritz",
+  "product_reference_code": "",
+  "channel_product_codes": {
+    "viator": "",
+    "tripadvisor": "",
+    "supplier": ""
+  },
+  "website_link": "{{WebsiteLink}}",
+  "tripadvisor_link": "",
+  "viator_link": "",
+  "cta_primary_link": "",
+  "cta_primary_channel": "pending",
+  "direct_booking_followup_required": true,
+  "price_from": "EUR 113.85",
+  "duration_text": "12 to 13 hours",
+  "start_time": "07:15",
+  "operating_days": "Daily",
+  "meeting_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
+  "end_point": "Largo Cairoli, 18, 20121 Milano MI, Italy",
+  "languages": [
+    "English"
+  ],
+  "max_travelers": 20,
+  "max_travelers_per_booking": 15,
+  "qa_status": "blocked",
+  "publish_status": "needs_clarification",
+  "public_copy_state": "not_started",
+  "generation_phase_completed": true,
+  "clarify_phase_required": true,
+  "clarify_phase_completed": false,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "intake_questions_resolved": false,
+  "clarification_questions_presented": false,
+  "clarification_questions_presented_at": "2026-05-13",
+  "clarification_mode_selected": "pending",
+  "provisional_mode": true,
+  "blocking_issues": [
+    "No booking permalink in source (Viator, TripAdvisor, and supplier website all missing). At least one real link must be supplied before public copy can drive a CTA."
+  ],
+  "conversion_blockers": [
+    "No booking permalink available"
+  ],
+  "clarifications_needed": [
+    {
+      "field": "booking_permalink",
+      "question": "Which booking link (Viator, TripAdvisor, or supplier website) should be the primary CTA for the Bernina + St Moritz tour?",
+      "blocking": true
+    },
+    {
+      "field": "product_reference_code",
+      "question": "What is the internal product reference code for the Bernina + St Moritz tour?",
+      "blocking": false
+    }
+  ],
+  "warnings": [
+    "Cancellation policy is 'All sales final' — non-refundable; surface prominently in public copy.",
+    "Source mandates 'A VALID PASSPORT IS REQUIRED' — must appear in FAQ and pre-booking notes.",
+    "Tour explicitly not suitable for guests with wheelchairs or impaired mobility.",
+    "Last-minute bookings under 12 hours cannot be guaranteed; require valid email + active phone."
+  ],
+  "clarify_decisions": [
+    {
+      "field": "canonical_tour_title",
+      "raw_value": "Full Day Tour in Bernina red train and St Moritz from Milan",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "Capitalization normalized: 'Bernina red train' → 'Bernina Red Train'.",
+      "resolved_value": "Full Day Tour in Bernina Red Train and St Moritz from Milan"
+    }
+  ],
+  "last_qa_date": "2026-05-13",
+  "brand": "Milano Adventures",
+  "page_title": "Bernina Red Train & St Moritz Day Trip from Milan: Swiss Alps",
+  "meta_description": "Full-day Swiss Alps tour from Milan with the UNESCO Bernina Express, Alp Grüm and Diavolezza views, Pontresina, and free time in St Moritz.",
+  "primary_keyword": "bernina red train st moritz tour from milan",
+  "funnel_stage": "BOFU",
+  "cta_primary": "Booking link pending",
+  "human_review_required": true,
+  "canonical_title_status": "confirmed",
+  "can_generate_public_copy": false,
+  "notes": [
+    "Single generated blog intentionally disabled at this stage; source-only intake per user instruction.",
+    "Opens a new cluster: `swiss-alps-from-milan`. Other cluster assets (MOFU comparison, TOFU destination guide, FAQ) are planned-not-started.",
+    "`can_generate_public_copy` set to false until a real booking permalink is supplied."
+  ]
+}

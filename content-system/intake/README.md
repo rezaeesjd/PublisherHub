@@ -4,7 +4,8 @@ Raw operator/supplier inputs land here before being normalised into individual t
 
 ## Files
 
-- `2026-05-12-tour-batch-01.csv` — initial batch of 5 in-scope tours (Cinque Terre, three Lake Como/Lugano variants, Milan cooking class). Source-facts and meta files for each tour are derived from this row.
+- `2026-05-12-tour-batch-01.csv` — initial batch of in-scope tours: Cinque Terre, the All-in-One Como/Bellagio/Lugano BOFU, the Milan cooking class, the Lake Como + Lugano two-lake variant, and the Bernina Express + St Moritz Swiss Alps tour. Source-facts and meta files for each tour are derived from this row.
+  - Rows 5 and 6 (Lake Como + Lugano Full Day Trip, Bernina + St Moritz) were added from the 2026-05-13 spreadsheet upload (sheets 3 and 4).
 
 ## Rejected from this batch
 
