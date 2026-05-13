@@ -229,18 +229,53 @@ if (in_array((string) ($meta['funnel_stage'] ?? ''), ['BOFU', 'MOFU'], true) || 
     }
 }
 
-// G2A.5: related posts from the same cluster / keyword.
+// G2A.5: related posts from the same cluster / keyword. Cluster siblings
+// (resolved through the registry) are surfaced first; remaining slots are
+// filled by keyword/funnel/variant similarity.
 $archiveIndex = wps_archive_index($settings);
-$relatedRecords = wps_related_posts(
+$archiveRecords = is_array($archiveIndex['posts'] ?? null) ? $archiveIndex['posts'] : [];
+
+$relatedLimit = 4;
+$siblingRecords = wps_cluster_sibling_records($post, $archiveRecords, $relatedLimit);
+$seenSlugs = [];
+foreach ($siblingRecords as $rec) {
+    $seenSlugs[(string) ($rec['public_slug'] ?? '')] = true;
+}
+$seenSlugs[$publicSlug] = true;
+
+$keywordRelated = wps_related_posts(
     [
         'public_slug'     => $publicSlug,
         'primary_keyword' => (string) ($post['primary_keyword'] ?? ''),
         'funnel_stage'    => (string) ($post['funnel_stage'] ?? ''),
         'variant_of'      => (string) ($meta['variant_of'] ?? ''),
     ],
-    is_array($archiveIndex['posts'] ?? null) ? $archiveIndex['posts'] : [],
-    4
+    $archiveRecords,
+    $relatedLimit * 2
 );
+
+$relatedRecords = $siblingRecords;
+foreach ($keywordRelated as $rec) {
+    if (count($relatedRecords) >= $relatedLimit) {
+        break;
+    }
+    $slug = (string) ($rec['public_slug'] ?? '');
+    if ($slug === '' || isset($seenSlugs[$slug])) {
+        continue;
+    }
+    $seenSlugs[$slug] = true;
+    $relatedRecords[] = $rec;
+}
+
+// G2A.10: external booking + review-platform CTAs resolved with a
+// per-post -> cluster -> site fallback chain. Empty when no real links
+// (only placeholders) are available, in which case the card is skipped.
+$bookingLinks = wps_resolve_post_booking_links($post, $settings, $utmCampaign);
+$hasPrimaryCta = $bookingLinks['viator']['url'] !== ''
+    || $bookingLinks['tripadvisor']['url'] !== ''
+    || $bookingLinks['website']['url'] !== '';
+$hasSecondaryCta = !empty($bookingLinks['secondary']);
+$showBookingCta = $hasPrimaryCta || $hasSecondaryCta;
 
 // G2A.6: preconnect to CTA destinations we know we'll link to + analytics.
 $preconnect = wps_render_preconnect($settings, $blogHtml);
@@ -313,6 +348,49 @@ $analyticsBody = wps_render_analytics($settings, 'body');
     <article class="card content-body" style="padding: 20px;">
       <?php echo $blogHtml; ?>
     </article>
+    <?php if ($showBookingCta): ?>
+      <?php
+        $websiteLabel = $siteName !== '' ? 'Book direct on ' . $siteName : 'Book direct on our website';
+        // rel="sponsored" on third-party booking destinations follows
+        // Google's guidance for affiliate-style outbound links.
+        $primaryRel = 'noopener sponsored';
+        $ownRel = 'noopener';
+      ?>
+      <section class="card book-cta" aria-labelledby="book-cta-heading">
+        <h2 id="book-cta-heading">Book this tour or check our reviews</h2>
+        <p class="muted">Reserve your spot and read recent traveler reviews on the platforms below.</p>
+        <ul class="book-cta-actions">
+          <?php if ($bookingLinks['viator']['url'] !== ''): ?>
+            <li>
+              <a class="cta-button-booking" href="<?php echo wps_h($bookingLinks['viator']['url']); ?>" target="_blank" rel="<?php echo $primaryRel; ?>">Book on Viator</a>
+              <span class="cta-sub">Live availability &amp; traveler reviews</span>
+            </li>
+          <?php endif; ?>
+          <?php if ($bookingLinks['tripadvisor']['url'] !== ''): ?>
+            <li>
+              <a class="cta-button-secondary" href="<?php echo wps_h($bookingLinks['tripadvisor']['url']); ?>" target="_blank" rel="<?php echo $primaryRel; ?>">View on TripAdvisor</a>
+              <span class="cta-sub">Ratings &amp; recent reviews</span>
+            </li>
+          <?php endif; ?>
+          <?php if ($bookingLinks['website']['url'] !== ''): ?>
+            <li>
+              <a class="cta-button-secondary" href="<?php echo wps_h($bookingLinks['website']['url']); ?>" target="_blank" rel="<?php echo $ownRel; ?>"><?php echo wps_h($websiteLabel); ?></a>
+              <span class="cta-sub">Book direct with the operator</span>
+            </li>
+          <?php endif; ?>
+        </ul>
+        <?php if ($hasSecondaryCta): ?>
+          <div class="trust-row">
+            <p class="muted trust-label">Also find us on</p>
+            <ul class="trust-links">
+              <?php foreach ($bookingLinks['secondary'] as $entry): ?>
+                <li><a href="<?php echo wps_h($entry['url']); ?>" target="_blank" rel="noopener"><?php echo wps_h($entry['label']); ?></a></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        <?php endif; ?>
+      </section>
+    <?php endif; ?>
     <?php if (!empty($faqPairs)): ?>
       <section class="card faq-block" style="padding: 20px; margin-top: 20px;" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions</h2>

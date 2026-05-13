@@ -163,6 +163,71 @@ textarea:focus-visible,
 .post-summary strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-dark); margin-bottom: 4px; }
 .post-summary p { margin: 0; color: var(--text); }
 
+/* Booking + review-platform CTA card. Rendered between the article body
+   and the FAQ when at least one real booking/review URL is resolved. */
+.book-cta {
+    margin-top: 24px;
+    padding: 20px;
+}
+.book-cta h2 { margin-top: 0; }
+.book-cta > p { margin: 4px 0 14px; }
+.book-cta-actions {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+.book-cta-actions li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.book-cta-actions .cta-sub {
+    font-size: 13px;
+    color: var(--muted);
+}
+.cta-button-secondary {
+    display: inline-block;
+    background: #fff;
+    color: var(--brand-dark) !important;
+    border: 1px solid var(--brand);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none !important;
+}
+.cta-button-secondary:hover {
+    background: var(--brand-light);
+}
+.trust-row {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+.trust-row .trust-label {
+    margin: 0 0 6px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.trust-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+}
+.trust-links a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--brand-dark);
+}
+.trust-links a:hover { text-decoration: underline; }
+
 /* Reduce-motion users get instant transitions */
 @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; }
