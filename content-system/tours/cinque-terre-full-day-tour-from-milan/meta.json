@@ -20,7 +20,7 @@
   "start_time": "07:00",
   "meeting_point": "Piazza IV Novembre, 20124 Milano MI, Italy",
   "qa_status": "warning",
-  "publish_status": "ready_for_review",
+  "publish_status": "ready_for_sync",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
@@ -41,7 +41,7 @@
   "clarify_decisions": [
     {
       "field": "canonical_tour_title",
-      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &\u2026",
+      "raw_value": "Cinque Terre Full-Day Tour from Milan: Riomaggiore, Manarola &…",
       "blocking": false,
       "decision": "auto_resolved",
       "reason": "Trailing ellipsis and narrower scope auto-normalized to full-tour canonical title.",

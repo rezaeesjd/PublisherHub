@@ -27,7 +27,7 @@
   "max_travelers": 20,
   "max_travelers_per_booking": 15,
   "qa_status": "warning",
-  "publish_status": "ready_for_review",
+  "publish_status": "ready_for_sync",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,
@@ -49,8 +49,8 @@
     }
   ],
   "warnings": [
-    "Cancellation policy is 'All sales final' \u2014 non-refundable; surface prominently in public copy.",
-    "Source mandates 'A VALID PASSPORT IS REQUIRED' \u2014 must appear in FAQ and pre-booking notes.",
+    "Cancellation policy is 'All sales final' — non-refundable; surface prominently in public copy.",
+    "Source mandates 'A VALID PASSPORT IS REQUIRED' — must appear in FAQ and pre-booking notes.",
     "Tour explicitly not suitable for guests with wheelchairs or impaired mobility.",
     "Last-minute bookings under 12 hours cannot be guaranteed; require valid email + active phone."
   ],
@@ -60,7 +60,7 @@
       "raw_value": "Full Day Tour in Bernina red train and St Moritz from Milan",
       "blocking": false,
       "decision": "auto_resolved",
-      "reason": "Capitalization normalized: 'Bernina red train' \u2192 'Bernina Red Train'.",
+      "reason": "Capitalization normalized: 'Bernina red train' → 'Bernina Red Train'.",
       "resolved_value": "Full Day Tour in Bernina Red Train and St Moritz from Milan"
     },
     {
@@ -75,7 +75,7 @@
   "last_qa_date": "2026-05-13",
   "brand": "Milano Adventures",
   "page_title": "Use a pre-booking checklist to choose the right Bernina + St Moritz departure from Milan.",
-  "meta_description": "Full-day Swiss Alps tour from Milan with the UNESCO Bernina Express, Alp Gr\u00fcm and Diavolezza views, Pontresina, and free time in St Moritz.",
+  "meta_description": "Full-day Swiss Alps tour from Milan with the UNESCO Bernina Express, Alp Grüm and Diavolezza views, Pontresina, and free time in St Moritz.",
   "primary_keyword": "bernina st moritz day trip booking checklist",
   "funnel_stage": "BOFU",
   "cta_primary": "Book on Milano Adventures",
@@ -91,12 +91,12 @@
   "inherited_warnings": [
     {
       "field": "warning",
-      "base_value": "Cancellation policy is 'All sales final' \u2014 non-refundable; surface prominently in public copy.",
+      "base_value": "Cancellation policy is 'All sales final' — non-refundable; surface prominently in public copy.",
       "decision": "inherit"
     },
     {
       "field": "warning",
-      "base_value": "Source mandates 'A VALID PASSPORT IS REQUIRED' \u2014 must appear in FAQ and pre-booking notes.",
+      "base_value": "Source mandates 'A VALID PASSPORT IS REQUIRED' — must appear in FAQ and pre-booking notes.",
       "decision": "inherit"
     },
     {
