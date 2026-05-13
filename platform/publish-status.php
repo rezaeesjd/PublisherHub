@@ -109,11 +109,8 @@ function wps_publish_status_transition(array $meta, string $next, ?string $reaso
     if ($next === 'ready_for_sync' || $next === 'needs_live_verification' || $next === 'published') {
         $meta['publish_phase_completed'] = true;
     }
-    if ($next === 'published') {
-        $meta['live_verification_completed'] = true;
-        if (empty($meta['first_published_at'])) {
-            $meta['first_published_at'] = gmdate('Y-m-d');
-        }
+    if ($next === 'published' && empty($meta['first_published_at'])) {
+        $meta['first_published_at'] = gmdate('Y-m-d');
     }
     if ($next === 'needs_clarification') {
         $meta['clarify_phase_required'] = true;

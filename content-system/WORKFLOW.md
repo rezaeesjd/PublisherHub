@@ -70,8 +70,8 @@
 - `intake_questions_resolved` true only after every blocking-required intake field is answered (or waived in provisional mode).
 - `can_generate_public_copy` true only when blocking clarifications are empty OR provisional mode is explicitly approved.
 - `publish_phase_completed` true only after `WPS:PUBLISH_BLOG` finishes its checks.
-- `live_verification_completed` true only after `WPS:LIVE_VERIFY` confirms archive + single post.
-- `publish_status` must not be `published` while `live_verification_completed == false`.
+- `live_verification_completed` true only after `WPS:LIVE_VERIFY` confirms archive + single post (informational marker).
+- `publish_status` can be `published` without requiring `live_verification_completed == true`.
 - `public_copy_state` transitions: `not_started` → (`holding_notice` | `provisional` | `final`). `holding_notice` and `provisional` can transition to `final` only via a re-run of `WPS:GENERATE_CONTENT` after blockers are resolved.
 
 ## Generation vs publishing vs live verification

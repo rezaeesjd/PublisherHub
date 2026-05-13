@@ -130,7 +130,7 @@
 - **Should do:** Confirm actual accessible live pages.
 - **Must not do:** Generate or rewrite content packages.
 - **Allowed file changes:** QA notes / status updates reflecting verification.
-- **Final expected status:** `live_verification_completed: true` only when confirmed; only then can `publish_status` be `published`.
+- **Final expected status:** `publish_status: published` when package QA/publish checks pass; `live_verification_completed` remains optional verification telemetry.
 
 
 ## Direct-booking follow-up (required when OTA fallback is primary)
