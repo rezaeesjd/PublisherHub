@@ -30,8 +30,8 @@
 | product/reference code | 187808P109 | User input | confirmed | Non-OTA code treated as primary |
 | channel product codes | Viator: 187808P82; TripAdvisor: 33344981; Supplier: 187808P109 | User input + URLs | confirmed | Channel-specific mapping |
 | website booking URL | https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/ | User input | confirmed | Direct booking URL provided and used as primary CTA |
-| TripAdvisor URL | provided | User input | confirmed | Secondary trust/alternate booking |
-| Viator URL | provided | User input | confirmed | Valid permalink |
+| TripAdvisor URL | https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html | User input | confirmed | Secondary trust/alternate booking |
+| Viator URL | https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82 | User input | confirmed | Valid permalink |
 | price | Adult 275 EUR; Child 157 EUR; Infant 0 EUR | User input | confirmed | Per person |
 | duration | 13 Hrs and 30 minutes | User input | confirmed | One-day tour |
 | start time | 07:00 | User input | confirmed | Relative booking cutoff 9h |
