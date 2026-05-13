@@ -161,6 +161,10 @@ function wps_default_settings(): array
         'website_link' => '{{WebsiteLink}}',
         'tripadvisor_link' => '{{TripAdvisorLink}}',
         'viator_link' => '{{ViatorLink}}',
+        // Site-wide secondary review/profile links shown in the per-post
+        // booking CTA card. Keys are visible labels, values are absolute
+        // URLs. Per-post meta.cta_secondary_links override entries by key.
+        'cta_secondary_links' => [],
         'admin_email' => '',
         'force_https' => false,
         'archive_page_size' => 20,
@@ -955,6 +959,169 @@ function wps_related_posts(array $current, array $allRecords, int $limit = 4): a
 
     usort($scored, fn($a, $b) => $b['score'] <=> $a['score']);
     return array_slice(array_map(fn($s) => $s['record'], $scored), 0, $limit);
+}
+
+/**
+ * Find the cluster registry entry that owns this tour package, if any.
+ * Returns the cluster array (with full assets list) or null when the
+ * package is not registered. Used to inherit booking links and surface
+ * sibling assets in the per-post UI.
+ */
+function wps_cluster_for_post(array $post): ?array
+{
+    $baseSlug = trim((string) ($post['base_slug'] ?? $post['slug'] ?? ''));
+    if ($baseSlug === '') {
+        return null;
+    }
+    $index = wps_index_tour_clusters();
+    $entry = $index['by_package_slug'][$baseSlug] ?? null;
+    if (!is_array($entry) || !is_array($entry['cluster'] ?? null)) {
+        return null;
+    }
+    return $entry['cluster'];
+}
+
+/**
+ * Resolve a single booking link with a per-post -> cluster -> site fallback
+ * chain. Placeholders ({{...}}) and non-http values are treated as "no link"
+ * so we never render dummy CTAs. Real URLs are tagged with the UTM medium
+ * passed in.
+ *
+ * @internal exposed for wps_resolve_post_booking_links().
+ */
+function wps_pick_booking_link(array $sources, string $campaign, string $medium): array
+{
+    foreach ($sources as $source => $candidate) {
+        $url = trim((string) $candidate);
+        if ($url === '' || strpos($url, '{{') !== false) {
+            continue;
+        }
+        if (!preg_match('#^https?://#i', $url)) {
+            continue;
+        }
+        if (function_exists('wps_append_utm') && $campaign !== '') {
+            $url = wps_append_utm($url, $campaign, 'blog', $medium);
+        }
+        return ['url' => $url, 'source' => (string) $source];
+    }
+    return ['url' => '', 'source' => ''];
+}
+
+/**
+ * Resolve every external review/booking destination available for a blog
+ * post. Resolution order for each channel is: per-post meta -> cluster
+ * registry -> site settings. Secondary links are merged across site
+ * defaults and per-post overrides keyed by case-insensitive label.
+ *
+ * @return array{
+ *   viator: array{url:string,source:string},
+ *   tripadvisor: array{url:string,source:string},
+ *   website: array{url:string,source:string},
+ *   secondary: list<array{label:string,url:string,source:string}>,
+ *   cluster: array<string,mixed>
+ * }
+ */
+function wps_resolve_post_booking_links(array $post, array $settings, string $utmCampaign): array
+{
+    $meta    = is_array($post['meta'] ?? null) ? $post['meta'] : [];
+    $cluster = wps_cluster_for_post($post) ?? [];
+
+    $viator = wps_pick_booking_link([
+        'post'    => (string) ($meta['viator_link'] ?? ''),
+        'cluster' => (string) ($cluster['viator_url'] ?? ''),
+        'site'    => (string) ($settings['viator_link'] ?? ''),
+    ], $utmCampaign, 'cta-viator');
+
+    $tripadvisor = wps_pick_booking_link([
+        'post'    => (string) ($meta['tripadvisor_link'] ?? ''),
+        'cluster' => (string) ($cluster['tripadvisor_url'] ?? ''),
+        'site'    => (string) ($settings['tripadvisor_link'] ?? ''),
+    ], $utmCampaign, 'cta-tripadvisor');
+
+    $website = wps_pick_booking_link([
+        'post'    => (string) ($meta['website_link'] ?? ''),
+        'cluster' => (string) ($cluster['website_url'] ?? ''),
+        'site'    => (string) ($settings['website_link'] ?? ''),
+    ], $utmCampaign, 'cta-website');
+
+    $secondaryByKey = [];
+    $merge = static function ($links, string $source) use (&$secondaryByKey): void {
+        if (!is_array($links)) {
+            return;
+        }
+        foreach ($links as $label => $url) {
+            $url = trim((string) $url);
+            $label = trim((string) $label);
+            if ($label === '' || $url === '' || strpos($url, '{{') !== false) {
+                continue;
+            }
+            if (!preg_match('#^https?://#i', $url)) {
+                continue;
+            }
+            $secondaryByKey[strtolower($label)] = ['label' => $label, 'url' => $url, 'source' => $source];
+        }
+    };
+    $merge($settings['cta_secondary_links'] ?? null, 'site');
+    $merge($meta['cta_secondary_links'] ?? null, 'post');
+
+    $secondary = [];
+    foreach ($secondaryByKey as $entry) {
+        if (function_exists('wps_append_utm') && $utmCampaign !== '') {
+            $entry['url'] = wps_append_utm($entry['url'], $utmCampaign, 'blog', 'cta-secondary');
+        }
+        $secondary[] = $entry;
+    }
+
+    return [
+        'viator'      => $viator,
+        'tripadvisor' => $tripadvisor,
+        'website'     => $website,
+        'secondary'   => $secondary,
+        'cluster'     => $cluster,
+    ];
+}
+
+/**
+ * Filter archive records down to cluster siblings (other package_slugs
+ * registered in the same cluster registry entry as the current post).
+ * Returns at most $limit records, ordered as they appear in the archive
+ * index (newest first).
+ */
+function wps_cluster_sibling_records(array $post, array $allRecords, int $limit = 4): array
+{
+    $cluster = wps_cluster_for_post($post);
+    if (!$cluster) {
+        return [];
+    }
+    $baseSlug = (string) ($post['base_slug'] ?? $post['slug'] ?? '');
+    $siblings = [];
+    foreach (($cluster['assets'] ?? []) as $asset) {
+        if (!is_array($asset)) {
+            continue;
+        }
+        $slug = trim((string) ($asset['package_slug'] ?? ''));
+        if ($slug === '' || $slug === $baseSlug) {
+            continue;
+        }
+        $siblings[$slug] = true;
+    }
+    if (!$siblings) {
+        return [];
+    }
+    $out = [];
+    foreach ($allRecords as $rec) {
+        if (!is_array($rec)) {
+            continue;
+        }
+        $recBase = (string) ($rec['base_slug'] ?? '');
+        if ($recBase !== '' && isset($siblings[$recBase])) {
+            $out[] = $rec;
+            if (count($out) >= $limit) {
+                break;
+            }
+        }
+    }
+    return $out;
 }
 
 function wps_render_footer(): void
