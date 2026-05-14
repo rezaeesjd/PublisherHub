@@ -27,9 +27,22 @@ header('Content-Type: application/xml; charset=utf-8');
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
-// Archive index
+// Archive index — lastmod tracks the freshest published post so crawlers
+// see the listing change whenever new content ships. Dates are ISO
+// (YYYY-MM-DD), so a plain string comparison finds the newest.
+$archiveLastmod = '';
+foreach ($records as $r) {
+    $d = (string) ($r['last_qa_date'] ?? $r['published_date'] ?? '');
+    if ($d !== '' && $d > $archiveLastmod) {
+        $archiveLastmod = $d;
+    }
+}
+
 echo "  <url>\n";
 echo '    <loc>' . htmlspecialchars($archiveUrl, ENT_QUOTES, 'UTF-8') . "</loc>\n";
+if ($archiveLastmod !== '') {
+    echo '    <lastmod>' . htmlspecialchars($archiveLastmod, ENT_QUOTES, 'UTF-8') . "</lastmod>\n";
+}
 echo "    <changefreq>daily</changefreq>\n";
 echo "    <priority>0.6</priority>\n";
 echo "  </url>\n";

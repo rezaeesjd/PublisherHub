@@ -76,6 +76,11 @@ function wps_archive_index_rebuild(array $settings): array
                 continue;
             }
             $applied = wps_apply_post_override($post);
+            // Source-content packages stay in the dashboard (wps_get_posts)
+            // but never reach the public archive, sitemap, or related links.
+            if (wps_is_source_content_package((string) ($applied['base_slug'] ?? $applied['slug'] ?? ''))) {
+                continue;
+            }
             $publicSlug = (string) ($applied['public_slug'] ?? $applied['slug'] ?? '');
             if ($publicSlug === '') {
                 continue;

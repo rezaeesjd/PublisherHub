@@ -103,19 +103,21 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 - [ ] **[manual]** `blog-post.md` renders cleanly in the public template (no broken Markdown)
 - [ ] **[machine]** `faq.md` exists and is parseable as a Q&A list
 
-## Multi-Variant Compliance
+## Multi-Content Cluster Compliance
 
-> **Runner-enforcement status:** the items below are tagged `[manual until runner]` because `platform/qa-rules.php` does not yet implement cross-package variant checks (no overwrite-vs-`-v<N>` routing detection, no `variant_of` linkage check, no sibling `public_slug` collision check, no cluster-wide `primary_keyword` uniqueness check). They are mandatory checks today; reviewers must confirm them by hand. Promote each tag to `[machine]` only after the corresponding check ships in `platform/qa-rules.php`.
+> **Runner-enforcement status:** the items below are tagged `[manual until runner]` because `platform/qa-rules.php` does not yet implement cross-package cluster checks (no overwrite-vs-new-asset routing detection, no `cluster_parent` linkage check, no sibling `public_slug` collision check, no cluster-wide `primary_keyword` uniqueness check). They are mandatory checks today; reviewers must confirm them by hand. Promote each tag to `[machine]` only after the corresponding check ships in `platform/qa-rules.php`.
 
-- [ ] **[manual until runner]** if a base package for the same canonical tour title already exists and `meta.json.publish_status` ∈ `{"ready_for_review", "published", "published", "published"}`, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
-- [ ] **[manual until runner]** if the base package is in `publish_status: draft` or `needs_fix`, this run did **not** unnecessarily fork a `-v<N>` (drafts are iterable in place)
-- [ ] **[manual until runner]** when `variant_index` is set, `variant_of` references an existing package slug under `content-system/tours/`
-- [ ] **[manual until runner]** when `variant_of` is set, `public_slug` does not collide with the base or any sibling variant's `public_slug`
-- [ ] **[manual until runner]** when `variant_of` is set, `variant_role` is one of the schema enum values and is **not** duplicated by any sibling in the same cluster (unless explicitly approved)
-- [ ] **[manual until runner]** when `variant_of` is set, `primary_keyword` is **not** duplicated by any sibling in the same cluster (cluster-keyword-uniqueness)
-- [ ] **[manual until runner]** when `variant_of` is set and the base package had open warnings, this variant has a non-empty `inherited_warnings[]` array recording the inheritance handshake decisions
-- [ ] **[manual until runner]** when `variant_of` is set, the variant ships with a `CHANGELOG.md` whose first entry records `variant_of`, `variant_index`, `variant_role`, and `variant_angle`
-- [ ] **[manual]** variant package differs from siblings only on `page_title`, `public_slug`, `primary_keyword`, hook, section ordering, FAQ angle, and CTA copy — pricing, duration, departures, transport, languages, and meeting points remain identical across the cluster
+- [ ] **[manual until runner]** if a base/source package for the same canonical tour title already exists and `meta.json.publish_status` ∈ `{"ready_for_review", "published"}`, this run did **not** overwrite it and did **not** fork a `<base-slug>-v<N>` clone — the new files live in a keyword-meaningful cluster-asset folder
+- [ ] **[manual until runner]** if the base package is in `publish_status: draft` or `needs_fix`, this run refined it in place rather than branching a new asset
+- [ ] **[manual until runner]** the new cluster asset sets `cluster_parent` to an existing cluster in `cluster-registry.json` and a valid `cluster_type` / `cluster_role` pair from `default_required_assets`
+- [ ] **[manual until runner]** the new asset's `public_slug` does not collide with the source package or any sibling asset's `public_slug`
+- [ ] **[manual until runner]** the new asset's `cluster_role` is not duplicated by any sibling in the same cluster (unless explicitly approved)
+- [ ] **[manual until runner]** the new asset's `primary_keyword` is **not** duplicated by any sibling in the same cluster (cluster-keyword-uniqueness)
+- [ ] **[manual until runner]** when the source package had open warnings, the new asset has a non-empty `inherited_warnings[]` array recording the inheritance handshake decisions
+- [ ] **[manual until runner]** the new asset ships with a `CHANGELOG.md` whose first entry records the asset creation, `cluster_parent`, and the `cluster_type` / `cluster_role` chosen
+- [ ] **[manual until runner]** the new asset is registered in `cluster-registry.json` under its parent cluster's `assets[]`
+- [ ] **[manual]** the new asset carries genuinely distinct content for its funnel stage — not a re-skin of the source package's hook, sections, and CTA — while pricing, duration, departures, transport, languages, and meeting points stay consistent across the cluster
+- [ ] **[manual]** no `-v<N>` clone package was created; the retired variant mechanism must not reappear
 
 ## Content vs System Boundary
 

@@ -207,8 +207,8 @@
           "public_slug": "bernina-red-train-and-st-moritz-from-milan",
           "title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
           "status": "published",
-          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v4",
-          "notes": "Main BOFU conversion asset; generated and internally QA-passing. Published."
+          "next_step_link_target": "bernina-express-guided-vs-diy-from-milan",
+          "notes": "Cluster source content (canonical tour data for the dashboard and content generation). Not a public blog asset."
         },
         {
           "required": true,
@@ -242,39 +242,6 @@
           "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
           "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Published."
-        },
-        {
-          "required": false,
-          "cluster_type": "VARIANT",
-          "cluster_role": "intent-variant-post",
-          "package_slug": "bernina-red-train-and-st-moritz-from-milan-v2",
-          "public_slug": "bernina-express-route-guide-from-milan-to-st-moritz",
-          "title": "Understand the full Bernina route from Milan before you choose how to travel.",
-          "status": "published",
-          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v3",
-          "notes": "TOFU itinerary guide variant linked to Bernina parent cluster. Published."
-        },
-        {
-          "required": false,
-          "cluster_type": "VARIANT",
-          "cluster_role": "intent-variant-post",
-          "package_slug": "bernina-red-train-and-st-moritz-from-milan-v3",
-          "public_slug": "guided-vs-diy-bernina-express-day-trip-from-milan",
-          "title": "Compare guided Bernina day tours versus planning the route independently.",
-          "status": "published",
-          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v4",
-          "notes": "MOFU comparison variant linked to Bernina parent cluster. Published."
-        },
-        {
-          "required": false,
-          "cluster_type": "VARIANT",
-          "cluster_role": "intent-variant-post",
-          "package_slug": "bernina-red-train-and-st-moritz-from-milan-v4",
-          "public_slug": "bernina-st-moritz-day-trip-booking-checklist-from-milan",
-          "title": "Use a pre-booking checklist to choose the right Bernina + St Moritz departure from Milan.",
-          "status": "published",
-          "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "BOFU checklist variant linked to Bernina parent cluster. Published."
         }
       ]
     },

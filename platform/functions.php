@@ -111,6 +111,23 @@ function wps_emit_public_headers(): void
     header('Referrer-Policy: strict-origin-when-cross-origin');
     header('X-Frame-Options: SAMEORIGIN');
     header('Permissions-Policy: interest-cohort=()');
+    // CSP for the public blog surface. The pages legitimately rely on inline
+    // critical CSS, the inline gtag bootstrap, and a stylesheet onload
+    // handler, so style/script keep 'unsafe-inline'; everything else is
+    // locked down (default-src 'self', restricted base-uri/form-action,
+    // frame-ancestors). GA endpoints are explicitly allowlisted.
+    header(
+        "Content-Security-Policy: default-src 'self'; "
+        . "base-uri 'self'; "
+        . "form-action 'self'; "
+        . "frame-ancestors 'self'; "
+        . "object-src 'none'; "
+        . "img-src 'self' https: data:; "
+        . "font-src 'self'; "
+        . "style-src 'self' 'unsafe-inline'; "
+        . "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; "
+        . "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com"
+    );
 }
 
 /**
@@ -154,6 +171,10 @@ function wps_default_settings(): array
         'archive_title' => 'Travel Guides & Tour Ideas',
         'archive_description' => 'Helpful travel guides, tour ideas, and booking-focused articles from Milano Adventures.',
         'archive_base_url' => 'blog',
+        // Absolute URL of the real site homepage, used for the breadcrumb
+        // "Home" link and WebSite JSON-LD. Empty falls back to the derived
+        // system base, which may point at a subdirectory rather than root.
+        'site_home_url' => '',
         'github_owner' => 'rezaeesjd',
         'github_repo' => 'PublisherHub',
         'github_branch' => 'main',
@@ -374,6 +395,45 @@ function wps_index_tour_clusters(): array
 }
 
 /**
+ * Slugs of the "source content" package in each registry cluster — the
+ * cluster's primary_conversion_asset. These packages hold canonical tour
+ * data for the dashboard and content generation but are NOT public blog
+ * assets: they are excluded from the archive, sitemap and related-post
+ * links, and the public post route returns 404 for them.
+ *
+ * @return array<string,true> set keyed by base slug for O(1) lookup
+ */
+function wps_source_content_slugs(): array
+{
+    static $cache = null;
+    if ($cache !== null) {
+        return $cache;
+    }
+    $cache = [];
+    $result = wps_load_cluster_registry();
+    foreach (($result['registry']['clusters'] ?? []) as $cluster) {
+        if (!is_array($cluster)) {
+            continue;
+        }
+        $slug = trim((string) ($cluster['primary_conversion_asset'] ?? ''));
+        if ($slug !== '') {
+            $cache[$slug] = true;
+        }
+    }
+    return $cache;
+}
+
+/**
+ * True when the given base slug is a cluster's source-content package and
+ * therefore must not be served as a public blog post.
+ */
+function wps_is_source_content_package(string $baseSlug): bool
+{
+    $baseSlug = trim($baseSlug);
+    return $baseSlug !== '' && isset(wps_source_content_slugs()[$baseSlug]);
+}
+
+/**
  * Write file contents atomically with an exclusive lock. Writes to a
  * temp sibling first, fsyncs, then renames into place. Prevents
  * concurrent writers from corrupting the JSON store.
@@ -464,6 +524,21 @@ function wps_system_url_base(): string
     }
 
     return $origin . ($segments ? '/' . implode('/', $segments) : '');
+}
+
+/**
+ * Absolute URL of the real site homepage, used for the breadcrumb "Home"
+ * crumb and WebSite JSON-LD. Prefers the operator-configured site_home_url;
+ * falls back to the derived system base (which may be a subdirectory).
+ */
+function wps_site_home_url(): string
+{
+    $settings = wps_load_settings();
+    $configured = trim((string) ($settings['site_home_url'] ?? ''));
+    if ($configured !== '' && preg_match('#^https?://#i', $configured)) {
+        return rtrim($configured, '/') . '/';
+    }
+    return rtrim(wps_system_url_base(), '/') . '/';
 }
 
 function wps_asset_url(string $path): string
@@ -560,8 +635,12 @@ function wps_ensure_archive_alias(array $settings): void
     $up = str_repeat('../', max(1, $depth));
 
     file_put_contents($aliasDir . '/.wps-archive-alias', "managed-by=WebPublisherSystem\n");
-    file_put_contents($aliasDir . '/index.php', "<?php\nrequire_once __DIR__ . '/" . $up . "blog/index.php';\n");
-    file_put_contents($aliasDir . '/post.php', "<?php\nrequire_once __DIR__ . '/" . $up . "blog/post.php';\n");
+    // Mirror every public blog entry point at the alias so robots.txt,
+    // llms.txt, the XML sitemap and the RSS feed resolve under the custom
+    // archive slug just as they do under /blog/.
+    foreach (['index.php', 'post.php', 'sitemap.xml.php', 'robots.txt.php', 'llms.txt.php', 'feed.xml.php'] as $stub) {
+        file_put_contents($aliasDir . '/' . $stub, "<?php\nrequire_once __DIR__ . '/" . $up . "blog/" . $stub . "';\n");
+    }
 
     // Mirror the blog rewrite behavior so clean URLs like
     // /<archive-slug>/post/<public-slug>/ resolve for custom archive aliases.
@@ -569,6 +648,10 @@ function wps_ensure_archive_alias(array $settings): void
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteRule ^robots\.txt$ robots.txt.php [L]
+    RewriteRule ^llms\.txt$ llms.txt.php [L]
+    RewriteRule ^sitemap\.xml$ sitemap.xml.php [L]
+    RewriteRule ^feed\.xml$ feed.xml.php [L]
     RewriteRule ^post/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [QSA,L]
     RewriteRule ^page/([0-9]+)/?$ index.php?page=$1 [QSA,L]
 </IfModule>
@@ -735,6 +818,71 @@ function wps_resolve_hero_image_url(string $heroValue, string $tourFolderName): 
 }
 
 /**
+ * Resolve a meta.hero_image to its public URL plus measured pixel
+ * dimensions. Dimensions are filled only when the image resolves to a
+ * local file we can read with getimagesize(); remote URLs return null
+ * width/height so callers omit the og:image:width/height meta tags rather
+ * than emit guessed values.
+ *
+ * @return array{url:string,width:?int,height:?int}
+ */
+function wps_resolve_hero_image(string $heroValue, string $tourFolderName): array
+{
+    $url = wps_resolve_hero_image_url($heroValue, $tourFolderName);
+    $out = ['url' => $url, 'width' => null, 'height' => null];
+    if ($url === '') {
+        return $out;
+    }
+    $heroValue = trim($heroValue);
+    if ($heroValue === '' || preg_match('#^https?://#i', $heroValue)) {
+        return $out;
+    }
+    if ($tourFolderName === '' || !preg_match('/^[a-zA-Z0-9_-]+$/', $tourFolderName)) {
+        return $out;
+    }
+    $rel = ltrim($heroValue, '/');
+    $diskPath = __DIR__ . '/../content-system/tours/' . $tourFolderName . '/' . $rel;
+    $size = @getimagesize($diskPath);
+    if (is_array($size) && !empty($size[0]) && !empty($size[1])) {
+        $out['width'] = (int) $size[0];
+        $out['height'] = (int) $size[1];
+    }
+    return $out;
+}
+
+/**
+ * Guarantee a rendered post body has exactly one <h1> for a clean document
+ * outline. With no <h1>, a fallback built from the post title is prepended.
+ * With several, the extras are demoted to <h2> so a single top-level
+ * heading remains.
+ */
+function wps_enforce_single_h1(string $html, string $fallbackTitle): string
+{
+    $count = (int) preg_match_all('/<h1\b/i', $html);
+    if ($count === 0) {
+        $fallbackTitle = trim($fallbackTitle);
+        return $fallbackTitle === ''
+            ? $html
+            : '<h1>' . wps_h($fallbackTitle) . "</h1>\n" . $html;
+    }
+    if ($count === 1) {
+        return $html;
+    }
+    $openSeen = 0;
+    return preg_replace_callback('/<(\/?)h1(\b[^>]*)>/i', function ($m) use (&$openSeen) {
+        $isClosing = $m[1] === '/';
+        if (!$isClosing) {
+            $openSeen++;
+        }
+        // Keep the first <h1>...</h1> pair; demote every later one to <h2>.
+        if ($openSeen <= 1) {
+            return $m[0];
+        }
+        return '<' . $m[1] . 'h2' . $m[2] . '>';
+    }, $html) ?? $html;
+}
+
+/**
  * Compute reading time (whole minutes, min 1) and word count from HTML.
  * Strips tags first so navigation and inline code don't inflate the count.
  */
@@ -779,7 +927,6 @@ function wps_human_publish_status(string $status): string
 {
     return match ($status) {
         'ready_for_review' => 'Needs review',
-        'published' => 'Published',
         'published' => 'Published',
         default => ucwords(str_replace('_', ' ', $status ?: 'preview')),
     };
