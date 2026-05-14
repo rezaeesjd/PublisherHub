@@ -142,7 +142,6 @@ $preconnect = wps_render_preconnect($settings, '');
           <li class="card" style="padding: 18px;">
             <h2 style="margin-top: 0;"><a href="<?php echo wps_h($postUrl); ?>"><?php echo wps_h((string) ($record['title'] ?? $slug)); ?></a></h2>
             <p class="muted archive-meta" style="margin:0 0 8px; display:flex; gap:8px; flex-wrap:wrap;" aria-label="Post metadata">
-              <?php if (!empty($record['funnel_stage'])): ?><span class="qa-pill qa-pill-muted"><?php echo wps_h((string) $record['funnel_stage']); ?></span><?php endif; ?>
               <?php if (!empty($record['destination'])): ?><span class="qa-pill qa-pill-muted"><?php echo wps_h((string) $record['destination']); ?></span><?php endif; ?>
             </p>
             <?php if (!empty($record['meta_description'])): ?>
