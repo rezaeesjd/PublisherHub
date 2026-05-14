@@ -140,8 +140,10 @@ function wps_apply_post_override(array $post): array
         : [];
 
     $override = wps_load_post_override($baseSlug);
+    $metaPublicSlug = wps_post_safe_slug((string) ($post['meta']['public_slug'] ?? ''));
+
     if (!$override) {
-        $post['public_slug'] = $baseSlug;
+        $post['public_slug'] = $metaPublicSlug !== '' ? $metaPublicSlug : $baseSlug;
         $post['has_local_edits'] = false;
         $post['legacy_slugs'] = array_values(array_unique($metaLegacy));
         return $post;
@@ -154,7 +156,7 @@ function wps_apply_post_override(array $post): array
     }
 
     $publicSlug = wps_post_safe_slug((string) ($override['public_slug'] ?? ''));
-    $post['public_slug'] = $publicSlug !== '' ? $publicSlug : $baseSlug;
+    $post['public_slug'] = $publicSlug !== '' ? $publicSlug : ($metaPublicSlug !== '' ? $metaPublicSlug : $baseSlug);
     $post['has_local_edits'] = true;
     $post['local_override'] = $override;
 

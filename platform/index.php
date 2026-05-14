@@ -21,7 +21,7 @@ if ($postsResult['ok']) {
     }
 }
 
-$workflowCounts = ['Published' => 0, 'Needs Review' => 0, 'Revision Required' => 0, 'Blocked' => 0, 'Draft' => 0];
+$workflowCounts = ['Published' => 0, 'Ready for Review' => 0, 'Revision Required' => 0, 'Blocked' => 0, 'Draft' => 0];
 $assignedSlugs = [];
 $totalClusters = count($clusters);
 $totalAssets = 0;
@@ -56,10 +56,7 @@ function wps_asset_next_action(string $status): string
     switch ($status) {
         case 'published':
             return 'Live — monitor and refresh later.';
-        case 'needs_live_verification':
-            return 'Verify the archive and single-post pages are live.';
-        case 'ready_for_sync':
-            return 'Sync/deploy to live environment.';
+
         case 'ready_for_review':
             return 'Run QA and complete human review.';
         case 'needs_fix':
@@ -84,8 +81,6 @@ function wps_asset_status_tone(string $status): string
         case 'published':
             return 'success';
         case 'ready_for_review':
-        case 'ready_for_sync':
-        case 'needs_live_verification':
         case 'draft':
             return 'warning';
         case 'needs_clarification':

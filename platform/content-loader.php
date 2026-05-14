@@ -171,8 +171,12 @@ function wps_human_workflow_status(array $post): array
         return ['label' => 'Revision Required', 'tone' => 'danger'];
     }
 
-    if (in_array($publish, ['ready_for_review', 'ready_for_sync', 'needs_live_verification'], true)) {
-        return ['label' => 'Needs Review', 'tone' => 'warning'];
+    if ($publish === 'ready_for_review') {
+        return ['label' => 'Ready for Review', 'tone' => 'warning'];
+    }
+
+    if ($publish === 'published') {
+        return ['label' => 'Published', 'tone' => 'success'];
     }
 
     return ['label' => 'Draft', 'tone' => 'muted'];

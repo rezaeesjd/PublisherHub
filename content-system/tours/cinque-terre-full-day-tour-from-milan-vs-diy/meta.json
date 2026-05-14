@@ -23,7 +23,7 @@
   "languages": ["English", "Spanish"],
   "max_travelers": 22,
   "qa_status": "warning",
-  "publish_status": "ready_for_sync",
+  "publish_status": "published",
   "public_copy_state": "final",
   "generation_phase_completed": true,
   "clarify_phase_required": false,

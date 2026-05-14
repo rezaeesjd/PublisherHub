@@ -53,8 +53,8 @@ Use these statuses for each asset row:
 - `needs_clarification`
 - `needs_fix`
 - `ready_for_review`
-- `ready_for_sync`
-- `needs_live_verification`
+- `published`
+- `published`
 - `published`
 - `refresh_needed`
 

@@ -7,7 +7,7 @@ wps_require_auth();
 $settings = wps_load_settings();
 $index = wps_archive_index($settings);
 $allRecords = is_array($index['posts'] ?? null) ? $index['posts'] : [];
-$records = wps_records_by_publish_status($allRecords, ['ready_for_review', 'ready_for_sync', 'needs_live_verification']);
+$records = wps_records_by_publish_status($allRecords, ['ready_for_review', 'published']);
 
 wps_render_header('Preview archive');
 ?>

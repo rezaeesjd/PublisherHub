@@ -54,8 +54,8 @@
     "needs_clarification",
     "needs_fix",
     "ready_for_review",
-    "ready_for_sync",
-    "needs_live_verification",
+    "published",
+    "published",
     "published",
     "refresh_needed"
   ],
@@ -90,9 +90,9 @@
           "package_slug": "cinque-terre-full-day-tour-from-milan-vs-diy",
           "public_slug": "cinque-terre-guided-tour-vs-diy-by-train-from-milan",
           "title": "Cinque Terre guided tour vs DIY by train from Milan",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Published."
         },
         {
           "required": true,
@@ -112,9 +112,9 @@
           "package_slug": "cinque-terre-from-milan-faq",
           "public_slug": "cinque-terre-from-milan-faq-practical-guide",
           "title": "Cinque Terre from Milan: practical FAQs",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Published."
         }
       ]
     },
@@ -190,7 +190,7 @@
     {
       "cluster_parent": "swiss-alps-from-milan",
       "title": "Swiss Alps Day Trips from Milan",
-      "destination": "Bernina Express route + St Moritz (Canton of Graub\u00fcnden, Switzerland)",
+      "destination": "Bernina Express route + St Moritz (Canton of Graubünden, Switzerland)",
       "origin_city": "Milan",
       "primary_conversion_asset": "bernina-red-train-and-st-moritz-from-milan",
       "viator_url": "",
@@ -206,9 +206,9 @@
           "package_slug": "bernina-red-train-and-st-moritz-from-milan",
           "public_slug": "bernina-red-train-and-st-moritz-from-milan",
           "title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v4",
-          "notes": "Main BOFU conversion asset; generated and internally QA-passing."
+          "notes": "Main BOFU conversion asset; generated and internally QA-passing. Published."
         },
         {
           "required": true,
@@ -217,9 +217,9 @@
           "package_slug": "bernina-express-guided-vs-diy-from-milan",
           "public_slug": "bernina-express-guided-tour-vs-diy-from-milan",
           "title": "Bernina Express guided tour from Milan vs DIY from Tirano",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Published."
         },
         {
           "required": true,
@@ -230,7 +230,7 @@
           "title": "Swiss Alps from Milan: Bernina Express route guide",
           "status": "planned",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "Discovery asset covering the UNESCO Bernina Express, Tirano, Alp Gr\u00fcm, Diavolezza, Pontresina, and St Moritz."
+          "notes": "Discovery asset covering the UNESCO Bernina Express, Tirano, Alp Grüm, Diavolezza, Pontresina, and St Moritz."
         },
         {
           "required": true,
@@ -239,9 +239,9 @@
           "package_slug": "bernina-st-moritz-from-milan-faq",
           "public_slug": "bernina-express-st-moritz-from-milan-faq",
           "title": "Bernina Express + St Moritz from Milan: passport, weather and timing FAQ",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Published."
         },
         {
           "required": false,
@@ -250,9 +250,9 @@
           "package_slug": "bernina-red-train-and-st-moritz-from-milan-v2",
           "public_slug": "bernina-express-route-guide-from-milan-to-st-moritz",
           "title": "Understand the full Bernina route from Milan before you choose how to travel.",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v3",
-          "notes": "TOFU itinerary guide variant linked to Bernina parent cluster."
+          "notes": "TOFU itinerary guide variant linked to Bernina parent cluster. Published."
         },
         {
           "required": false,
@@ -261,9 +261,9 @@
           "package_slug": "bernina-red-train-and-st-moritz-from-milan-v3",
           "public_slug": "guided-vs-diy-bernina-express-day-trip-from-milan",
           "title": "Compare guided Bernina day tours versus planning the route independently.",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan-v4",
-          "notes": "MOFU comparison variant linked to Bernina parent cluster."
+          "notes": "MOFU comparison variant linked to Bernina parent cluster. Published."
         },
         {
           "required": false,
@@ -272,9 +272,9 @@
           "package_slug": "bernina-red-train-and-st-moritz-from-milan-v4",
           "public_slug": "bernina-st-moritz-day-trip-booking-checklist-from-milan",
           "title": "Use a pre-booking checklist to choose the right Bernina + St Moritz departure from Milan.",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "BOFU checklist variant linked to Bernina parent cluster."
+          "notes": "BOFU checklist variant linked to Bernina parent cluster. Published."
         }
       ]
     },
@@ -307,7 +307,7 @@
           "cluster_role": "comparison-post",
           "package_slug": "milan-cooking-class-vs-food-tour",
           "public_slug": "",
-          "title": "Milan: cooking class vs food tour \u2014 which to choose",
+          "title": "Milan: cooking class vs food tour — which to choose",
           "status": "planned",
           "next_step_link_target": "pizza-and-gelato-cooking-class-in-milan",
           "notes": "Decision-support asset."

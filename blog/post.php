@@ -251,6 +251,12 @@ if (in_array((string) ($meta['funnel_stage'] ?? ''), ['BOFU', 'MOFU'], true) || 
 $archiveIndex = wps_archive_index($settings);
 $archiveRecords = is_array($archiveIndex['posts'] ?? null) ? $archiveIndex['posts'] : [];
 
+// Public readers can only open published posts; keep related links aligned
+// so "From this tour cluster" never points to 404 pages for guests.
+if (!wps_is_logged_in()) {
+    $archiveRecords = wps_published_records($archiveRecords);
+}
+
 $relatedLimit = 4;
 $siblingRecords = wps_cluster_sibling_records($post, $archiveRecords, $relatedLimit);
 $seenSlugs = [];
