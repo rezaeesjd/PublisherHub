@@ -218,7 +218,7 @@
         "ready_for_review",
         "needs_fix",
         "published",
-        "needs_live_verification",
+        "published",
         "published",
         "archived"
       ]

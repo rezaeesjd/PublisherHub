@@ -28,7 +28,7 @@ flowchart TD
     E1 --> E2[Publish Sync]
     E2 --> E3[Live Verification\narchive + single post + CTA render]
     E3 --> E4{Live checks pass?}
-    E4 -->|No| E5[needs_live_verification / fix]
+    E4 -->|No| E5[published / fix]
     E5 --> E3
     E4 -->|Yes| F1([Published])
 

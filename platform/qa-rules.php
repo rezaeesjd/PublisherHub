@@ -321,7 +321,7 @@ function wps_qa_apply_cross_package_findings(array &$reports): void
         $keyword = strtolower(trim((string) ($meta['primary_keyword'] ?? '')));
         $cluster = strtolower(trim((string) ($meta['variant_of'] ?? $meta['slug'] ?? $report['tour'] ?? '')));
         $status  = (string) ($meta['publish_status'] ?? 'draft');
-        $isLive  = in_array($status, ['ready_for_review', 'published', 'needs_live_verification', 'published'], true);
+        $isLive  = in_array($status, ['ready_for_review', 'published', 'published', 'published'], true);
 
         if ($keyword === '' || !$isLive) {
             continue;

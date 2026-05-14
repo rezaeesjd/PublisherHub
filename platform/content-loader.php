@@ -175,8 +175,8 @@ function wps_human_workflow_status(array $post): array
         return ['label' => 'Ready for Review', 'tone' => 'warning'];
     }
 
-    if ($publish === 'needs_live_verification') {
-        return ['label' => 'Needs Live Verification', 'tone' => 'warning'];
+    if ($publish === 'published') {
+        return ['label' => 'Published', 'tone' => 'success'];
     }
 
     return ['label' => 'Draft', 'tone' => 'muted'];
