@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../platform/content-loader.php';
 require_once __DIR__ . '/../platform/post-overrides.php';
 require_once __DIR__ . '/../platform/cache.php';
+require_once __DIR__ . '/../platform/auth.php';
 
 $settings = wps_load_settings();
 wps_enforce_https();
@@ -39,6 +40,14 @@ if (($postResult['matched_via'] ?? '') === 'legacy' && $publicSlug !== $slug) {
 // G1.2: noindex non-published content even when accessed via direct URL.
 $publishStatus = (string) ($post['publish_status'] ?? 'draft');
 wps_emit_noindex_if_unpublished($publishStatus);
+
+// Public readers should only access published posts. Unpublished content
+// remains available only to authenticated operators for preview/debug.
+if ($publishStatus !== 'published' && !wps_is_logged_in()) {
+    http_response_code(404);
+    echo 'Post not found.';
+    exit;
+}
 
 // G2A.9: tag CTA destinations with utm_campaign=<public_slug> so booking
 // clicks attribute back to the right article in GA4.
@@ -136,6 +145,7 @@ $article = [
     'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => $canonical],
     'publisher'        => $organization,
     'wordCount'        => $reading['words'],
+    'inLanguage'       => 'en',
 ];
 if ($description !== '') {
     $article['description'] = $description;
@@ -155,6 +165,12 @@ if ($authorName !== '') {
         $authorNode['url'] = $authorUrl;
     }
     $article['author'] = $authorNode;
+}
+if (!empty($post['primary_keyword'])) {
+    $article['about'] = (string) $post['primary_keyword'];
+}
+if (!empty($meta['destination'])) {
+    $article['contentLocation'] = ['@type' => 'Place', 'name' => (string) $meta['destination']];
 }
 
 $faqLd = null;
@@ -267,6 +283,18 @@ foreach ($keywordRelated as $rec) {
     $relatedRecords[] = $rec;
 }
 
+$clusterRelated = array_slice($siblingRecords, 0, $relatedLimit);
+$topicRelated = [];
+foreach ($relatedRecords as $rec) {
+    $s = (string) ($rec['public_slug'] ?? '');
+    if ($s === '' || isset($seenSlugs[$s]) && in_array($rec, $clusterRelated, true)) {
+        continue;
+    }
+    if (!in_array($rec, $clusterRelated, true)) {
+        $topicRelated[] = $rec;
+    }
+}
+
 // G2A.10: external booking + review-platform CTAs resolved with a
 // per-post -> cluster -> site fallback chain. Empty when no real links
 // (only placeholders) are available, in which case the card is skipped.
@@ -282,6 +310,14 @@ $preconnect = wps_render_preconnect($settings, $blogHtml);
 
 $analyticsHead = wps_render_analytics($settings, 'head');
 $analyticsBody = wps_render_analytics($settings, 'body');
+
+$freshnessDays = null;
+if ($dateModified !== '') {
+    $freshnessTs = strtotime($dateModified);
+    if ($freshnessTs !== false) {
+        $freshnessDays = max(0, (int) floor((time() - $freshnessTs) / 86400));
+    }
+}
 
 ?>
 <!doctype html>
@@ -320,8 +356,11 @@ $analyticsBody = wps_render_analytics($settings, 'body');
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <main id="main-content" class="wrap" style="max-width: 880px; padding: 32px 16px; margin: 0 auto;">
-    <nav aria-label="Breadcrumb" class="muted" style="margin-bottom: 8px;">
-      <a href="<?php echo wps_h($archiveUrl); ?>">&larr; Back to <?php echo wps_h($archiveTitle !== '' ? $archiveTitle : 'archive'); ?></a>
+    <nav aria-label="Breadcrumb" class="muted breadcrumb-inline" style="margin-bottom: 8px;">
+      <a href="<?php echo wps_h($systemBase); ?>">Home</a> &rsaquo;
+      <a href="<?php echo wps_h($archiveUrl); ?>"><?php echo wps_h($archiveTitle !== '' ? $archiveTitle : 'Archive'); ?></a> &rsaquo;
+      <span aria-current="page"><?php echo wps_h($title); ?></span>
+      <span class="sr-only">Current page</span>
     </nav>
     <?php if ($authorName !== '' || $dateModified !== '' || $reading['minutes'] > 0): ?>
       <p class="post-byline">
@@ -331,9 +370,9 @@ $analyticsBody = wps_render_analytics($settings, 'body');
         <?php if ($dateModified !== ''): ?>
           <span>
             <?php if ($datePublished !== '' && $datePublished !== $dateModified): ?>
-              Published <time datetime="<?php echo wps_h($datePublished); ?>"><?php echo wps_h($datePublished); ?></time> &middot;
+              Published <time datetime="<?php echo wps_h($datePublished); ?>"><?php echo wps_h(wps_human_date($datePublished)); ?></time> &middot;
             <?php endif; ?>
-            Updated <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h($dateModified); ?></time>
+            Updated <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h(wps_human_date($dateModified)); ?></time>
           </span>
         <?php endif; ?>
         <span><?php echo (int) $reading['minutes']; ?> min read</span>
@@ -344,6 +383,18 @@ $analyticsBody = wps_render_analytics($settings, 'body');
         <strong>Summary</strong>
         <p><?php echo wps_h($description); ?></p>
       </aside>
+    <?php endif; ?>
+    <?php if ($dateModified !== ''): ?>
+      <p class="muted" style="margin: 10px 0 14px;">
+        Last reviewed on <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h(wps_human_date($dateModified)); ?></time>.
+        <?php if ($freshnessDays !== null): ?>
+          <?php if ($freshnessDays > 180): ?>
+            <strong>Refresh recommended (<?php echo (int) $freshnessDays; ?> days since review).</strong>
+          <?php else: ?>
+            <span>Reviewed <?php echo (int) $freshnessDays; ?> day(s) ago.</span>
+          <?php endif; ?>
+        <?php endif; ?>
+      </p>
     <?php endif; ?>
     <article class="card content-body" style="padding: 20px;">
       <?php echo $blogHtml; ?>
@@ -403,11 +454,11 @@ $analyticsBody = wps_render_analytics($settings, 'body');
         <?php endforeach; ?>
       </section>
     <?php endif; ?>
-    <?php if (!empty($relatedRecords)): ?>
+    <?php if (!empty($clusterRelated)): ?>
       <aside class="card related-posts" aria-labelledby="related-heading">
-        <h2 id="related-heading">Related reading</h2>
+        <h2 id="related-heading">From this tour cluster</h2>
         <ul>
-          <?php foreach ($relatedRecords as $rec): ?>
+          <?php foreach ($clusterRelated as $rec): ?>
             <?php $relSlug = (string) ($rec['public_slug'] ?? ''); if ($relSlug === '') continue; ?>
             <li>
               <a href="<?php echo wps_h(wps_public_post_url($relSlug)); ?>"><?php echo wps_h((string) ($rec['title'] ?? $relSlug)); ?></a>
@@ -417,6 +468,27 @@ $analyticsBody = wps_render_analytics($settings, 'body');
             </li>
           <?php endforeach; ?>
         </ul>
+      </aside>
+    <?php endif; ?>
+    <?php if (!empty($topicRelated)): ?>
+      <aside class="card related-posts" aria-labelledby="related-topic-heading">
+        <h2 id="related-topic-heading">More guides on this topic</h2>
+        <ul>
+          <?php foreach ($topicRelated as $rec): ?>
+            <?php $relSlug = (string) ($rec['public_slug'] ?? ''); if ($relSlug === '') continue; ?>
+            <li>
+              <a href="<?php echo wps_h(wps_public_post_url($relSlug)); ?>"><?php echo wps_h((string) ($rec['title'] ?? $relSlug)); ?></a>
+              <?php if (!empty($rec['meta_description'])): ?>
+                <p><?php echo wps_h(wps_trim_description((string) $rec['meta_description'], 110)); ?></p>
+              <?php endif; ?>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </aside>
+    <?php elseif (empty($clusterRelated)): ?>
+      <aside class="card related-posts" aria-labelledby="related-empty-heading">
+        <h2 id="related-empty-heading">More guides coming soon</h2>
+        <p class="muted">We’re expanding this cluster with more destination-specific guides and FAQs.</p>
       </aside>
     <?php endif; ?>
   </main>

@@ -5,7 +5,7 @@ $settings = wps_load_settings();
 wps_enforce_https();
 
 $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
-$sitemapUrl = $archiveUrl . 'sitemap.xml.php';
+$sitemapUrl = $archiveUrl . 'sitemap.xml';
 
 header('Content-Type: text/plain; charset=utf-8');
 

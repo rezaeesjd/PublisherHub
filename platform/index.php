@@ -133,6 +133,7 @@ wps_render_header($settings['archive_title']);
     <div class="actions">
         <a class="button-secondary" href="qa.php">Open QA Report</a>
         <a class="button-secondary" href="../blog/">Open Blog Archive</a>
+        <a class="button-secondary" href="preview-archive.php">Open Preview Archive</a>
     </div>
 </section>
 
@@ -229,7 +230,7 @@ wps_render_header($settings['archive_title']);
                                         $sourceStatus = $sourcePost ? (string) ($sourcePost['publish_status'] ?? 'draft') : 'not_started';
                                         $sourceTone = wps_asset_status_tone($sourceStatus);
                                     ?>
-                                    <span class="qa-pill qa-pill-<?php echo wps_h($sourceTone); ?>"><?php echo wps_h($sourceStatus); ?></span>
+                                    <span class="qa-pill qa-pill-<?php echo wps_h($sourceTone); ?>"><?php echo wps_h(wps_human_publish_status($sourceStatus)); ?></span>
                                 </td>
                                 <td><small class="muted">Used for dashboard facts and future cluster blog generation.</small></td>
                             </tr>
@@ -282,7 +283,7 @@ wps_render_header($settings['archive_title']);
                                             <span class="qa-pill qa-pill-muted"><?php echo wps_h($assetType ?: 'asset'); ?></span><br>
                                             <small class="muted"><?php echo wps_h($assetRole ?: '—'); ?></small>
                                         </td>
-                                        <td><span class="qa-pill qa-pill-<?php echo wps_h($tone); ?>"><?php echo wps_h($assetStatus); ?></span></td>
+                                        <td><span class="qa-pill qa-pill-<?php echo wps_h($tone); ?>"><?php echo wps_h(wps_human_publish_status($assetStatus)); ?></span></td>
                                         <td>
                                             <?php echo wps_h($nextAction); ?>
                                             <?php if ($assetNotes !== ''): ?>
