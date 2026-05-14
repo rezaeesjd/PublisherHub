@@ -67,7 +67,7 @@ function wps_archive_index_rebuild(array $settings): array
     // Public archive surface. We include ready_for_review here to preserve
     // the pre-cache behavior (operators rely on the public archive as a
     // visual preview). Hardening the gate is a separate workflow change.
-    $publishable = ['ready_for_review', 'published'];
+    $publishable = ['ready_for_review', 'published', 'ready_for_sync', 'needs_live_verification'];
     $records = [];
 
     if ($postsResult['ok']) {

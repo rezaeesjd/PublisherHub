@@ -25,9 +25,19 @@ function wps_publish_status_allowed_transitions(): array
     ];
 }
 
+
+function wps_publish_status_normalize_legacy(string $state): string
+{
+    $legacyMap = [
+        'ready_for_sync' => 'published',
+        'needs_live_verification' => 'published',
+    ];
+    return $legacyMap[$state] ?? $state;
+}
+
 function wps_publish_status_is_valid(string $state): bool
 {
-    return in_array($state, wps_publish_status_states(), true);
+    return in_array(wps_publish_status_normalize_legacy($state), wps_publish_status_states(), true);
 }
 
 function wps_publish_status_can_transition(string $from, string $to): bool
@@ -38,9 +48,12 @@ function wps_publish_status_can_transition(string $from, string $to): bool
 
 function wps_publish_status_transition(array $meta, string $next, ?string $reason = null, ?string $actor = null): array
 {
-    $current = (string) ($meta['publish_status'] ?? 'draft');
+    $currentRaw = (string) ($meta['publish_status'] ?? 'draft');
+    $current = wps_publish_status_normalize_legacy($currentRaw);
     if (!wps_publish_status_is_valid($next)) return ['ok'=>false,'meta'=>$meta,'error'=>"Unknown publish_status '{$next}'."];
-    if (!wps_publish_status_is_valid($current)) { $current='draft'; $meta['publish_status']='draft'; }
+    if (!wps_publish_status_is_valid($current)) {
+        $current='draft';
+    }
     if ($current === $next) return ['ok'=>true,'meta'=>$meta,'error'=>''];
     if (!wps_publish_status_can_transition($current, $next)) return ['ok'=>false,'meta'=>$meta,'error'=>"publish_status: '{$current}' → '{$next}' is not an allowed transition."];
 
@@ -54,7 +67,7 @@ function wps_publish_status_transition(array $meta, string $next, ?string $reaso
     if ($next === 'needs_fix') $meta['qa_status'] = 'needs_fix';
 
     $history = is_array($meta['publish_status_history'] ?? null) ? $meta['publish_status_history'] : [];
-    $history[] = array_filter(['from'=>$current,'to'=>$next,'at'=>gmdate('c'),'reason'=>$reason?:null,'actor'=>$actor?:null], fn($v)=>$v!==null);
+    $history[] = array_filter(['from'=>$currentRaw,'to'=>$next,'at'=>gmdate('c'),'reason'=>$reason?:null,'actor'=>$actor?:null], fn($v)=>$v!==null);
     $meta['publish_status_history'] = $history;
     return ['ok'=>true,'meta'=>$meta,'error'=>''];
 }
