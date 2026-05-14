@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 BASE="${1:-http://127.0.0.1:8099}"
-SITEMAP="${BASE}/blog/sitemap.xml"
-PHP_VARIANT="${BASE}/blog/sitemap.xml.php"
+SITEMAP="${BASE}/blog/sitemap.php"
+LEGACY_VARIANT="${BASE}/blog/sitemap.xml.php"
 
 code=$(curl -s -o /tmp/sitemap.xml -w "%{http_code}" "$SITEMAP")
 if [[ "$code" != "200" ]]; then
@@ -10,9 +10,9 @@ if [[ "$code" != "200" ]]; then
   exit 2
 fi
 
-redir=$(curl -sI "$PHP_VARIANT" | rg -i '^location:' || true)
-if [[ -z "$redir" ]]; then
-  echo "ERROR: sitemap.php did not redirect"
+legacy_code=$(curl -s -o /tmp/sitemap-legacy.xml -w "%{http_code}" "$LEGACY_VARIANT")
+if [[ "$legacy_code" != "200" ]]; then
+  echo "ERROR: legacy sitemap implementation returned $legacy_code"
   exit 3
 fi
 

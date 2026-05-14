@@ -9,17 +9,6 @@ require_once __DIR__ . '/../platform/content-loader.php';
 require_once __DIR__ . '/../platform/post-overrides.php';
 require_once __DIR__ . '/../platform/cache.php';
 
-// Canonicalize direct requests to the friendly /blog/sitemap.xml endpoint.
-// This file is still included by sitemap.xml as the implementation target.
-if (PHP_SAPI !== 'cli' && !headers_sent()) {
-    $requestUri = str_replace('\\', '/', (string) ($_SERVER['REQUEST_URI'] ?? ''));
-    if (preg_match('#/sitemap\.xml\.php(?:$|\?)#', $requestUri) === 1) {
-        $canonical = rtrim(wps_archive_url(), '/') . '/sitemap.xml';
-        header('Location: ' . $canonical, true, 301);
-        exit;
-    }
-}
-
 $settings = wps_load_settings();
 wps_enforce_https();
 wps_emit_public_headers();

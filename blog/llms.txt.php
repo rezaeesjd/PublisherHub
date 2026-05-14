@@ -11,7 +11,7 @@ wps_enforce_https();
 
 $systemBase = rtrim(wps_system_url_base(), '/') . '/';
 $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
-$sitemapUrl = $archiveUrl . 'sitemap.xml';
+$sitemapUrl = $archiveUrl . 'sitemap.php';
 $siteName = trim((string) ($settings['site_name'] ?? ''));
 $archiveTitle = trim((string) ($settings['archive_title'] ?? 'Blog'));
 $archiveDescription = trim((string) ($settings['archive_description'] ?? ''));

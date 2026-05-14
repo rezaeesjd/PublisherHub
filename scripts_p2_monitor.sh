@@ -12,8 +12,8 @@ check() {
   "$@"
 }
 
-check "sitemap canonical redirect" curl -sI "${BASE}/blog/sitemap.xml.php" | sed -n '1,8p'
-check "sitemap endpoint" curl -sI "${BASE}/blog/sitemap.xml" | sed -n '1,8p'
+check "sitemap endpoint" curl -sI "${BASE}/blog/sitemap.php" | sed -n '1,8p'
+check "sitemap implementation endpoint" curl -sI "${BASE}/blog/sitemap.xml.php" | sed -n '1,8p'
 check "archive canonical" curl -sI "${BASE}/blog/?page=1" | sed -n '1,10p'
 
 if [[ -n "${PUBLISHED_SLUG}" ]]; then
