@@ -67,6 +67,15 @@ function wps_qa_run_for_tour(string $tourDir): array
         $meta = [];
     }
 
+    $tourSlug = basename($tourDir);
+    if (wps_is_retired_variant_slug($tourSlug) || wps_is_retired_variant_slug((string) ($meta['slug'] ?? ''))) {
+        $findings[] = wps_qa_finding(
+            'fail',
+            'retired-variant-clone',
+            "Package '{$tourSlug}' is a retired -vN variant clone. The -vN variant mechanism was retired; delete this package and, if a new angle is needed, generate a distinct typed cluster asset with its own slug."
+        );
+    }
+
     foreach (wps_meta_schema_findings($meta) as $f) {
         $findings[] = $f;
     }
