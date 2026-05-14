@@ -434,6 +434,19 @@ function wps_is_source_content_package(string $baseSlug): bool
 }
 
 /**
+ * True when a slug looks like a retired "-vN" variant clone (e.g.
+ * "bernina-...-from-milan-v2"). The -vN variant mechanism was retired:
+ * re-running generation now creates a distinct, typed cluster blog asset
+ * with its own keyword-meaningful slug, never a numbered clone. Any
+ * package still matching this pattern is a stale clone that must be
+ * deleted, not linked into a cluster.
+ */
+function wps_is_retired_variant_slug(string $slug): bool
+{
+    return preg_match('/-v[0-9]+$/', trim($slug)) === 1;
+}
+
+/**
  * Write file contents atomically with an exclusive lock. Writes to a
  * temp sibling first, fsyncs, then renames into place. Prevents
  * concurrent writers from corrupting the JSON store.

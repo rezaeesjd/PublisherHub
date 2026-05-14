@@ -306,12 +306,18 @@ wps_render_header($settings['archive_title']);
 
 <?php
     $unclusteredPosts = [];
+    $retiredVariantCount = 0;
     if ($postsResult['ok']) {
         foreach ($postsResult['posts'] as $post) {
             $slug = (string) ($post['slug'] ?? '');
             $folder = (string) ($post['folder_name'] ?? '');
             $assigned = isset($assignedSlugs[$slug]) || isset($assignedSlugs[$folder]);
             if (!$assigned) {
+                $post['is_retired_variant'] = wps_is_retired_variant_slug($slug)
+                    || wps_is_retired_variant_slug($folder);
+                if ($post['is_retired_variant']) {
+                    $retiredVariantCount++;
+                }
                 $unclusteredPosts[] = $post;
             }
         }
@@ -322,6 +328,14 @@ wps_render_header($settings['archive_title']);
 <section class="panel">
     <h2>Packages not linked to any tour</h2>
     <p class="muted">These packages exist on disk but aren't referenced in the cluster registry. Either link them to a tour cluster or remove them.</p>
+    <?php if ($retiredVariantCount > 0): ?>
+        <div class="alert alert-error">
+            <strong><?php echo (int) $retiredVariantCount; ?> retired <code>-vN</code> variant clone(s) found.</strong>
+            The <code>-vN</code> variant mechanism was retired — re-running generation now creates a
+            distinct, typed cluster asset, not a numbered clone. Delete these package directories from
+            <code>content-system/tours/</code>.
+        </div>
+    <?php endif; ?>
     <div class="table-wrap">
         <table class="workflow-table">
             <thead>
@@ -336,14 +350,27 @@ wps_render_header($settings['archive_title']);
                     <?php
                         $status = wps_human_workflow_status($post);
                         $slug = (string) ($post['slug'] ?? '');
+                        $isRetiredVariant = !empty($post['is_retired_variant']);
                     ?>
                     <tr>
                         <td>
                             <strong><a href="edit-post.php?slug=<?php echo rawurlencode($slug); ?>"><?php echo wps_h($post['title'] ?? 'Untitled'); ?></a></strong><br>
                             <small class="muted"><?php echo wps_h($slug); ?></small>
                         </td>
-                        <td><span class="qa-pill qa-pill-<?php echo wps_h($status['tone'] ?? 'muted'); ?>"><?php echo wps_h($status['label']); ?></span></td>
-                        <td><small class="muted">publish_status=<?php echo wps_h((string) $post['publish_status']); ?> · qa_status=<?php echo wps_h((string) $post['qa_status']); ?></small></td>
+                        <td>
+                            <?php if ($isRetiredVariant): ?>
+                                <span class="qa-pill qa-pill-danger">Retired variant clone</span>
+                            <?php else: ?>
+                                <span class="qa-pill qa-pill-<?php echo wps_h($status['tone'] ?? 'muted'); ?>"><?php echo wps_h($status['label']); ?></span>
+                            <?php endif; ?>
+                        </td>
+                        <td>
+                            <?php if ($isRetiredVariant): ?>
+                                <small class="muted"><strong>Hard error:</strong> retired <code>-vN</code> variant clone. Delete this package — do not link it to a cluster.</small>
+                            <?php else: ?>
+                                <small class="muted">publish_status=<?php echo wps_h((string) $post['publish_status']); ?> · qa_status=<?php echo wps_h((string) $post['qa_status']); ?></small>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
