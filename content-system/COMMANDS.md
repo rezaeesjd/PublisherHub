@@ -2,12 +2,12 @@
 
 ## WPS:GENERATE_CONTENT
 
-- **Purpose:** Generate one tour content package. The system is a multi-content publisher: each tour is expected to grow a cluster of variant packages over time.
+- **Purpose:** Generate one tour content package. The system is a multi-content publisher: each tour has one source content package and grows a cluster of distinct, typed blog assets (BOFU/MOFU/TOFU/FAQ) over time.
 - **Should do:** Extract source facts first, build provenance matrix, run clarify gate, **invoke `WPS:CLARIFY` automatically** if blocking ambiguities are detected, generate remaining files only when allowed.
 - **Must do (automatic system QA — completion gate):** Run an internal `WPS:PROCESS_QA` pass automatically at the end of generation, without requiring a separate user prompt/command, write a per-run process report under `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md` (required, non-empty, includes status triad block), and link that report path in `automation-notes.md` (or in `qa-report.md` for holding-notice mode). Generation is not complete and `generation_phase_completed` must not be set to `true` until both the report file and its linkage exist.
-- **Must do (multi-variant rule):** Before writing any file, check whether a base package for this canonical tour title already exists at `content-system/tours/<base-slug>/`. If that package is **approved** (`publish_status` ∈ `ready_for_review` / `published` / `published` / `published` — see `AGENTS.md` "Multi-variant rule (hard rule)") **do not overwrite** it — create a new variant package at `content-system/tours/<base-slug>-v<N>/` with `variant_of`, `variant_index`, `variant_role`, and a unique `public_slug` set in `meta.json`. A base package still in `publish_status: draft` or `needs_fix` is iterable in place — do **not** fork a variant for draft re-runs.
+- **Must do (multi-content cluster rule):** Before writing any file, check whether a base package for this canonical tour title already exists at `content-system/tours/<base-slug>/`. If that package is **approved** (`publish_status` ∈ `ready_for_review` / `published` — see `AGENTS.md` "Multi-content cluster rule (hard rule)") **do not overwrite** it and **do not** fork a `<base-slug>-v<N>` clone (the `-v<N>` variant mechanism is retired). Instead create a new **cluster blog asset**: a distinct package in a keyword-meaningful folder, with `cluster_parent`, `funnel_stage`, a `cluster_type` / `cluster_role` pair, and a unique `public_slug` in `meta.json`, registered in `cluster-registry.json`. A base package still in `publish_status: draft` or `needs_fix` is iterable in place — do **not** branch a new asset for draft re-runs.
 - **Must not do:** Claim published/live verification; bypass blocking clarification gate; generate final `blog-post.md` while blocking clarifications remain (unless the user has explicitly approved provisional mode in chat); overwrite an approved base package (route to `WPS:FIX_PACKAGE` if an in-place rewrite of an approved package is genuinely intended); modify system files (`AGENTS.md`, `COMMANDS.md`, `WORKFLOW.md`, `QA-CHECKLIST.md`, `templates/`, `structures/`, `meta.schema.json`, `platform/`) — system rule changes belong in a separate `WPS:IMPROVE_SYSTEM_WORKFLOW` PR.
-- **Allowed file changes:** files under `content-system/tours/<slug>/` only (base or new variant). Templates/checklists may be touched only if the user explicitly requests it as part of the same task.
+- **Allowed file changes:** files under `content-system/tours/<slug>/` only (the source package or a new cluster blog asset), plus the new asset's entry in `content-system/clusters/cluster-registry.json`. Templates/checklists may be touched only if the user explicitly requests it as part of the same task.
 - **Allowed file changes (automatic QA exception):** In addition to `content-system/tours/<slug>/`, the run may create/update:
   - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
   - `content-system/system-qa/SYSTEM-QA-BACKLOG.md` (append-only entries or explicit `none found` note)
@@ -112,15 +112,15 @@
 
 ## WPS:RELINK_CLUSTER
 
-- **Purpose:** When a real direct website booking URL becomes available for a tour that already has one or more variants, propagate that URL across every package in the cluster in a single sweep.
+- **Purpose:** When a real direct website booking URL becomes available for a tour that already has one or more cluster blog assets, propagate that URL across every package in the cluster in a single sweep.
 - **Invocation:** `WPS:RELINK_CLUSTER <base-slug> <new-website-url> [--cta "<copy>"]`
 - **Should do:**
-  - locate every package whose `meta.json.slug == <base-slug>` or `meta.json.variant_of == <base-slug>`
+  - locate every package in the cluster: the source package (`meta.json.slug == <base-slug>`) plus every asset registered under the same cluster in `cluster-registry.json` (matched by `cluster_parent`)
   - update each package's `meta.json.website_link`, `cta_primary_link`, `cta_primary_channel: "website"`, and `cta_primary` (default copy: "Book on our website" unless `--cta` is supplied)
   - rewrite the booking links in each `blog-post.md` so the website URL replaces the prior OTA fallback while keeping OTA links as secondary trust references
   - record one entry in each package's `CHANGELOG.md` describing the relinking
   - leave `source-facts.md` provenance rows updated: the website-URL row moves from `missing` to `confirmed`
-- **Must not do:** rewrite any other field (pricing, duration, departures, copy hooks, FAQs); add new variants; mark anything published.
+- **Must not do:** rewrite any other field (pricing, duration, departures, copy hooks, FAQs); add new cluster assets; mark anything published.
 - **Allowed file changes:** `meta.json`, `blog-post.md`, `source-facts.md`, `qa-report.md`, and `CHANGELOG.md` for every package in the cluster. No system file changes.
 - **Final expected status:** every package in the cluster has `cta_primary_channel: "website"`, the website-URL row is `confirmed` in each `source-facts.md`, and the prior `meta.json.warnings[]` entry "website_link is a placeholder…" is removed from each.
 

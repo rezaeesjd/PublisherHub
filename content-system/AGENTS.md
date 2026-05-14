@@ -160,7 +160,7 @@ If the user asks only for strategy, templates, QA, or system setup, provide or u
 ---
 
 ## Tour folder creation rule
-Create one folder inside `/WebPublisherSystem/content-system/tours/` for each **content package**. A "package" is one variant of one tour, not one tour. The system is intended to host **multiple content variants per tour** for SEO and conversion testing.
+Create one folder inside `/WebPublisherSystem/content-system/tours/` for each **content package**. A "package" is one content asset — either a tour's **source content** package or one **cluster blog asset** generated from it (BOFU/MOFU/TOFU/FAQ). The system hosts **one source package plus a cluster of typed blog assets per tour** for SEO and conversion coverage.
 
 Folder name format:
 - lowercase
@@ -173,57 +173,47 @@ Example:
 
 The folder name is a stable source/content identifier. The public URL slug may later be edited separately in the platform without renaming the folder.
 
-### Multi-variant rule (hard rule)
-The system is a **multi-content publisher**: each tour is expected to grow a cluster of content variants over time (BOFU landing, day-trip BOFU, comparison MOFU, informational TOFU, seasonal/FAQ, etc.).
+### Multi-content cluster rule (hard rule)
+The system is a **multi-content publisher**: each tour has one **source content** package and grows a *cluster* of distinct, typed blog assets generated from it (BOFU booking post, MOFU comparison, TOFU destination/itinerary guide, FAQ support post — see the cluster registry's `default_required_assets`).
 
-When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft`), the agent must not overwrite it. Approved means:
+The base package created from a tour's intake is that tour's **source content**: it holds canonical tour data for the dashboard and for content generation. It is **not** a public blog asset and has no public page — the platform serves it only inside the admin dashboard.
 
-- `meta.json.publish_status` ∈ `{"ready_for_review", "published", "published", "published"}`
+When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft` — `meta.json.publish_status` ∈ `{"ready_for_review", "published"}`), the agent must **not** overwrite it and must **not** fork a `<base-slug>-v<N>` clone of it. The old `-v<N>` variant mechanism is **retired**: it produced thin, near-duplicate copies of the source rather than genuinely distinct content.
 
-A package in `publish_status: draft` is **iterable**: a follow-up `WPS:GENERATE_CONTENT` may continue to refine the draft in place, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Drafts have not yet been approved by a human reviewer; forking a `-v<N>` for every draft re-run would break normal iterative correction. Variant routing is reserved for tours where someone has already endorsed the prior package.
+A package in `publish_status: draft` or `needs_fix` is still **iterable in place**: a follow-up `WPS:GENERATE_CONTENT` continues to refine it, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Branching a new asset is reserved for tours whose base package a human has already endorsed.
 
-When the base package is approved per the predicate above, the agent must create a **new variant package** in a sibling folder using the slug pattern:
+When the base package is approved per the predicate above, the agent generates a **new cluster blog asset** — a distinct package that serves one funnel stage for the tour's cluster. The new asset must:
 
-```
-<base-slug>-v<N>
-```
-
-…where `<N>` is the smallest positive integer such that the resulting folder does not already exist (the base package itself is implicitly `v1`; the first explicit variant is therefore `-v2`).
-
-The new variant package must:
-
-1. Use the same `canonical_tour_title` as the base package.
-2. Use a `slug` equal to the new folder name.
-3. Use a `public_slug` that does not collide with any other package's `public_slug` (uniqueness is enforced by `platform/post-overrides.php::wps_public_slug_in_use`). Prefer a keyword-meaningful public slug (e.g., `cinque-terre-day-trip-from-milan-five-villages`), not the mechanical `-v<N>` suffix.
-4. Set the variant linkage fields in `meta.json`:
-   - `variant_of`: base package slug (string)
-   - `variant_index`: integer ≥ 2
-   - `variant_angle`: short human label (e.g., `"BOFU day-trip / five-villages keyword variant"`)
-5. Differ from the base package only on `page_title`, `public_slug`, `primary_keyword`, hook paragraph, section ordering, FAQ angle, and CTA copy phrasing. Pricing, duration, departures, transport, languages, meeting points, and other source facts must remain identical across variants and must continue to trace to the same `source-facts.md` provenance rows.
-6. Include its own `source-facts.md` (with a "Variant context" section that names the base package), `qa-report.md`, and the rest of the 9 required files. A variant package is not allowed to share files with the base package by reference.
+1. Use a **keyword-meaningful folder slug** that describes the asset itself (e.g. `swiss-alps-from-milan-guide`, `bernina-express-guided-vs-diy-from-milan`). Never a mechanical `-v<N>` suffix.
+2. Use a `slug` equal to the new folder name and a `public_slug` that does not collide with any other package's `public_slug` (uniqueness is enforced by `platform/post-overrides.php::wps_public_slug_in_use`).
+3. Set its cluster role in `meta.json`:
+   - `cluster_parent`: the parent cluster slug (matches `cluster-registry.json` → `clusters[].cluster_parent`)
+   - `funnel_stage`: `BOFU` | `MOFU` | `TOFU` | `FAQ`
+   - the `cluster_type` / `cluster_role` pair from the cluster registry's `default_required_assets` (e.g. `MOFU` / `comparison-post`)
+4. Carry **genuinely distinct content** for that funnel stage — a real comparison, destination guide, or FAQ — not a re-skin of the source package's hook, sections, and CTA. Source facts (pricing, duration, departures, transport, languages, meeting points) must still trace to the same provenance and stay consistent across the cluster.
+5. Ship its own 9 required files; a cluster asset is not allowed to share files with the source package by reference.
+6. Be registered in `content-system/clusters/cluster-registry.json` under the parent cluster's `assets[]` with its `package_slug`, `public_slug`, `cluster_type`, `cluster_role`, and `status`.
 
 Counter-cases:
 
-- If the base package is in `publish_status: draft` (regardless of `public_copy_state` or `generation_phase_completed`), the request continues to update the existing package — do **not** fork `-v<N>` for a draft. Iterative draft refinement is the expected behavior.
-- If the base package is in `publish_status: needs_fix` and the request is a re-generation to address the fixes, continue to update it in place. Do **not** fork `-v<N>`.
+- If the base package is in `publish_status: draft` or `needs_fix`, the request continues to update the existing package in place — do **not** branch a new asset for a draft/needs_fix re-run.
 - If the user explicitly requests an in-place rewrite of an already-approved package, route to `WPS:FIX_PACKAGE` instead.
-- The `-v<N>` mechanism applies to every tour, not just Cinque Terre.
 
-The QA runner and the agent both treat overwriting an approved base package without explicit `WPS:FIX_PACKAGE` routing as a hard failure.
+The QA runner and the agent both treat overwriting an approved base package without explicit `WPS:FIX_PACKAGE` routing — and creating a `-v<N>` clone of any package — as a hard failure.
 
-### Variant inheritance handshake (hard rule)
+### Source-fact inheritance handshake (hard rule)
 
-When the multi-variant rule fires and the agent is about to create a `-v<N>` package, it must first run a **variant inheritance handshake** before any file is written:
+When the multi-content cluster rule fires and the agent is about to create a new cluster blog asset, it must first run a **source-fact inheritance handshake** before any file is written:
 
-1. Collect the base package's open warnings and `needs_human_review` rows from `meta.json.warnings[]` and the `Status` column of `source-facts.md`'s provenance matrix.
+1. Collect the source package's open warnings and `needs_human_review` rows from `meta.json.warnings[]` and the `Status` column of `source-facts.md`'s provenance matrix.
 2. If any are present, batch them into a single `AskUserQuestion` call (one focused question per inherited gap, max four). Each option offered to the user must be one of:
-   - **Inherit unchanged** — the variant copies the base's auto-resolved decision (current default if the user does not answer).
-   - **Resolve now** — the user supplies the missing value; the variant records it as `confirmed` and removes the warning.
-   - **Escalate to blocker** — the user wants this gap blocking; the variant adds a `clarifications_needed` entry with `blocking: true` and enters the hard clarify gate.
-3. Record every answer in the new variant's `meta.json.inherited_warnings[]` array (one entry per gap, with `field`, `base_value`, `decision` ∈ `inherit | resolved | escalated`, and the resolved value when applicable).
-4. Only after the handshake completes may the variant package proceed to file generation.
+   - **Inherit unchanged** — the new asset copies the source's auto-resolved decision (current default if the user does not answer).
+   - **Resolve now** — the user supplies the missing value; the asset records it as `confirmed` and removes the warning.
+   - **Escalate to blocker** — the user wants this gap blocking; the asset adds a `clarifications_needed` entry with `blocking: true` and enters the hard clarify gate.
+3. Record every answer in the new asset's `meta.json.inherited_warnings[]` array (one entry per gap, with `field`, `base_value`, `decision` ∈ `inherit | resolved | escalated`, and the resolved value when applicable).
+4. Only after the handshake completes may the new cluster asset proceed to file generation.
 
-A variant created without an `inherited_warnings[]` array (when the base had open warnings) is non-compliant and must be flagged by the QA runner.
+A cluster asset created without an `inherited_warnings[]` array (when the source had open warnings) is non-compliant and must be flagged by the QA runner.
 
 ---
 
@@ -264,7 +254,7 @@ This file is intentionally deferred until blocking clarifications are resolved.
 This resolves the hard-gate rule (do not generate dependent final content) while preserving machine-readable package completeness.
 
 ### Recommended (not required) files
-- `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`, `WPS:RELINK_CLUSTER`, etc.), what changed, who/what triggered it. Required (not just recommended) when the package is a variant: every `-v<N>` package must ship with a `CHANGELOG.md` whose first entry records the variant creation, the `variant_of` base slug, the `variant_index`, and the `variant_role` chosen. Use `templates/changelog-template.md` as the seed.
+- `CHANGELOG.md` — one bullet per refresh: date, command (`WPS:GENERATE_CONTENT`, `WPS:PUBLISH_BLOG`, `WPS:CLARIFY`, `WPS:RELINK_CLUSTER`, etc.), what changed, who/what triggered it. Required (not just recommended) when the package is a generated cluster blog asset: its `CHANGELOG.md` first entry records the asset creation, the `cluster_parent`, and the `cluster_type` / `cluster_role` chosen. Use `templates/changelog-template.md` as the seed.
 - `images/` folder — store hero and gallery assets here. Reference the hero from `meta.hero_image` (relative path, e.g. `images/hero.jpg`) and any others in `meta.image_gallery`.
 
 The QA runner (`platform/qa.php`) raises a warning when these are missing or when `meta.hero_image` is unset but an `images/` folder exists.

@@ -50,7 +50,7 @@ flowchart TD
 4. **CTA hierarchy**: direct website booking is primary whenever available; OTA is fallback.
 5. **QA as gate**: no publish status escalation without QA traceability.
 6. **Live verification required**: “published” only after real front-end checks.
-7. **Behavior loop**: interaction metrics feed next content variant and optimization cycle.
+7. **Behavior loop**: interaction metrics feed the next cluster blog asset and optimization cycle.
 
 ## Most important data to capture end-to-end
 
