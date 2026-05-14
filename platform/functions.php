@@ -600,11 +600,11 @@ function wps_redirect_legacy_blog_path_if_needed(array $settings): void
     if ($isPost) {
         $slugParam = isset($_GET['slug']) ? (string) $_GET['slug'] : '';
         $target = rtrim($targetBase, '/') . '/post.php' . ($slugParam !== '' ? '?slug=' . rawurlencode($slugParam) : '');
-        header('Location: ' . $target, true, 302);
+        header('Location: ' . $target, true, 301);
         exit;
     }
 
-    header('Location: ' . $targetBase, true, 302);
+    header('Location: ' . $targetBase, true, 301);
     exit;
 }
 
@@ -760,6 +760,30 @@ function wps_trim_description(string $text, int $max = 158): string
         $cut = mb_substr($cut, 0, $space);
     }
     return rtrim($cut, " ,.;:") . '…';
+}
+
+function wps_human_date(string $date): string
+{
+    $date = trim($date);
+    if ($date === '') {
+        return '';
+    }
+    $ts = strtotime($date);
+    if ($ts === false) {
+        return $date;
+    }
+    return gmdate('F j, Y', $ts);
+}
+
+function wps_human_publish_status(string $status): string
+{
+    return match ($status) {
+        'ready_for_review' => 'Needs review',
+        'ready_for_sync' => 'Ready for sync',
+        'needs_live_verification' => 'Needs live verification',
+        'published' => 'Published',
+        default => ucwords(str_replace('_', ' ', $status ?: 'preview')),
+    };
 }
 
 /**

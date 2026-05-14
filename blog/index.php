@@ -9,6 +9,7 @@ wps_emit_public_headers();
 
 $index = wps_archive_index($settings);
 $records = is_array($index['posts'] ?? null) ? $index['posts'] : [];
+$records = wps_published_records($records);
 
 $perPage = max(5, min(100, (int) ($settings['archive_page_size'] ?? 20)));
 $rawPage = $_GET['page'] ?? null;
@@ -133,18 +134,22 @@ $preconnect = wps_render_preconnect($settings, '');
     <?php if ($paged['total'] === 0): ?>
       <p>No posts are available yet.</p>
     <?php else: ?>
-      <ul style="list-style: none; padding: 0; margin: 0; display: grid; gap: 16px;">
+      <ul class="archive-list" style="list-style: none; padding: 0; margin: 0; display: grid; gap: 16px;">
         <?php foreach ($paged['records'] as $record): ?>
           <?php $slug = (string) ($record['public_slug'] ?? ''); ?>
           <?php $date = (string) ($record['last_qa_date'] ?? $record['published_date'] ?? ''); ?>
           <?php $postUrl = wps_public_post_url($slug); ?>
           <li class="card" style="padding: 18px;">
             <h2 style="margin-top: 0;"><a href="<?php echo wps_h($postUrl); ?>"><?php echo wps_h((string) ($record['title'] ?? $slug)); ?></a></h2>
+            <p class="muted archive-meta" style="margin:0 0 8px; display:flex; gap:8px; flex-wrap:wrap;" aria-label="Post metadata">
+              <?php if (!empty($record['funnel_stage'])): ?><span class="qa-pill qa-pill-muted"><?php echo wps_h((string) $record['funnel_stage']); ?></span><?php endif; ?>
+              <?php if (!empty($record['destination'])): ?><span class="qa-pill qa-pill-muted"><?php echo wps_h((string) $record['destination']); ?></span><?php endif; ?>
+            </p>
             <?php if (!empty($record['meta_description'])): ?>
-              <p><?php echo wps_h((string) $record['meta_description']); ?></p>
+              <p class="archive-desc"><?php echo wps_h(wps_trim_description((string) $record['meta_description'], 170)); ?></p>
             <?php endif; ?>
             <?php if ($date !== ''): ?>
-              <p class="muted"><small>Updated <time datetime="<?php echo wps_h($date); ?>"><?php echo wps_h($date); ?></time></small></p>
+              <p class="muted"><small>Updated <time datetime="<?php echo wps_h($date); ?>"><?php echo wps_h(wps_human_date($date)); ?></time></small></p>
             <?php endif; ?>
           </li>
         <?php endforeach; ?>

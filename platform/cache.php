@@ -94,6 +94,7 @@ function wps_archive_index_rebuild(array $settings): array
                 'last_qa_date'     => (string) ($meta['last_qa_date'] ?? ''),
                 'hero_image'       => (string) ($meta['hero_image'] ?? ''),
                 'cluster_parent'   => (string) ($meta['variant_of'] ?? $applied['slug'] ?? ''),
+                'destination'      => (string) ($meta['destination'] ?? ''),
             ];
         }
     }
@@ -120,6 +121,28 @@ function wps_archive_index_rebuild(array $settings): array
     );
 
     return $payload;
+}
+
+/**
+ * Return records filtered to publish-state values.
+ *
+ * @param array<int,array<string,mixed>> $records
+ * @param array<int,string> $states
+ * @return array<int,array<string,mixed>>
+ */
+function wps_records_by_publish_status(array $records, array $states): array
+{
+    $allowed = array_values(array_filter(array_map('strval', $states), static fn(string $v): bool => $v !== ''));
+    if (empty($allowed)) {
+        return [];
+    }
+
+    return array_values(array_filter($records, static function ($r) use ($allowed) {
+        if (!is_array($r)) {
+            return false;
+        }
+        return in_array((string) ($r['publish_status'] ?? ''), $allowed, true);
+    }));
 }
 
 /**
