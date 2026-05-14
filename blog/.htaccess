@@ -13,6 +13,9 @@
     # /blog/sitemap.xml -> sitemap.xml.php
     RewriteRule ^sitemap\.xml$ sitemap.xml.php [L]
 
+    # /blog/feed.xml -> feed.xml.php
+    RewriteRule ^feed\.xml$ feed.xml.php [L]
+
     # Clean post URLs: /blog/post/<slug> -> post.php?slug=<slug>
     RewriteRule ^post/([A-Za-z0-9_-]+)/?$ post.php?slug=$1 [QSA,L]
 

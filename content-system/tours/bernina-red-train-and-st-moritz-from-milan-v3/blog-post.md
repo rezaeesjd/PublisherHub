@@ -1,6 +1,6 @@
-# Compare guided Bernina day tours versus planning the route independently.
+# Guided vs DIY Bernina Express Day Trip from Milan: How to Choose
 
-Compare guided Bernina day tours versus planning the route independently. This Bernina Red Train and St Moritz experience from Milan is built for travelers who want Swiss Alps scenery in one day with less planning risk.
+This comparison weighs a guided Bernina Express day tour from Milan against planning the route independently, so you can decide which approach fits your trip. The Bernina Red Train and St Moritz experience from Milan is built for travelers who want Swiss Alps scenery in one day with less planning risk.
 
 ## What stays the same on every variant
 - 12 to 13 hour full-day format
@@ -10,7 +10,7 @@ Compare guided Bernina day tours versus planning the route independently. This B
 - Free cancellation up to 24 hours before departure; non-refundable within 24h
 
 ## Who this page is for
-This MOFU page helps you evaluate fit before booking: route fit, practical constraints, and confidence checks.
+This comparison helps you evaluate fit before booking: route fit, practical constraints, and confidence checks.
 
 ## Key decision checks
 1. Can you handle a long 12–13 hour day?

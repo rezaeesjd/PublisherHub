@@ -59,20 +59,23 @@ $jsonLdItemList = [
     'itemListElement' => $itemListItems,
     'name'            => $archiveTitle,
 ];
+$siteHomeUrl = wps_site_home_url();
 $jsonLdBreadcrumb = [
     '@context'        => 'https://schema.org',
     '@type'           => 'BreadcrumbList',
     'itemListElement' => [
-        ['@type' => 'ListItem', 'position' => 1, 'name' => $siteName,     'item' => rtrim(wps_system_url_base(), '/') . '/'],
+        ['@type' => 'ListItem', 'position' => 1, 'name' => $siteName,     'item' => $siteHomeUrl],
         ['@type' => 'ListItem', 'position' => 2, 'name' => $archiveTitle, 'item' => $archiveUrl],
     ],
 ];
 $jsonLdWebSite = [
     '@context' => 'https://schema.org',
     '@type'    => 'WebSite',
-    'url'      => rtrim(wps_system_url_base(), '/') . '/',
+    'url'      => $siteHomeUrl,
     'name'     => $siteName,
 ];
+
+$feedUrl = $archiveUrl . 'feed.xml';
 
 $prevUrl = $paged['page'] > 1 ? wps_archive_page_url($paged['page'] - 1) : '';
 $nextUrl = $paged['page'] < $paged['pages'] ? wps_archive_page_url($paged['page'] + 1) : '';
@@ -87,13 +90,12 @@ $preconnect = wps_render_preconnect($settings, '');
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php echo wps_h($pageTitle); ?></title>
+  <title><?php echo wps_h($siteName !== '' && stripos($pageTitle, $siteName) === false ? $pageTitle . ' | ' . $siteName : $pageTitle); ?></title>
   <?php if ($metaDescription !== ''): ?><meta name="description" content="<?php echo wps_h($metaDescription); ?>"><?php endif; ?>
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="<?php echo wps_h($canonical); ?>">
-  <?php if ($prevUrl !== ''): ?><link rel="prev" href="<?php echo wps_h($prevUrl); ?>"><?php endif; ?>
-  <?php if ($nextUrl !== ''): ?><link rel="next" href="<?php echo wps_h($nextUrl); ?>"><?php endif; ?>
+  <link rel="alternate" type="application/rss+xml" title="<?php echo wps_h($archiveTitle); ?>" href="<?php echo wps_h($feedUrl); ?>">
   <?php echo $analyticsHead; ?>
   <?php echo $preconnect; ?>
   <meta property="og:type" content="website">

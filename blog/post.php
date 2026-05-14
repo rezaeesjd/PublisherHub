@@ -27,14 +27,23 @@ $folderPath = (string) ($post['folder_path'] ?? '');
 $folderName = (string) ($post['folder_name'] ?? '');
 $meta = is_array($post['meta'] ?? null) ? $post['meta'] : [];
 
+// Source-content packages hold canonical tour data for the dashboard and
+// content generation; they are not public blog assets and have no public
+// page. They remain visible to operators in the dashboard.
+if (wps_is_source_content_package((string) ($post['base_slug'] ?? $post['slug'] ?? ''))) {
+    http_response_code(404);
+    echo 'Post not found.';
+    exit;
+}
+
 $publicSlug = (string) ($post['public_slug'] ?? $post['slug'] ?? $slug);
 
-// G2A.10: legacy slug 301-redirects to the current public URL.
-if (($postResult['matched_via'] ?? '') === 'legacy' && $publicSlug !== $slug) {
-    if (PHP_SAPI !== 'cli' && !headers_sent()) {
-        header('Location: ' . wps_public_post_url($publicSlug), true, 301);
-        exit;
-    }
+// G2A.10: 301 any non-canonical slug (a legacy slug or the internal base
+// slug) to the current public URL so each post is reachable at exactly one
+// indexable URL.
+if ($publicSlug !== '' && $slug !== $publicSlug && PHP_SAPI !== 'cli' && !headers_sent()) {
+    header('Location: ' . wps_public_post_url($publicSlug), true, 301);
+    exit;
 }
 
 // G1.2: noindex non-published content even when accessed via direct URL.
@@ -80,7 +89,17 @@ if ($blogHtml === '') {
 
 $faqPairs = $faqMarkdown !== '' ? wps_parse_faq_pairs($faqMarkdown) : [];
 
+// FAQ-stage posts already render the full Q&A in their body; the standalone
+// FAQ accordion would duplicate it on the same URL. Other funnel stages keep
+// the accordion as a supplementary block. FAQPage JSON-LD is emitted either
+// way so FAQ posts still get structured data.
+$isFaqPost = strtoupper(trim((string) ($post['funnel_stage'] ?? ''))) === 'FAQ';
+
 $title = (string) ($post['title'] ?? $slug);
+
+// Guarantee the rendered body has exactly one <h1> for a clean document
+// outline regardless of how the source markdown was authored.
+$blogHtml = wps_enforce_single_h1($blogHtml, $title);
 
 // G1.3: fall back to an auto-generated description when meta has none,
 // trimmed on a word boundary at ~158 chars.
@@ -93,16 +112,22 @@ if ($description === '') {
 
 $archiveUrl = rtrim(wps_archive_url(), '/') . '/';
 $canonical  = wps_public_post_url($publicSlug);
-$systemBase = rtrim(wps_system_url_base(), '/') . '/';
+$systemBase = wps_site_home_url();
+$feedUrl    = $archiveUrl . 'feed.xml';
 $siteName   = (string) ($settings['site_name'] ?? '');
 $twitterHandle = trim((string) ($settings['twitter_handle'] ?? ''));
+$articleSection = trim((string) ($meta['destination'] ?? ''));
 
 $dateModified  = (string) ($meta['last_qa_date'] ?? $post['published_date'] ?? '');
 $datePublished = (string) ($meta['first_published_at'] ?? $dateModified);
 
-// G1.11: resolve local hero images to real public URLs so og:image,
-// twitter:image and Article.image actually fire.
-$heroImage = wps_resolve_hero_image_url((string) ($meta['hero_image'] ?? ''), $folderName);
+// G1.11: resolve local hero images to real public URLs (and measured
+// dimensions when the file is local) so og:image, twitter:image and
+// Article.image fire with accurate metadata.
+$hero       = wps_resolve_hero_image((string) ($meta['hero_image'] ?? ''), $folderName);
+$heroImage  = (string) $hero['url'];
+$heroWidth  = $hero['width'];
+$heroHeight = $hero['height'];
 
 $cssVersion = @filemtime(__DIR__ . '/../platform/assets/theme.css') ?: time();
 $themeCssUrl = rtrim(wps_system_url_base(), '/') . '/platform/assets/theme.css?v=' . rawurlencode((string) $cssVersion);
@@ -331,11 +356,12 @@ if ($dateModified !== '') {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?php echo wps_h($title); ?></title>
+  <title><?php echo wps_h($siteName !== '' ? $title . ' | ' . $siteName : $title); ?></title>
   <?php if ($description !== ''): ?><meta name="description" content="<?php echo wps_h($description); ?>"><?php endif; ?>
   <meta name="robots" content="<?php echo $publishStatus === 'published' ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, nofollow'; ?>">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="<?php echo wps_h($canonical); ?>">
+  <link rel="alternate" type="application/rss+xml" title="<?php echo wps_h($archiveTitle !== '' ? $archiveTitle : 'Blog'); ?>" href="<?php echo wps_h($feedUrl); ?>">
   <?php echo $analyticsHead; ?>
   <?php echo $preconnect; ?>
   <meta property="og:type" content="article">
@@ -345,12 +371,15 @@ if ($dateModified !== '') {
   <meta property="og:url" content="<?php echo wps_h($canonical); ?>">
   <?php if ($heroImage !== ''): ?>
   <meta property="og:image" content="<?php echo wps_h($heroImage); ?>">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <?php if ($heroWidth && $heroHeight): ?>
+  <meta property="og:image:width" content="<?php echo (int) $heroWidth; ?>">
+  <meta property="og:image:height" content="<?php echo (int) $heroHeight; ?>">
+  <?php endif; ?>
   <?php endif; ?>
   <?php if ($datePublished !== ''): ?><meta property="article:published_time" content="<?php echo wps_h($datePublished); ?>"><?php endif; ?>
   <?php if ($dateModified !== ''): ?><meta property="article:modified_time" content="<?php echo wps_h($dateModified); ?>"><?php endif; ?>
   <?php if ($authorName !== ''): ?><meta property="article:author" content="<?php echo wps_h($authorName); ?>"><?php endif; ?>
+  <?php if ($articleSection !== ''): ?><meta property="article:section" content="<?php echo wps_h($articleSection); ?>"><?php endif; ?>
   <meta name="twitter:card" content="<?php echo $heroImage !== '' ? 'summary_large_image' : 'summary'; ?>">
   <?php if ($twitterHandle !== ''): ?><meta name="twitter:site" content="@<?php echo wps_h($twitterHandle); ?>"><?php endif; ?>
   <meta name="twitter:title" content="<?php echo wps_h($title); ?>">
@@ -390,7 +419,10 @@ if ($dateModified !== '') {
         <p><?php echo wps_h($description); ?></p>
       </aside>
     <?php endif; ?>
-    <?php if ($dateModified !== ''): ?>
+    <?php // Internal review cadence ("Refresh recommended", "Reviewed N days
+          // ago") is an operator signal, not public copy — readers already
+          // get an "Updated" date in the byline above. Show only to operators. ?>
+    <?php if ($dateModified !== '' && wps_is_logged_in()): ?>
       <p class="muted" style="margin: 10px 0 14px;">
         Last reviewed on <time datetime="<?php echo wps_h($dateModified); ?>"><?php echo wps_h(wps_human_date($dateModified)); ?></time>.
         <?php if ($freshnessDays !== null): ?>
@@ -448,7 +480,7 @@ if ($dateModified !== '') {
         <?php endif; ?>
       </section>
     <?php endif; ?>
-    <?php if (!empty($faqPairs)): ?>
+    <?php if (!empty($faqPairs) && !$isFaqPost): ?>
       <section class="card faq-block" style="padding: 20px; margin-top: 20px;" aria-labelledby="faq-heading">
         <h2 id="faq-heading">Frequently asked questions</h2>
         <?php foreach ($faqPairs as $pair): ?>

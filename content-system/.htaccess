@@ -1,0 +1,16 @@
+# WebPublisherSystem: content-system holds raw content sources (blog-post.md,
+# faq.md), rendered HTML caches, QA reports, intake CSVs, and internal
+# metadata (meta.json). None of it is a public surface — only image assets
+# that the rendered blog legitimately hot-links may be served.
+#
+# Designed for Apache 2.4. No-ops on hosts without the relevant modules.
+
+Options -Indexes
+
+<FilesMatch "\.(md|json|csv|stamp|html|txt|yml|yaml|lock|schema\.json)$">
+    Require all denied
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
