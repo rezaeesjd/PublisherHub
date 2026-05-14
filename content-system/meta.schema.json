@@ -217,7 +217,7 @@
         "draft",
         "ready_for_review",
         "needs_fix",
-        "ready_for_sync",
+        "published",
         "needs_live_verification",
         "published",
         "archived"

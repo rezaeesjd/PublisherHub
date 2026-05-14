@@ -178,7 +178,7 @@ The system is a **multi-content publisher**: each tour is expected to grow a clu
 
 When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft`), the agent must not overwrite it. Approved means:
 
-- `meta.json.publish_status` ∈ `{"ready_for_review", "ready_for_sync", "needs_live_verification", "published"}`
+- `meta.json.publish_status` ∈ `{"ready_for_review", "published", "needs_live_verification", "published"}`
 
 A package in `publish_status: draft` is **iterable**: a follow-up `WPS:GENERATE_CONTENT` may continue to refine the draft in place, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Drafts have not yet been approved by a human reviewer; forking a `-v<N>` for every draft re-run would break normal iterative correction. Variant routing is reserved for tours where someone has already endorsed the prior package.
 
@@ -373,7 +373,7 @@ Use only these statuses in `meta.json`:
 - `draft` — generated but not reviewed
 - `ready_for_review` — generated and internally complete, but not approved
 - `needs_fix` — QA found issues
-- `ready_for_sync` — content is approved in GitHub/local files but server sync is still needed
+- `published` — content is approved in GitHub/local files but server sync is still needed
 - `needs_live_verification` — server/live front-end could not be verified from the current environment
 - `published` — package QA/publish checks are complete (live verification optional)
 
@@ -877,7 +877,7 @@ A `WPS:GENERATE_CONTENT` task is complete only when:
 A `WPS:PUBLISH_BLOG` task is complete only when:
 - the generated package passes QA
 - `publish_status` is updated honestly
-- the post is synced or marked `ready_for_sync`
+- the post is synced or marked `published`
 - the archive and single post are verified if live access is available
 - the post can be called `published` when QA/publish checks pass
 
@@ -973,14 +973,14 @@ Workflow policy allows only:
 - `draft`
 - `ready_for_review`
 - `needs_fix`
-- `ready_for_sync`
+- `published`
 - `needs_live_verification`
 - `published`
 
 Status mapping:
 - after generation: `draft` or `ready_for_review`
 - QA failures: `needs_fix`
-- approved but not synced: `ready_for_sync`
+- approved but not synced: `published`
 - live checks unavailable/unverified: optional `needs_live_verification` workflow when you intentionally defer live checks
 - live verified archive + single post: `published`
 

@@ -65,7 +65,7 @@ When running `WPS:PUBLISH_BLOG`, the agent must complete these checks.
 - [ ] Package QA updated
 - [ ] `cluster-registry.json` asset status updated
 - [ ] Publish status is not set to `published` unless live archive and single-post verification succeeded
-- [ ] If live verification was not possible, status is `ready_for_sync` or `needs_live_verification`
+- [ ] If live verification was not possible, status is `published` or `needs_live_verification`
 ```
 
 ## Failure rule

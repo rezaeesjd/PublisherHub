@@ -54,7 +54,7 @@
     "needs_clarification",
     "needs_fix",
     "ready_for_review",
-    "ready_for_sync",
+    "published",
     "needs_live_verification",
     "published",
     "refresh_needed"
@@ -90,9 +90,9 @@
           "package_slug": "cinque-terre-full-day-tour-from-milan-vs-diy",
           "public_slug": "cinque-terre-guided-tour-vs-diy-by-train-from-milan",
           "title": "Cinque Terre guided tour vs DIY by train from Milan",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Published."
         },
         {
           "required": true,
@@ -112,9 +112,9 @@
           "package_slug": "cinque-terre-from-milan-faq",
           "public_slug": "cinque-terre-from-milan-faq-practical-guide",
           "title": "Cinque Terre from Milan: practical FAQs",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Published."
         }
       ]
     },
@@ -217,9 +217,9 @@
           "package_slug": "bernina-express-guided-vs-diy-from-milan",
           "public_slug": "bernina-express-guided-tour-vs-diy-from-milan",
           "title": "Bernina Express guided tour from Milan vs DIY from Tirano",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Ready for sync."
+          "notes": "MOFU comparison post. Human-reviewed 2026-05-13. Published."
         },
         {
           "required": true,
@@ -239,9 +239,9 @@
           "package_slug": "bernina-st-moritz-from-milan-faq",
           "public_slug": "bernina-express-st-moritz-from-milan-faq",
           "title": "Bernina Express + St Moritz from Milan: passport, weather and timing FAQ",
-          "status": "ready_for_sync",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Ready for sync."
+          "notes": "FAQ support post. Human-reviewed 2026-05-13. Cancellation policy confirmed (24h free). Published."
         },
         {
           "required": false,

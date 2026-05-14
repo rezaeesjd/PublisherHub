@@ -58,7 +58,7 @@ function wps_asset_next_action(string $status): string
             return 'Live — monitor and refresh later.';
         case 'needs_live_verification':
             return 'Verify the archive and single-post pages are live.';
-        case 'ready_for_sync':
+        case 'published':
             return 'Sync/deploy to live environment.';
         case 'ready_for_review':
             return 'Run QA and complete human review.';
@@ -84,7 +84,7 @@ function wps_asset_status_tone(string $status): string
         case 'published':
             return 'success';
         case 'ready_for_review':
-        case 'ready_for_sync':
+        case 'published':
         case 'needs_live_verification':
         case 'draft':
             return 'warning';

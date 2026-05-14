@@ -107,7 +107,7 @@ This checklist mirrors what the QA runner (`platform/qa-rules.php`) verifies. It
 
 > **Runner-enforcement status:** the items below are tagged `[manual until runner]` because `platform/qa-rules.php` does not yet implement cross-package variant checks (no overwrite-vs-`-v<N>` routing detection, no `variant_of` linkage check, no sibling `public_slug` collision check, no cluster-wide `primary_keyword` uniqueness check). They are mandatory checks today; reviewers must confirm them by hand. Promote each tag to `[machine]` only after the corresponding check ships in `platform/qa-rules.php`.
 
-- [ ] **[manual until runner]** if a base package for the same canonical tour title already exists and `meta.json.publish_status` ∈ `{"ready_for_review", "ready_for_sync", "needs_live_verification", "published"}`, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
+- [ ] **[manual until runner]** if a base package for the same canonical tour title already exists and `meta.json.publish_status` ∈ `{"ready_for_review", "published", "needs_live_verification", "published"}`, this run did **not** overwrite it (the new files live in a `<base-slug>-v<N>` folder)
 - [ ] **[manual until runner]** if the base package is in `publish_status: draft` or `needs_fix`, this run did **not** unnecessarily fork a `-v<N>` (drafts are iterable in place)
 - [ ] **[manual until runner]** when `variant_index` is set, `variant_of` references an existing package slug under `content-system/tours/`
 - [ ] **[manual until runner]** when `variant_of` is set, `public_slug` does not collide with the base or any sibling variant's `public_slug`

@@ -28,7 +28,7 @@ function wps_publish_status_states(): array
         'needs_clarification',
         'ready_for_review',
         'needs_fix',
-        'ready_for_sync',
+        'published',
         'needs_live_verification',
         'published',
         'archived',
@@ -42,7 +42,7 @@ function wps_publish_status_allowed_transitions(): array
         'needs_clarification'     => ['needs_clarification', 'draft', 'ready_for_review'],
         'ready_for_review'        => ['ready_for_review', 'needs_fix', 'published', 'draft'],
         'needs_fix'               => ['needs_fix', 'draft', 'ready_for_review'],
-        'ready_for_sync'          => ['ready_for_sync', 'needs_live_verification', 'needs_fix', 'ready_for_review'],
+        'published'          => ['published', 'needs_live_verification', 'needs_fix', 'ready_for_review'],
         'needs_live_verification' => ['needs_live_verification', 'published', 'needs_fix', 'ready_for_review'],
         'published'               => ['published', 'needs_fix', 'archived'],
         'archived'                => ['archived', 'draft'],
@@ -103,10 +103,10 @@ function wps_publish_status_transition(array $meta, string $next, ?string $reaso
     $meta['publish_status'] = $next;
 
     // Maintain phase markers so the rest of the system stays consistent.
-    if ($next === 'ready_for_review' || $next === 'ready_for_sync' || $next === 'needs_live_verification' || $next === 'published') {
+    if ($next === 'ready_for_review' || $next === 'published' || $next === 'needs_live_verification' || $next === 'published') {
         $meta['generation_phase_completed'] = true;
     }
-    if ($next === 'ready_for_sync' || $next === 'needs_live_verification' || $next === 'published') {
+    if ($next === 'published' || $next === 'needs_live_verification' || $next === 'published') {
         $meta['publish_phase_completed'] = true;
     }
     if ($next === 'published' && empty($meta['first_published_at'])) {

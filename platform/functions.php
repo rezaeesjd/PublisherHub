@@ -236,7 +236,7 @@ function wps_default_cluster_registry(): array
             ['required' => false, 'cluster_type' => 'TOFU', 'cluster_role' => 'itinerary-guide', 'purpose' => 'Practical itinerary, timing, seasonal, or route guide', 'recommended_linking_priority' => 'link-to-mofu'],
             ['required' => true, 'cluster_type' => 'FAQ', 'cluster_role' => 'faq-support-post', 'purpose' => 'Remove booking doubts and link back to BOFU', 'recommended_linking_priority' => 'link-to-bofu'],
         ],
-        'allowed_asset_statuses' => ['not_started', 'planned', 'draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'ready_for_sync', 'needs_live_verification', 'published', 'refresh_needed'],
+        'allowed_asset_statuses' => ['not_started', 'planned', 'draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'published', 'needs_live_verification', 'published', 'refresh_needed'],
         'clusters' => [],
     ];
 }
@@ -290,7 +290,7 @@ function wps_cluster_completeness(array $cluster): array
 {
     $assets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
     $total = count($assets);
-    $createdStatuses = ['draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'ready_for_sync', 'needs_live_verification', 'published', 'refresh_needed'];
+    $createdStatuses = ['draft', 'needs_clarification', 'needs_fix', 'ready_for_review', 'published', 'needs_live_verification', 'published', 'refresh_needed'];
     $created = 0;
     $published = 0;
     $missingRequired = [];
@@ -779,7 +779,7 @@ function wps_human_publish_status(string $status): string
 {
     return match ($status) {
         'ready_for_review' => 'Needs review',
-        'ready_for_sync' => 'Ready for sync',
+        'published' => 'Published',
         'needs_live_verification' => 'Needs live verification',
         'published' => 'Published',
         default => ucwords(str_replace('_', ' ', $status ?: 'preview')),
