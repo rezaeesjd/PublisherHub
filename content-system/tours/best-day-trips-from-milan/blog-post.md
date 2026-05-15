@@ -44,7 +44,7 @@ The third major day trip from Milan trades coast and lake for high mountains. Th
 
 This trip is the most visually distinctive of the three: glacier views, alpine lakes, and a panoramic-window train. It's also the most weather-sensitive — winter brings snow scenery but shorter days; summer brings clearer mountain views but more crowded carriages.
 
-**Best for:** travellers who want a "wow" scenic-rail experience, a passport stamp into Switzerland, and don't mind a long day with a lot of seat-time.
+**Best for:** travellers who want a "wow" scenic-rail experience, a day across the Swiss border (note: Schengen border crossings typically do not issue a passport stamp), and don't mind a long day with a lot of seat-time.
 
 ---
 
