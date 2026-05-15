@@ -36,6 +36,16 @@ if (wps_is_source_content_package((string) ($post['base_slug'] ?? $post['slug'] 
     exit;
 }
 
+// Retired -vN variant clones are stale duplicates pending deletion. They
+// must never resolve to a public page even if the directory still lingers
+// on disk with publish_status: published.
+if (wps_is_retired_variant_slug((string) ($post['base_slug'] ?? $post['slug'] ?? ''))
+    || wps_is_retired_variant_slug((string) ($post['folder_name'] ?? ''))) {
+    http_response_code(404);
+    echo 'Post not found.';
+    exit;
+}
+
 $publicSlug = (string) ($post['public_slug'] ?? $post['slug'] ?? $slug);
 
 // G2A.10: 301 any non-canonical slug (a legacy slug or the internal base
