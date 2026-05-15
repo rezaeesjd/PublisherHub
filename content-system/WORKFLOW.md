@@ -33,6 +33,7 @@
      - Live verification: not yet verified | verified
      ```
 10. Open or update the PR. PR description must mirror both `qa-report.md` and process-QA findings.
+10a. Chat response must include a concise **Reviewer Handoff**: open review items, why each matters, and recommended reviewer response/action.
 11. Human review resolves any open clarifications and any QA findings.
 12. Publish workflow (`WPS:PUBLISH_BLOG`) validates package.
 13. Server sync occurs.

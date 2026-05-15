@@ -330,6 +330,20 @@ Generate FAQ, internal linking plan, automation notes, and metadata.
 ### Step 6: QA report
 Create `qa-report.md` and mark the package status honestly.
 
+### Step 7: Reviewer handoff summary in chat (required)
+After generation or publish workflows, the agent must include a concise **Reviewer Handoff** section in the chat response (not only in files).
+
+Required format:
+- `Review needed:` 2–6 bullets listing exactly what a human should verify before approval/publication
+- `Why it matters:` one short line per bullet (risk if left unchecked)
+- `Recommended response:` one short action per bullet (what reviewer should do/decide)
+
+Rules:
+- Keep this section short and operational; do not paste full QA files.
+- Only include open items (warnings/notes/blockers), not passes.
+- If no review items remain, state: `No human review items remain; package is ready to publish.`
+- For `WPS:PUBLISH_BLOG`, include whether any live-link recheck is deferred and who should perform it.
+
 ---
 
 ## Master workflow for `WPS:PUBLISH_BLOG`
