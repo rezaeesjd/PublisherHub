@@ -5,6 +5,61 @@ require_once __DIR__ . '/content-loader.php';
 
 wps_require_auth();
 
+
+$deleteResult = null;
+
+function wps_delete_directory_tree(string $dir): bool
+{
+    if (!is_dir($dir)) {
+        return false;
+    }
+
+    $items = scandir($dir);
+    if ($items === false) {
+        return false;
+    }
+
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') {
+            continue;
+        }
+
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            if (!wps_delete_directory_tree($path)) {
+                return false;
+            }
+            continue;
+        }
+
+        if (!@unlink($path)) {
+            return false;
+        }
+    }
+
+    return @rmdir($dir);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (string) ($_POST['action'] ?? '') === 'delete_unclustered_package') {
+    wps_csrf_validate_or_die();
+
+    $slug = trim((string) ($_POST['slug'] ?? ''));
+    if ($slug === '' || !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+        $deleteResult = ['ok' => false, 'message' => 'Invalid package slug.'];
+    } else {
+        $packagePath = realpath(__DIR__ . '/../content-system/tours/' . $slug);
+        $toursRoot = realpath(__DIR__ . '/../content-system/tours');
+
+        if ($packagePath === false || $toursRoot === false || !is_dir($packagePath) || strpos($packagePath, $toursRoot . DIRECTORY_SEPARATOR) !== 0) {
+            $deleteResult = ['ok' => false, 'message' => 'Package folder not found on disk.'];
+        } elseif (!wps_delete_directory_tree($packagePath)) {
+            $deleteResult = ['ok' => false, 'message' => 'Failed to delete package folder. Check file permissions.'];
+        } else {
+            $deleteResult = ['ok' => true, 'message' => "Deleted package folder: {$slug}."];
+        }
+    }
+}
+
 $settings = wps_load_settings();
 $connection = wps_test_github_connection($settings);
 $postsResult = wps_get_posts($settings);
@@ -95,6 +150,14 @@ function wps_asset_status_tone(string $status): string
 
 wps_render_header($settings['archive_title']);
 ?>
+
+<?php if ($deleteResult !== null): ?>
+    <section class="panel">
+        <div class="alert <?php echo !empty($deleteResult['ok']) ? 'alert-success' : 'alert-error'; ?>">
+            <?php echo wps_h((string) ($deleteResult['message'] ?? '')); ?>
+        </div>
+    </section>
+<?php endif; ?>
 
 <section class="hero panel">
     <p class="eyebrow">Milano Adventures Blog</p>
@@ -343,6 +406,7 @@ wps_render_header($settings['archive_title']);
                     <th>Package</th>
                     <th>Status</th>
                     <th>Why this status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -370,6 +434,14 @@ wps_render_header($settings['archive_title']);
                             <?php else: ?>
                                 <small class="muted">publish_status=<?php echo wps_h((string) $post['publish_status']); ?> · qa_status=<?php echo wps_h((string) $post['qa_status']); ?></small>
                             <?php endif; ?>
+                        </td>
+                        <td>
+                            <form method="post" onsubmit="return confirm('Delete package folder "' + <?php echo json_encode($slug); ?> + '" from content-system/tours? This cannot be undone.');">
+                                <?php echo wps_csrf_field(); ?>
+                                <input type="hidden" name="action" value="delete_unclustered_package">
+                                <input type="hidden" name="slug" value="<?php echo wps_h($slug); ?>">
+                                <button type="submit" class="button-secondary btn-danger">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
