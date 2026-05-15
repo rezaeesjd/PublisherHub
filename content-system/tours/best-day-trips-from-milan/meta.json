@@ -3,8 +3,12 @@
   "slug": "best-day-trips-from-milan",
   "public_slug": "best-day-trips-from-milan-overview",
   "variant_angle": "TOFU destination guide: overview of the best day trips travellers can take from Milan, with Cinque Terre as the headline option",
-  "product_reference_code": "",
-  "channel_product_codes": {},
+  "product_reference_code": "187808P109",
+  "channel_product_codes": {
+    "viator": "187808P82",
+    "tripadvisor": "33344981",
+    "supplier": "187808P109"
+  },
   "website_link": "https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/",
   "tripadvisor_link": "",
   "viator_link": "",
@@ -30,6 +34,32 @@
   "warnings": [
     "Day-trip overview facts (transit times, seasons, alternative destinations) sourced from general destination knowledge — flagged as inferred in source-facts.md. Human reviewer should validate before publish.",
     "Lake Como and Bernina cluster public slugs not all live yet; cluster cross-links should be re-checked before publish."
+  ],
+  "inherited_warnings": [
+    {
+      "field": "cancellation_policy",
+      "base_value": "15 (unit unspecified)",
+      "decision": "inherit",
+      "resolved_value": "See booking page for latest cancellation terms",
+      "source_package": "cinque-terre-full-day-tour-from-milan",
+      "notes": "Auto-resolved on base package; inherited unchanged for this TOFU asset. Public copy points readers to the booking page for current terms."
+    },
+    {
+      "field": "accessibility",
+      "base_value": "not provided",
+      "decision": "inherit",
+      "resolved_value": null,
+      "source_package": "cinque-terre-full-day-tour-from-milan",
+      "notes": "No accessibility data on the headline Cinque Terre tour; inherited as non-blocking for the TOFU overview, which does not make accessibility claims."
+    },
+    {
+      "field": "canonical_title_status",
+      "base_value": "unconfirmed (base package)",
+      "decision": "resolved",
+      "resolved_value": "Cinque Terre Full-Day Tour from Milan",
+      "source_package": "cinque-terre-full-day-tour-from-milan",
+      "notes": "Base canonical title accepted as resolved for cross-cluster reference in this overview asset."
+    }
   ],
   "clarify_decisions": [],
   "last_qa_date": "2026-05-15",
