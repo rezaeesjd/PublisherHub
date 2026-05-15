@@ -1,0 +1,76 @@
+{
+  "canonical_tour_title": "Full Day Tour in Bernina Red Train and St Moritz from Milan",
+  "slug": "swiss-alps-from-milan-guide",
+  "public_slug": "swiss-alps-from-milan-guide",
+  "variant_angle": "TOFU destination guide focused on Bernina Express route discovery from Milan",
+  "product_reference_code": "",
+  "channel_product_codes": {
+    "viator": "",
+    "tripadvisor": "",
+    "supplier": ""
+  },
+  "website_link": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
+  "tripadvisor_link": "",
+  "viator_link": "",
+  "cta_primary_link": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
+  "cta_primary_channel": "website",
+  "direct_booking_followup_required": false,
+  "qa_status": "warning",
+  "publish_status": "ready_for_review",
+  "public_copy_state": "final",
+  "generation_phase_completed": true,
+  "clarify_phase_required": false,
+  "clarify_phase_completed": true,
+  "publish_phase_completed": false,
+  "live_verification_completed": false,
+  "intake_questions_resolved": true,
+  "clarification_questions_presented": false,
+  "clarification_questions_presented_at": "2026-05-15",
+  "clarification_mode_selected": "auto_resolved",
+  "provisional_mode": false,
+  "blocking_issues": [],
+  "conversion_blockers": [],
+  "clarifications_needed": [],
+  "warnings": [
+    "TOFU route framing includes inferred seasonal/visibility context; human review recommended before publish."
+  ],
+  "inherited_warnings": [
+    {
+      "field": "product_reference_code",
+      "base_value": "not provided",
+      "decision": "inherit",
+      "resolved_value": null,
+      "source_package": "bernina-red-train-and-st-moritz-from-milan",
+      "notes": "Non-blocking identifier gap inherited from BOFU source package."
+    }
+  ],
+  "clarify_decisions": [
+    {
+      "field": "overview_framing",
+      "raw_value": "Swiss Alps route discovery context",
+      "blocking": false,
+      "decision": "auto_resolved",
+      "reason": "TOFU route explainer facts are framed as inferred where not explicitly numeric in source.",
+      "resolved_value": "kept with human-review note"
+    }
+  ],
+  "last_qa_date": "2026-05-15",
+  "brand": "Milano Adventures",
+  "page_title": "Swiss Alps from Milan: Bernina Express Route Guide",
+  "meta_description": "Discovery guide to the Bernina Express route from Milan, including Tirano, Alp Grüm, Diavolezza, Pontresina, and St Moritz, with a clear next step to book.",
+  "primary_keyword": "swiss alps from milan",
+  "funnel_stage": "TOFU",
+  "cluster_parent": "swiss-alps-from-milan",
+  "cluster_type": "TOFU",
+  "cluster_role": "destination-guide",
+  "bofu_link_target": "bernina-red-train-and-st-moritz-from-milan",
+  "mofu_link_target": "bernina-express-guided-vs-diy-from-milan",
+  "human_review_required": true,
+  "canonical_title_status": "confirmed",
+  "can_generate_public_copy": true,
+  "notes": [
+    "TOFU discovery guide for swiss-alps-from-milan cluster.",
+    "Primary CTA routes to Bernina BOFU conversion asset.",
+    "Process QA report generated for this run."
+  ]
+}
