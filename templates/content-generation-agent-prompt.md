@@ -28,6 +28,23 @@ If any required step fails or is skipped, the workflow must explicitly report:
 
 Do not silently skip registry updates, QA updates, or system-QA backlog updates.
 
+## FAQ content rule
+
+Before generating FAQ content, the agent must follow:
+
+```text
+structures/faq-content-standard.md
+```
+
+Core FAQ rules:
+
+- Every main BOFU/MOFU package may include a short embedded FAQ section.
+- Embedded FAQ sections help conversion and objection removal.
+- Embedded FAQ sections do NOT automatically become standalone blog posts.
+- Standalone FAQ/support packages should only be created for major searchable questions or important booking objections.
+- Standalone FAQ packages must avoid duplicate intent with the main BOFU/MOFU asset.
+- Standalone FAQ packages must target one clear primary question.
+
 ## Required funnel instruction
 Always specify the intended funnel stage and content role.
 
@@ -106,6 +123,10 @@ Good for:
 - what is included?
 - how pickup works?
 - what to know before booking?
+
+Avoid generic FAQ-dump pages.
+
+The FAQ page must target one primary searchable question or objection.
 
 Example:
 ```text
