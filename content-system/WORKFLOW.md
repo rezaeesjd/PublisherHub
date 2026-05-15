@@ -37,7 +37,8 @@
 12. Publish workflow (`WPS:PUBLISH_BLOG`) validates package.
 13. Server sync occurs.
 14. Live verification (`WPS:LIVE_VERIFY`) checks archive + single post.
-15. Only then may status become `published`.
+15. **Registry parity check (required):** when a package is marked `published`, update the matching asset row in `content-system/clusters/cluster-registry.json` to `status: published` and clear/replace stale “needs review/publish” next-step text for that cluster.
+16. Only then may status become `published` in all surfaced dashboards.
 
 ## Hard gate behavior (must-ask-first)
 

@@ -39,9 +39,9 @@
 ## WPS:PUBLISH_BLOG
 
 - **Purpose:** Validate package for publishing readiness.
-- **Should do:** Check files, metadata, links, source-facts integrity, content cleanliness, publish-path status. Verify `public_copy_state == "final"`.
+- **Should do:** Check files, metadata, links, source-facts integrity, content cleanliness, publish-path status. Verify `public_copy_state == "final"`. When publishing a cluster asset, also sync `content-system/clusters/cluster-registry.json` for the matching `cluster_parent/assets[]` row (`status`, notes if needed) so registry state matches package `meta.json`.
 - **Must not do:** Claim live publishing without verification. Promote a holding-notice or provisional package to publish.
-- **Allowed file changes:** QA and metadata adjustments required for publish prep.
+- **Allowed file changes:** QA and metadata adjustments required for publish prep, plus `content-system/clusters/cluster-registry.json` synchronization for the published asset and cluster next-step text when it references stale `ready_for_review` actions.
 - **Final expected status:** `published`, `published`, or `needs_fix`.
 
 ## WPS:GENERATE_AND_PUBLISH
