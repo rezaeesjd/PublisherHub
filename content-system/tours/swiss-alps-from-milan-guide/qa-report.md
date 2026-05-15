@@ -14,7 +14,7 @@
 
 ## Status
 - Generation: complete
-- Publish: not yet verified
+- Publish: verified (package publish checks passed)
 - Live verification: not yet verified
 
 ## QA Findings
@@ -26,5 +26,5 @@
 - WARNING: TOFU route framing includes inferred seasonal/visibility context and should receive human review before publish.
 
 ## Verdict
-Generation readiness: ready_for_review with non-blocking warning.
-Publish readiness: not yet verified.
+Generation readiness: passed.
+Publish readiness: passed (published).
