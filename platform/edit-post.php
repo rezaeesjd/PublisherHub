@@ -223,6 +223,45 @@ wps_render_header($pageTitle);
         <h2>Original tour source content</h2>
         <p class="muted">Read-only canonical tour data from the generated package files. Single blogs in this cluster pull their facts from here.</p>
 
+        <?php
+            $meta = is_array($post['meta'] ?? null) ? $post['meta'] : [];
+            $factToString = static function ($value): string {
+                if (is_array($value)) {
+                    return implode(', ', array_map('strval', $value));
+                }
+                return (string) $value;
+            };
+            $tourFacts = [
+                'Price from' => (string) ($meta['price_from'] ?? ''),
+                'Duration' => (string) ($meta['duration_text'] ?? ''),
+                'Start time' => (string) ($meta['start_time'] ?? ''),
+                'Operating days' => $factToString($meta['operating_days'] ?? ''),
+                'Meeting point' => (string) ($meta['meeting_point'] ?? ''),
+                'End point' => (string) ($meta['end_point'] ?? ''),
+                'Languages' => $factToString($meta['languages'] ?? ''),
+                'Max travelers' => isset($meta['max_travelers']) ? (string) $meta['max_travelers'] : '',
+                'Max travelers per booking' => isset($meta['max_travelers_per_booking']) ? (string) $meta['max_travelers_per_booking'] : '',
+                'Product reference code' => (string) ($meta['product_reference_code'] ?? ''),
+            ];
+            $tourFacts = array_filter($tourFacts, static fn($v) => trim((string) $v) !== '');
+        ?>
+        <?php if (!empty($tourFacts)): ?>
+            <h3>Tour facts</h3>
+            <p class="muted">Structured tour data from <code>meta.json</code>. Itinerary, inclusions and exclusions are in the source facts below.</p>
+            <div class="table-wrap" style="margin-bottom:1rem;">
+                <table class="workflow-table">
+                    <tbody>
+                        <?php foreach ($tourFacts as $label => $value): ?>
+                            <tr>
+                                <th style="width:16rem; text-align:left;"><?php echo wps_h($label); ?></th>
+                                <td><?php echo wps_h((string) $value); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+
         <label>
             Source facts (source-facts.md)
             <textarea rows="14" readonly><?php echo wps_h($sourceFactsContent); ?></textarea>
