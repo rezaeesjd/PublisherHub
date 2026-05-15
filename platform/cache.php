@@ -16,6 +16,10 @@ require_once __DIR__ . '/post-overrides.php';
 
 const WPS_ARCHIVE_INDEX_FILE   = WPS_DATA_DIR . '/archive-index.json';
 const WPS_RENDER_CACHE_VERSION = 'r3';
+// Bump whenever wps_archive_index_rebuild() changes which records it emits
+// (or their shape) so a stale on-disk index built by an older revision is
+// discarded on the next load instead of lingering until content changes.
+const WPS_ARCHIVE_INDEX_SCHEMA = 2;
 
 /**
  * Returns the publishable archive index, building it from disk if the
@@ -29,7 +33,9 @@ function wps_archive_index(array $settings, bool $forceRebuild = false): array
         if ($cacheMtime > 0 && $cacheMtime >= $newestSource) {
             $raw = @file_get_contents(WPS_ARCHIVE_INDEX_FILE);
             $decoded = json_decode((string) $raw, true);
-            if (is_array($decoded) && isset($decoded['posts']) && is_array($decoded['posts'])) {
+            if (is_array($decoded)
+                && (int) ($decoded['schema_version'] ?? 0) === WPS_ARCHIVE_INDEX_SCHEMA
+                && isset($decoded['posts']) && is_array($decoded['posts'])) {
                 return $decoded;
             }
         }
@@ -81,6 +87,15 @@ function wps_archive_index_rebuild(array $settings): array
             if (wps_is_source_content_package((string) ($applied['base_slug'] ?? $applied['slug'] ?? ''))) {
                 continue;
             }
+            // Retired -vN variant clones are stale duplicates pending
+            // deletion (the -vN mechanism was retired). The index is built
+            // by scanning tour directories, so a lingering clone with
+            // publish_status: published would otherwise surface on the
+            // public archive, sitemap, feed, and related-post rails.
+            if (wps_is_retired_variant_slug((string) ($applied['base_slug'] ?? $applied['slug'] ?? ''))
+                || wps_is_retired_variant_slug((string) ($applied['folder_name'] ?? ''))) {
+                continue;
+            }
             $publicSlug = (string) ($applied['public_slug'] ?? $applied['slug'] ?? '');
             if ($publicSlug === '') {
                 continue;
@@ -114,7 +129,7 @@ function wps_archive_index_rebuild(array $settings): array
     });
 
     $payload = [
-        'schema_version' => 1,
+        'schema_version' => WPS_ARCHIVE_INDEX_SCHEMA,
         'built_at'       => gmdate('c'),
         'post_count'     => count($records),
         'posts'          => $records,

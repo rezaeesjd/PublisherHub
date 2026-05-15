@@ -221,13 +221,13 @@ wps_render_header($settings['archive_title']);
                                     <small class="muted">Canonical tour data (not a blog asset)</small>
                                 </td>
                                 <td>
-                                    <?php
-                                        $sourceStatus = $sourcePost ? (string) ($sourcePost['publish_status'] ?? 'draft') : 'not_started';
-                                        $sourceTone = wps_asset_status_tone($sourceStatus);
-                                    ?>
-                                    <span class="qa-pill qa-pill-<?php echo wps_h($sourceTone); ?>"><?php echo wps_h(wps_human_publish_status($sourceStatus)); ?></span>
+                                    <?php // Source content is canonical tour data, not a publishable
+                                          // blog post — a "Published" pill would be misleading. Show
+                                          // the cluster's own progress instead. ?>
+                                    <span class="qa-pill qa-pill-muted"><?php echo wps_h($clusterStatus); ?></span><br>
+                                    <small class="muted"><?php echo (int) $score['published']; ?> of <?php echo (int) $score['total']; ?> cluster asset(s) published</small>
                                 </td>
-                                <td><small class="muted">Used for dashboard facts and future cluster blog generation.</small></td>
+                                <td><small class="muted">Canonical tour data for dashboard facts and cluster blog generation — not a publishable blog post.</small></td>
                             </tr>
                         </tbody>
                     </table>
