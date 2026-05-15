@@ -225,18 +225,20 @@ wps_render_header($pageTitle);
 
         <?php
             $meta = is_array($post['meta'] ?? null) ? $post['meta'] : [];
-            $languages = $meta['languages'] ?? [];
-            if (is_array($languages)) {
-                $languages = implode(', ', array_map('strval', $languages));
-            }
+            $factToString = static function ($value): string {
+                if (is_array($value)) {
+                    return implode(', ', array_map('strval', $value));
+                }
+                return (string) $value;
+            };
             $tourFacts = [
                 'Price from' => (string) ($meta['price_from'] ?? ''),
                 'Duration' => (string) ($meta['duration_text'] ?? ''),
                 'Start time' => (string) ($meta['start_time'] ?? ''),
-                'Operating days' => (string) ($meta['operating_days'] ?? ''),
+                'Operating days' => $factToString($meta['operating_days'] ?? ''),
                 'Meeting point' => (string) ($meta['meeting_point'] ?? ''),
                 'End point' => (string) ($meta['end_point'] ?? ''),
-                'Languages' => (string) $languages,
+                'Languages' => $factToString($meta['languages'] ?? ''),
                 'Max travelers' => isset($meta['max_travelers']) ? (string) $meta['max_travelers'] : '',
                 'Max travelers per booking' => isset($meta['max_travelers_per_booking']) ? (string) $meta['max_travelers_per_booking'] : '',
                 'Product reference code' => (string) ($meta['product_reference_code'] ?? ''),
