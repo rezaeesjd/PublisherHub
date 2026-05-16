@@ -49,6 +49,19 @@ Expected result:
 
 If the live server cannot be accessed from the current environment, you may still set `published` after package QA/publish checks; use `published` only when you explicitly want a deferred live-check workflow.
 
+### `WPS:REVIEW_BRIEF`
+Use this when a package is in `publish_status: ready_for_review` and the user wants a plain-language summary of what a human must check before publishing.
+
+Expected behavior:
+- read the package files (`meta.json`, `qa-report.md`, `automation-notes.md`, `source-facts.md`, `blog-post.md`) and the cluster registry row
+- return a single concise chat reply with five sections: **TL;DR**, **What needs review**, **Auto-resolvable now**, **Hard blockers**, **Green-light checklist**
+- keep total bullets across the middle three sections to ≤ 10
+- use plain language; write "None." for empty sections; do not pad
+- do **not** modify any file, do **not** change `publish_status` or `qa_status`
+- end by pointing the user to `WPS:FIX_PACKAGE` (for auto-resolvable rewrites) or `WPS:PUBLISH_BLOG` (when the checklist is satisfied)
+
+See `COMMANDS.md` → `WPS:REVIEW_BRIEF` for the full contract.
+
 ### `WPS:GENERATE_AND_PUBLISH`
 Use this only when the user explicitly wants both workflows in one task.
 

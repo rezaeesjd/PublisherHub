@@ -44,6 +44,27 @@
 - **Allowed file changes:** QA and metadata adjustments required for publish prep.
 - **Final expected status:** `published`, `published`, or `needs_fix`.
 
+## WPS:REVIEW_BRIEF
+
+- **Invocation:** `WPS:REVIEW_BRIEF <package-slug>`
+- **Purpose:** Bridge between `ready_for_review` and `WPS:PUBLISH_BLOG`. Tell a human reviewer in plain language exactly what to check before flipping `publish_status` to `published`, why each item matters, and the smallest concrete fix.
+- **Inputs:** Read `content-system/tours/<package-slug>/` — primarily `meta.json`, `qa-report.md`, `automation-notes.md`, `source-facts.md`, `blog-post.md`. Cross-reference the package's row in `content-system/clusters/cluster-registry.json` for cluster context.
+- **Should do:** Return a single concise chat reply with these sections, in this order:
+  1. **TL;DR** — one sentence: ready to publish, blocked, or borderline.
+  2. **What needs review** — bulleted list. For each item: **What** (1-line plain-English description), **Where** (file + section/line), **Why it matters** (booking, SEO, factual accuracy, or compliance), **Suggested resolution** (smallest concrete change).
+  3. **Auto-resolvable now** — items the agent could fix without human judgment. List them; do **not** apply changes.
+  4. **Hard blockers** — items needing a human decision (pricing, schedule, policy, factual claims without sources, missing live URL).
+  5. **Green-light checklist** — 3–6 boxes a reviewer ticks before publish.
+- **Must do:**
+  - Keep total bullets across sections 2–4 to **≤ 10**.
+  - Use plain language; avoid funnel jargon unless essential.
+  - Write "None." for empty sections rather than padding.
+  - If `publish_status` is not `ready_for_review`, lead the reply with that fact and still produce the brief.
+- **Must not do:** Modify any file. Change `publish_status` or `qa_status`. Run generation or publish steps. Write a report file (this command is chat-only by design).
+- **Allowed file changes:** none.
+- **Final expected status:** No status change. The output is a human-facing review brief in chat.
+- **Hand-off:** After the human resolves the listed items, the next command is `WPS:FIX_PACKAGE` (for auto-resolvable rewrites) or `WPS:PUBLISH_BLOG` (when the green-light checklist is satisfied).
+
 ## WPS:GENERATE_AND_PUBLISH
 
 - **Purpose:** Sequentially run generation then publish validation.
