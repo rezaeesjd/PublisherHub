@@ -58,7 +58,7 @@ Allowed `Status` values: `confirmed | missing | conflicted | inferred | needs_hu
 | accessibility |  |  |  |  |
 | traveler cap / group size |  |  |  |  |
 | min travelers to operate |  |  |  |  |
-| cancellation policy |  |  |  | **Default if not provided / unit ambiguous:** "Free cancellation up to 24 hours before departure; within 24 hours non-refundable". Mark provenance as `default_applied`. Only override when explicit unit-qualified source states otherwise. Never blocking. |
+| cancellation policy |  |  |  | **Default if not provided / unit ambiguous:** record value "Free cancellation up to 24 hours before departure; within 24 hours non-refundable" with `Status: inferred` and note "brand-default cancellation policy applied (24h before departure)" in the Source column. Only override when explicit unit-qualified source states otherwise. Never blocking. |
 | seasonal/weather notes |  |  |  |  |
 | review rating |  |  |  | include source |
 | review count |  |  |  | include source |
