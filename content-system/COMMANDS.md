@@ -42,7 +42,7 @@
 - **Purpose:** Validate package for publishing readiness.
 - **Should do:** Check files, metadata, links, source-facts integrity, content cleanliness, publish-path status. Verify `public_copy_state == "final"`. When publishing a cluster asset, also sync `content-system/clusters/cluster-registry.json` for the matching `cluster_parent/assets[]` row (`status`, notes if needed) so registry state matches package `meta.json`. Return a short Reviewer Handoff in chat listing open human-review items + recommended responses. Include one parity line in chat: `Published blogs: X/4 (BOFU+MOFU+TOFU+FAQ); source_content tracked separately.`
 - **Must not do:** Claim live publishing without verification. Promote a holding-notice or provisional package to publish.
-- **Allowed file changes:** QA and metadata adjustments required for publish prep, plus `content-system/clusters/cluster-registry.json` synchronization for the published asset and cluster next-step text when it references stale `ready_for_review` actions.
+- **Allowed file changes:** QA and metadata adjustments required for publish prep, (package scope only). Cluster-registry updates must be routed through `WPS:IMPROVE_SYSTEM_WORKFLOW` in a separate PR to respect scope boundaries.
 - **Final expected status:** `published`, `published`, or `needs_fix`.
 
 ## WPS:GENERATE_AND_PUBLISH

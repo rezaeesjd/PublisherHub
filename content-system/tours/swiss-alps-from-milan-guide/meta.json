@@ -15,7 +15,7 @@
   "cta_primary_link": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
   "cta_primary_channel": "website",
   "direct_booking_followup_required": false,
-  "qa_status": "passing",
+  "qa_status": "warning",
   "publish_status": "published",
   "public_copy_state": "final",
   "generation_phase_completed": true,
