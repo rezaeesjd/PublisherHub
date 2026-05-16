@@ -219,9 +219,12 @@ wps_render_header($settings['archive_title']);
                 $nextGeneration = (string) ($cluster['next_recommended_generation'] ?? 'Review missing required assets');
                 $clusterAssets = array_values(array_filter(($cluster['assets'] ?? []), 'is_array'));
                 $sourcePost = $postsBySlug[$primarySlug] ?? null;
-                $blogAssets = array_values(array_filter($clusterAssets, static function (array $asset) use ($primarySlug): bool {
-                    return (string) ($asset['package_slug'] ?? '') !== $primarySlug;
-                }));
+                // BOFU is a regular publishable blog asset (like MOFU / TOFU /
+                // FAQ). The source-content row above is a static reference to
+                // the cluster's tour data (source-facts.md), not a duplicate
+                // of BOFU — so show every registered asset here, including
+                // BOFU. See structures/cluster-metadata-standard.md.
+                $blogAssets = $clusterAssets;
             ?>
             <article class="panel cluster-panel" id="cluster-<?php echo wps_h($parentSlug); ?>" style="border:1px solid var(--border); margin-bottom:1.25rem;">
                 <header style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.75rem; align-items:baseline;">
@@ -244,11 +247,11 @@ wps_render_header($settings['archive_title']);
                 </header>
 
                 <p style="margin:0.75rem 0;">
-                    <strong>Source tour package:</strong>
+                    <strong>Tour source data:</strong>
                     <?php if (isset($postsBySlug[$primarySlug])): ?>
-                        <a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($postsBySlug[$primarySlug]['title'] ?? $primarySlug); ?></a>
+                        <a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>">source-facts.md (in <?php echo wps_h($primarySlug); ?>)</a>
                     <?php else: ?>
-                        <?php echo wps_h($primarySlug); ?>
+                        source-facts.md (in <?php echo wps_h($primarySlug); ?>)
                     <?php endif; ?>
                     <?php if ($viatorUrl !== ''): ?>
                         · <a href="<?php echo wps_h($viatorUrl); ?>" target="_blank" rel="noopener">Viator listing</a>
@@ -261,9 +264,9 @@ wps_render_header($settings['archive_title']);
                     <table class="workflow-table">
                         <thead>
                             <tr>
-                                <th>Source package</th>
-                                <th>Package role</th>
-                                <th>Status</th>
+                                <th>Tour source data</th>
+                                <th>Role</th>
+                                <th>Type</th>
                                 <th>Notes</th>
                             </tr>
                         </thead>
@@ -271,26 +274,23 @@ wps_render_header($settings['archive_title']);
                             <tr>
                                 <td>
                                     <?php if ($sourcePost): ?>
-                                        <strong><a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>"><?php echo wps_h($sourcePost['title'] ?? $primarySlug); ?></a></strong>
+                                        <strong><a href="edit-post.php?slug=<?php echo rawurlencode($primarySlug); ?>">source-facts.md</a></strong>
                                     <?php else: ?>
-                                        <strong><?php echo wps_h($primarySlug !== '' ? $primarySlug : 'Unlinked source package'); ?></strong>
+                                        <strong>source-facts.md</strong>
                                     <?php endif; ?>
                                     <?php if ($primarySlug !== ''): ?>
-                                        <br><small class="muted"><?php echo wps_h($primarySlug); ?></small>
+                                        <br><small class="muted">lives in <?php echo wps_h($primarySlug); ?>/</small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <span class="qa-pill qa-pill-muted">source_content</span><br>
-                                    <small class="muted">Canonical tour data (not a blog asset)</small>
+                                    <small class="muted">Static tour-data reference</small>
                                 </td>
                                 <td>
-                                    <?php // Source content is canonical tour data, not a publishable
-                                          // blog post — a "Published" pill would be misleading. Show
-                                          // the cluster's own progress instead. ?>
-                                    <span class="qa-pill qa-pill-muted"><?php echo wps_h($clusterStatus); ?></span><br>
-                                    <small class="muted"><?php echo (int) $score['published']; ?> of <?php echo (int) $score['total']; ?> cluster asset(s) published</small>
+                                    <span class="qa-pill qa-pill-muted">not a blog</span><br>
+                                    <small class="muted">No publish status</small>
                                 </td>
-                                <td><small class="muted">Canonical tour data for dashboard facts and cluster blog generation — not a publishable blog post.</small></td>
+                                <td><small class="muted">Canonical tour facts used as input for cluster blog generation. This is <strong>not</strong> a blog post — BOFU / MOFU / TOFU / FAQ are the publishable blog assets, listed below.</small></td>
                             </tr>
                         </tbody>
                     </table>

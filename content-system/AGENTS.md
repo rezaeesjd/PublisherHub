@@ -176,7 +176,14 @@ The folder name is a stable source/content identifier. The public URL slug may l
 ### Multi-content cluster rule (hard rule)
 The system is a **multi-content publisher**: each tour has one **source content** package and grows a *cluster* of distinct, typed blog assets generated from it (BOFU booking post, MOFU comparison, TOFU destination/itinerary guide, FAQ support post — see the cluster registry's `default_required_assets`).
 
-The base package created from a tour's intake is that tour's **source content**: it holds canonical tour data for the dashboard and for content generation. It is **not** a public blog asset and has no public page — the platform serves it only inside the admin dashboard.
+The base package created from a tour's intake holds two distinct things that must not be conflated:
+
+- The tour's **source content** — primarily `source-facts.md` plus the structured tour data. This is a **static reference** used as input to cluster blog generation. It has no public URL and no `publish_status`.
+- The cluster's **BOFU blog asset** (`cluster_type: "BOFU"`, `cluster_role: "main-booking-post"`) — a **publishable blog post** on par with MOFU / TOFU / FAQ. It has its own `publish_status`, serves a public URL, and counts as one of the cluster's blog assets in the dashboard counter.
+
+Both live inside the same package folder for convenience (the BOFU's `blog-post.md` and the source's `source-facts.md` sit side-by-side), but they are **different entities**.
+
+Do **not** treat the BOFU package slug as "source content" and suppress it from the public archive, sitemap, single-post route, or the dashboard blog asset table. A prior revision did this (via `wps_is_source_content_package` returning `true` for every `primary_conversion_asset`); the resulting behavior was wrong and has been corrected. See `structures/cluster-metadata-standard.md` for the canonical rule.
 
 When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft` — `meta.json.publish_status` ∈ `{"ready_for_review", "published"}`), the agent must **not** overwrite it and must **not** fork a `<base-slug>-v<N>` clone of it. The old `-v<N>` variant mechanism is **retired**: it produced thin, near-duplicate copies of the source rather than genuinely distinct content.
 
