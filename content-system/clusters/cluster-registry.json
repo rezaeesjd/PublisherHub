@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "last_updated": "2026-05-15",
+  "last_updated": "2026-05-16",
   "source_of_truth": true,
   "description": "Machine-readable cluster registry used by both AI agents and the WebPublisherSystem dashboard. Do not maintain separate cluster status sources.",
   "default_required_assets": [
@@ -69,8 +69,8 @@
       "viator_url": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
       "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
       "website_url": "https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/",
-      "next_recommended_generation": "Human-review the TOFU destination guide (`best-day-trips-from-milan`) and publish. All required cluster assets are now generated.",
-      "last_updated": "2026-05-15",
+      "next_recommended_generation": "All 4 required cluster assets published. Optional: live URL verification.",
+      "last_updated": "2026-05-16",
       "assets": [
         {
           "required": true,
@@ -79,9 +79,9 @@
           "package_slug": "cinque-terre-full-day-tour-from-milan",
           "public_slug": "cinque-terre-full-day-tour-from-milan-five-villages",
           "title": "Cinque Terre Full-Day Tour from Milan",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "website",
-          "notes": "Main conversion asset. Warnings: cancellation unit; accessibility not provided."
+          "notes": "Main conversion asset. Published 2026-05-16. Cancellation policy resolved to 24h default; accessibility not provided (inherited non-blocking)."
         },
         {
           "required": true,
@@ -101,9 +101,9 @@
           "package_slug": "best-day-trips-from-milan",
           "public_slug": "best-day-trips-from-milan-overview",
           "title": "Best day trips from Milan (overview)",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "TOFU destination guide. Generated 2026-05-15. Headline option: Cinque Terre; sibling cluster mentions for Lake Como + Lugano and Bernina + St Moritz. Overview framing inferred from general destination knowledge; sibling cross-links to Lake Como conditional pending live slugs; human review recommended before publish."
+          "notes": "TOFU destination guide. Published 2026-05-16. Overview framing remains inferred from general destination knowledge (low-risk framing copy). Sibling cross-links to unpublished Lake Como slugs kept as plain-text mentions; will be relinked by future cluster-link resolver (SYSQA-20260516-001)."
         },
         {
           "required": true,
@@ -137,9 +137,9 @@
           "package_slug": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
           "public_slug": "all-in-one-lake-como-bellagio-and-lugano-from-milan",
           "title": "All-in-One Lake Como, Bellagio & Lugano from Milan + Scenic Cruise",
-          "status": "ready_for_review",
+          "status": "not_started",
           "next_step_link_target": "viator",
-          "notes": "Cluster parent / primary conversion asset."
+          "notes": "BOFU not generated yet. Package currently holds a 'Blog Disabled' stub from the retired source-content era; needs WPS:GENERATE_CONTENT to produce a real BOFU post before it can publish."
         },
         {
           "required": true,
@@ -264,9 +264,9 @@
           "package_slug": "pizza-and-gelato-cooking-class-in-milan",
           "public_slug": "pizza-and-gelato-cooking-class-in-milan",
           "title": "Pizza and Gelato Cooking Class in Milan - Small Group Only",
-          "status": "ready_for_review",
+          "status": "not_started",
           "next_step_link_target": "viator",
-          "notes": "Main conversion asset. Warning: schedule start time '03:00' likely intended as 15:00."
+          "notes": "BOFU not generated yet. Package currently holds a 'Blog Disabled' stub from the retired source-content era; needs WPS:GENERATE_CONTENT to produce a real BOFU post before it can publish. Schedule start time '03:00' likely intended as 15:00 — confirm during generation."
         },
         {
           "required": true,
