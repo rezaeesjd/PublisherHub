@@ -178,6 +178,14 @@ The system is a **multi-content publisher**: each tour has one **source content*
 
 The base package created from a tour's intake is that tour's **source content**: it holds canonical tour data for the dashboard and for content generation. It is **not** a public blog asset and has no public page — the platform serves it only inside the admin dashboard.
 
+### Source-content vs BOFU asset boundary (hard rule)
+- `source_content` is a **static canonical data package** only (facts/provenance/admin reference). It is not a blog asset and must never be counted as a published blog.
+- `BOFU` `main-booking-post` is a **blog content asset** in the cluster, same category family as MOFU/TOFU/FAQ for publication tracking.
+- Dashboard summaries must keep two separate concepts:
+  1) blog asset publication count (BOFU+MOFU+TOFU+FAQ), and
+  2) source-content completeness state.
+- Do not merge or alias BOFU into `source_content` display rows. If both are shown in one cluster card, render them as separate rows with separate labels.
+
 When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft` — `meta.json.publish_status` ∈ `{"ready_for_review", "published"}`), the agent must **not** overwrite it and must **not** fork a `<base-slug>-v<N>` clone of it. The old `-v<N>` variant mechanism is **retired**: it produced thin, near-duplicate copies of the source rather than genuinely distinct content.
 
 A package in `publish_status: draft` or `needs_fix` is still **iterable in place**: a follow-up `WPS:GENERATE_CONTENT` continues to refine it, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Branching a new asset is reserved for tours whose base package a human has already endorsed.

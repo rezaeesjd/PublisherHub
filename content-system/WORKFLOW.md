@@ -40,6 +40,10 @@
 14. Live verification (`WPS:LIVE_VERIFY`) checks archive + single post.
 15. **Registry parity check (required):** when a package is marked `published`, update the matching asset row in `content-system/clusters/cluster-registry.json` to `status: published` and clear/replace stale “needs review/publish” next-step text for that cluster.
 16. Only then may status become `published` in all surfaced dashboards.
+17. **Dashboard parity check (required):** verify cluster card math and row classification before close-out:
+   - published-blog counter uses BOFU+MOFU+TOFU+FAQ statuses only
+   - `source_content` is shown as canonical/static and excluded from blog-publication counter
+   - BOFU appears in blog-asset listing (not collapsed into source-content row)
 
 ## Hard gate behavior (must-ask-first)
 
