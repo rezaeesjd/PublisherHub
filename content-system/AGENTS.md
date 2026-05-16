@@ -198,6 +198,14 @@ Both live inside the same package folder for convenience (the BOFU's `blog-post.
 
 Do **not** treat the BOFU package slug as "source content" and suppress it from the public archive, sitemap, single-post route, or the dashboard blog asset table. A prior revision did this (via `wps_is_source_content_package` returning `true` for every `primary_conversion_asset`); the resulting behavior was wrong and has been corrected. See `structures/cluster-metadata-standard.md` for the canonical rule.
 
+### Source-content vs BOFU asset boundary (hard rule)
+- `source_content` is a **static canonical data package** only (facts/provenance/admin reference). It is not a blog asset and must never be counted as a published blog.
+- `BOFU` `main-booking-post` is a **blog content asset** in the cluster, same category family as MOFU/TOFU/FAQ for publication tracking.
+- Dashboard summaries must keep two separate concepts:
+  1) blog asset publication count (BOFU+MOFU+TOFU+FAQ), and
+  2) source-content completeness state.
+- Do not merge or alias BOFU into `source_content` display rows. If both are shown in one cluster card, render them as separate rows with separate labels.
+
 When a `WPS:GENERATE_CONTENT` (or `WPS:GENERATE_CONTENT_FROM_INTAKE`) request maps to a tour whose **base package already exists** under `content-system/tours/<base-slug>/` and that package is **approved** (i.e., it has moved past `draft` — `meta.json.publish_status` ∈ `{"ready_for_review", "published"}`), the agent must **not** overwrite it and must **not** fork a `<base-slug>-v<N>` clone of it. The old `-v<N>` variant mechanism is **retired**: it produced thin, near-duplicate copies of the source rather than genuinely distinct content.
 
 A package in `publish_status: draft` or `needs_fix` is still **iterable in place**: a follow-up `WPS:GENERATE_CONTENT` continues to refine it, even when `public_copy_state == "final"` and `generation_phase_completed == true`. Branching a new asset is reserved for tours whose base package a human has already endorsed.
@@ -350,6 +358,20 @@ Generate FAQ, internal linking plan, automation notes, and metadata.
 
 ### Step 6: QA report
 Create `qa-report.md` and mark the package status honestly.
+
+### Step 7: Reviewer handoff summary in chat (required)
+After generation or publish workflows, the agent must include a concise **Reviewer Handoff** section in the chat response (not only in files).
+
+Required format:
+- `Review needed:` 2–6 bullets listing exactly what a human should verify before approval/publication
+- `Why it matters:` one short line per bullet (risk if left unchecked)
+- `Recommended response:` one short action per bullet (what reviewer should do/decide)
+
+Rules:
+- Keep this section short and operational; do not paste full QA files.
+- Only include open items (warnings/notes/blockers), not passes.
+- If no review items remain, state: `No human review items remain; package is ready to publish.`
+- For `WPS:PUBLISH_BLOG`, include whether any live-link recheck is deferred and who should perform it.
 
 ---
 
