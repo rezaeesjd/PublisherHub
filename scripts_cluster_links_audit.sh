@@ -16,9 +16,10 @@ if [[ ! -d "${TOURS_DIR}" ]]; then
   exit 1
 fi
 
-php -d display_errors=1 -r '
-require __DIR__ . "/platform/cluster-links.php";
-$base = __DIR__ . "/content-system/tours";
+WPS_ROOT="${ROOT}" php -d display_errors=1 -r '
+$root = getenv("WPS_ROOT") ?: __DIR__;
+require $root . "/platform/cluster-links.php";
+$base = $root . "/content-system/tours";
 $any = false;
 foreach (scandir($base) ?: [] as $entry) {
     if ($entry === "." || $entry === "..") continue;
