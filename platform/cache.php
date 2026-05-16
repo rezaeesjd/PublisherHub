@@ -19,7 +19,7 @@ const WPS_RENDER_CACHE_VERSION = 'r3';
 // Bump whenever wps_archive_index_rebuild() changes which records it emits
 // (or their shape) so a stale on-disk index built by an older revision is
 // discarded on the next load instead of lingering until content changes.
-const WPS_ARCHIVE_INDEX_SCHEMA = 2;
+const WPS_ARCHIVE_INDEX_SCHEMA = 3;
 
 /**
  * Returns the publishable archive index, building it from disk if the

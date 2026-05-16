@@ -49,6 +49,19 @@ Expected result:
 
 If the live server cannot be accessed from the current environment, you may still set `published` after package QA/publish checks; use `published` only when you explicitly want a deferred live-check workflow.
 
+### `WPS:REVIEW_BRIEF`
+Use this when a package is in `publish_status: ready_for_review` and the user wants a plain-language summary of what a human must check before publishing.
+
+Expected behavior:
+- read the package files (`meta.json`, `qa-report.md`, `automation-notes.md`, `source-facts.md`, `blog-post.md`) and the cluster registry row
+- return a single concise chat reply with five sections: **TL;DR**, **What needs review**, **Auto-resolvable now**, **Hard blockers**, **Green-light checklist**
+- keep total bullets across the middle three sections to ≤ 10
+- use plain language; write "None." for empty sections; do not pad
+- do **not** modify any file, do **not** change `publish_status` or `qa_status`
+- end by pointing the user to `WPS:FIX_PACKAGE` (for auto-resolvable rewrites) or `WPS:PUBLISH_BLOG` (when the checklist is satisfied)
+
+See `COMMANDS.md` → `WPS:REVIEW_BRIEF` for the full contract.
+
 ### `WPS:GENERATE_AND_PUBLISH`
 Use this only when the user explicitly wants both workflows in one task.
 
@@ -176,7 +189,14 @@ The folder name is a stable source/content identifier. The public URL slug may l
 ### Multi-content cluster rule (hard rule)
 The system is a **multi-content publisher**: each tour has one **source content** package and grows a *cluster* of distinct, typed blog assets generated from it (BOFU booking post, MOFU comparison, TOFU destination/itinerary guide, FAQ support post — see the cluster registry's `default_required_assets`).
 
-The base package created from a tour's intake is that tour's **source content**: it holds canonical tour data for the dashboard and for content generation. It is **not** a public blog asset and has no public page — the platform serves it only inside the admin dashboard.
+The base package created from a tour's intake holds two distinct things that must not be conflated:
+
+- The tour's **source content** — primarily `source-facts.md` plus the structured tour data. This is a **static reference** used as input to cluster blog generation. It has no public URL and no `publish_status`.
+- The cluster's **BOFU blog asset** (`cluster_type: "BOFU"`, `cluster_role: "main-booking-post"`) — a **publishable blog post** on par with MOFU / TOFU / FAQ. It has its own `publish_status`, serves a public URL, and counts as one of the cluster's blog assets in the dashboard counter.
+
+Both live inside the same package folder for convenience (the BOFU's `blog-post.md` and the source's `source-facts.md` sit side-by-side), but they are **different entities**.
+
+Do **not** treat the BOFU package slug as "source content" and suppress it from the public archive, sitemap, single-post route, or the dashboard blog asset table. A prior revision did this (via `wps_is_source_content_package` returning `true` for every `primary_conversion_asset`); the resulting behavior was wrong and has been corrected. See `structures/cluster-metadata-standard.md` for the canonical rule.
 
 ### Source-content vs BOFU asset boundary (hard rule)
 - `source_content` is a **static canonical data package** only (facts/provenance/admin reference). It is not a blog asset and must never be counted as a published blog.
@@ -292,6 +312,7 @@ Before writing marketing copy, extract the provided facts into `source-facts.md`
 - inclusions
 - exclusions
 - cancellation policy
+  - **Hard default:** if the source data does not specify a cancellation policy (or specifies a number without a unit, e.g. a bare `15`), record the policy as **"Free cancellation up to 24 hours before departure; within 24 hours non-refundable"** in `source-facts.md` with `Status: inferred` and note "brand-default cancellation policy applied (24h before departure)" in the Source column. In `meta.json.inherited_warnings[]` use `decision: "resolved"` with a notes line referencing this rule. A different policy is used **only** when explicit unit-qualified source data states otherwise (e.g. "free cancellation up to 7 days before departure"). This default is operator-confirmed across the active brand's tours; do not raise it as a blocking clarify question.
 - group size or traveler cap
 - languages
 - accessibility notes

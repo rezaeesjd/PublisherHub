@@ -2,6 +2,24 @@
 
 This standard makes tour content clusters machine-readable so AI generation, QA, publishing, and future internal-link automation can understand how each post fits into the booking funnel.
 
+## Hard rule: BOFU is a blog asset, source content is not
+
+Do **not** conflate these two concepts. They are distinct and have different lifecycles:
+
+- **BOFU** (`cluster_type: "BOFU"`, `cluster_role: "main-booking-post"`) is a **publishable blog asset**, on par with MOFU / TOFU / FAQ. It has its own `publish_status`, lives in the public archive, sitemap, and feed, and serves a public URL. The dashboard counter counts it as one of the cluster blog assets.
+- **Source content** is the **static tour-data reference** for the cluster — primarily `source-facts.md` (and structured tour data) inside the BOFU package directory. It is an **input** to cluster blog generation and has **no public URL** and **no publish_status**.
+
+A previous revision incorrectly treated the cluster's `primary_conversion_asset` (the BOFU package slug) as "source content" and suppressed it from the public archive, sitemap, single-post route, and the dashboard's blog asset table. That was wrong. Do not reintroduce that conflation.
+
+Concretely, when generating, displaying, or QAing a cluster:
+
+1. BOFU appears in `cluster-registry.json` → `clusters[].assets[]` like any other blog asset and counts toward "X/Y assets generated · Z published".
+2. `wps_is_source_content_package()` must return `false` for every package slug — source content is never a package slug; it is a file (`source-facts.md`) inside the BOFU package directory.
+3. Public archive / sitemap / `blog/post.php` must serve the BOFU public slug.
+4. The dashboard's per-cluster "Tour source data" row is informational only — it links to `source-facts.md` and has no publish status. BOFU itself appears in the blog asset table alongside MOFU / TOFU / FAQ.
+
+Touch points in code: `platform/functions.php::wps_is_source_content_package`, `platform/index.php` (cluster rendering), `platform/cache.php::wps_archive_index_rebuild`, and `blog/post.php` (single-post route).
+
 ## Required metadata fields
 
 Every tour content package `meta.json` should include these cluster fields.

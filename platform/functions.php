@@ -395,42 +395,21 @@ function wps_index_tour_clusters(): array
 }
 
 /**
- * Slugs of the "source content" package in each registry cluster — the
- * cluster's primary_conversion_asset. These packages hold canonical tour
- * data for the dashboard and content generation but are NOT public blog
- * assets: they are excluded from the archive, sitemap and related-post
- * links, and the public post route returns 404 for them.
+ * Source content is a static reference (the cluster's source-facts data),
+ * NOT a publishable blog asset. The BOFU "main-booking-post" is a real
+ * publishable blog asset on par with MOFU / TOFU / FAQ. Earlier revisions
+ * mistakenly equated the cluster's primary_conversion_asset (the BOFU
+ * package) with source content and suppressed it from the public archive;
+ * see structures/cluster-metadata-standard.md for the corrected rule.
  *
- * @return array<string,true> set keyed by base slug for O(1) lookup
- */
-function wps_source_content_slugs(): array
-{
-    static $cache = null;
-    if ($cache !== null) {
-        return $cache;
-    }
-    $cache = [];
-    $result = wps_load_cluster_registry();
-    foreach (($result['registry']['clusters'] ?? []) as $cluster) {
-        if (!is_array($cluster)) {
-            continue;
-        }
-        $slug = trim((string) ($cluster['primary_conversion_asset'] ?? ''));
-        if ($slug !== '') {
-            $cache[$slug] = true;
-        }
-    }
-    return $cache;
-}
-
-/**
- * True when the given base slug is a cluster's source-content package and
- * therefore must not be served as a public blog post.
+ * Kept as a no-op so callers don't have to change shape, but no package
+ * slug ever qualifies: source content lives inside the BOFU package as
+ * source-facts.md and is never a public URL.
  */
 function wps_is_source_content_package(string $baseSlug): bool
 {
-    $baseSlug = trim($baseSlug);
-    return $baseSlug !== '' && isset(wps_source_content_slugs()[$baseSlug]);
+    unset($baseSlug);
+    return false;
 }
 
 /**
