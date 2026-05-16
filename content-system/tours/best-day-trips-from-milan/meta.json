@@ -38,18 +38,18 @@
     {
       "field": "cancellation_policy",
       "base_value": "15 (unit unspecified)",
-      "decision": "default_applied",
+      "decision": "resolved",
       "resolved_value": "Free cancellation up to 24 hours before departure; within 24 hours non-refundable",
       "source_package": "cinque-terre-full-day-tour-from-milan",
-      "notes": "Default cancellation policy applied per AGENTS.md hard rule (24h before departure is the brand-wide operator-confirmed default). Replaces the earlier 'see booking page' placeholder."
+      "notes": "Resolved by AGENTS.md hard default (24h before departure — brand-wide operator-confirmed default). Replaces the earlier 'see booking page' placeholder."
     },
     {
       "field": "cross_cluster_internal_links",
       "base_value": "Lake Como + Bernina sibling slugs not all live",
-      "decision": "deferred_skip",
+      "decision": "resolved",
       "resolved_value": "Sibling clusters mentioned as plain-text only; no hrefs to unpublished slugs. Live cross-links will be added by the future cluster-link resolver (see SYSTEM-QA-BACKLOG SYSQA-20260516-001).",
       "source_package": "self",
-      "notes": "Resolved on 2026-05-16 at user direction: skip the conditional cross-link re-check and publish. System enhancement tracked in SYSTEM-QA-BACKLOG."
+      "notes": "Deferred-skip resolution on 2026-05-16 at user direction: skip the conditional cross-link re-check and publish. System enhancement tracked in SYSTEM-QA-BACKLOG."
     },
     {
       "field": "accessibility",
