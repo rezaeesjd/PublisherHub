@@ -12,6 +12,7 @@
   - `content-system/system-qa/reports/<YYYY-MM-DD>-<slug>-process-qa.md`
   - `content-system/system-qa/SYSTEM-QA-BACKLOG.md` (append-only entries or explicit `none found` note)
 - **Final expected status (no blockers):** `publish_status: draft`, `qa_status: pending`, `public_copy_state: final`, `intake_questions_resolved: true`.
+- **Chat output requirement:** include a short Reviewer Handoff section summarizing only open items a human must review before approval.
 - **Final expected status (blockers, holding-notice mode):** `publish_status: draft`, `qa_status: needs_clarification`, `public_copy_state: holding_notice`, `intake_questions_resolved: false`.
 - **Optional flag:** `--provisional` — user-authorized only. Skips the must-ask-first gate, sets `public_copy_state: provisional` and `provisional_mode: true`. Never default behavior.
 
@@ -39,9 +40,9 @@
 ## WPS:PUBLISH_BLOG
 
 - **Purpose:** Validate package for publishing readiness.
-- **Should do:** Check files, metadata, links, source-facts integrity, content cleanliness, publish-path status. Verify `public_copy_state == "final"`.
+- **Should do:** Check files, metadata, links, source-facts integrity, content cleanliness, publish-path status. Verify `public_copy_state == "final"`. When publishing a cluster asset, also sync `content-system/clusters/cluster-registry.json` for the matching `cluster_parent/assets[]` row (`status`, notes if needed) so registry state matches package `meta.json`. Return a short Reviewer Handoff in chat listing open human-review items + recommended responses. Include one parity line in chat: `Published blogs: X/4 (BOFU+MOFU+TOFU+FAQ); source_content tracked separately.`
 - **Must not do:** Claim live publishing without verification. Promote a holding-notice or provisional package to publish.
-- **Allowed file changes:** QA and metadata adjustments required for publish prep.
+- **Allowed file changes:** QA and metadata adjustments required for publish prep, (package scope only). Cluster-registry updates must be routed through `WPS:IMPROVE_SYSTEM_WORKFLOW` in a separate PR to respect scope boundaries.
 - **Final expected status:** `published`, `published`, or `needs_fix`.
 
 ## WPS:GENERATE_AND_PUBLISH

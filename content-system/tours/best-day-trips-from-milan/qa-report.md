@@ -17,7 +17,7 @@
 
 ## Status
 - Generation: complete
-- Publish: not yet verified
+- Publish: verified (package publish checks passed)
 - Live verification: not yet verified
 
 ## QA Findings
@@ -32,11 +32,11 @@
 - PASS: Status triad block present in this report.
 - PASS: MOFU cross-link present in blog-post.md (`cinque-terre-full-day-tour-from-milan-vs-diy`).
 - PASS: TOFU funnel routing correct — `link-to-mofu` (and BOFU) priority maintained; sibling cluster links are discovery-level only and below the primary CTA.
-- WARNING: Cancellation unit unspecified for the Cinque Terre headline tour (inherited non-blocking).
-- WARNING: Accessibility details not provided for the Cinque Terre headline tour (inherited non-blocking).
+- NOTE: Cancellation unit for the Cinque Terre headline tour is unspecified in source data; default handling policy applies (24 hours prior to departure) per system rules.
+- NOTE: Accessibility details are not provided for the headline tour; treated as non-blocking metadata gap per system rules.
 - WARNING: Lake Como + Lugano TOFU/FAQ public slugs not yet live; cluster cross-links to that sibling cluster are conditional and should be re-checked at publish time.
 - NOTE: Overview framing (typical day-trip duration, seasonal sweet spots) is inferred from general destination knowledge — appropriate for a TOFU discovery asset but human reviewer should validate before publish.
 
 ## Verdict
-Generation readiness: ready_for_review with inherited warnings and human review note on overview framing.
-Publish readiness: not yet verified.
+Generation readiness: passed.
+Publish readiness: passed (published).

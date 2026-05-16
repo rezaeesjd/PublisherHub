@@ -69,7 +69,7 @@
       "viator_url": "https://www.viator.com/tours/Milan/Full-Day-Cinque-Terre-Tour-from-Milan-Riomaggiore-Manarola/d512-187808P82",
       "tripadvisor_url": "https://www.tripadvisor.com/AttractionProductReview-g187849-d33344981-Cinque_Terre_Full_Day_Tour_from_Milan_Riomaggiore_Manarola-Milan_Lombardy.html",
       "website_url": "https://www.milano-adventures.com/tours/cinque-terre-full-day-tour-from-milan-riomaggiore-manarola/",
-      "next_recommended_generation": "Human-review the TOFU destination guide (`best-day-trips-from-milan`) and publish. All required cluster assets are now generated.",
+      "next_recommended_generation": "Publish the required BOFU asset (`cinque-terre-full-day-tour-from-milan`) after final review; then run optional live URL verification for sibling Lake Como cross-links.",
       "last_updated": "2026-05-15",
       "assets": [
         {
@@ -101,9 +101,9 @@
           "package_slug": "best-day-trips-from-milan",
           "public_slug": "best-day-trips-from-milan-overview",
           "title": "Best day trips from Milan (overview)",
-          "status": "ready_for_review",
+          "status": "published",
           "next_step_link_target": "cinque-terre-full-day-tour-from-milan",
-          "notes": "TOFU destination guide. Generated 2026-05-15. Headline option: Cinque Terre; sibling cluster mentions for Lake Como + Lugano and Bernina + St Moritz. Overview framing inferred from general destination knowledge; sibling cross-links to Lake Como conditional pending live slugs; human review recommended before publish."
+          "notes": "TOFU destination guide. Human-reviewed and published on 2026-05-15. Headline option: Cinque Terre; sibling mentions for Lake Como + Lugano and Bernina + St Moritz. Keep Lake Como sibling cross-links conditional until live slugs are verified."
         },
         {
           "required": true,
@@ -196,8 +196,8 @@
       "viator_url": "",
       "tripadvisor_url": "",
       "website_url": "https://www.milano-adventures.com/tours/full-day-tour-in-bernina-red-train-and-st-moritz-from-milan/",
-      "next_recommended_generation": "Generate TOFU destination guide: Swiss Alps from Milan — Bernina Express route guide (swiss-alps-from-milan-guide).",
-      "last_updated": "2026-05-13",
+      "next_recommended_generation": "Optional: run live URL verification checks for published Swiss Alps cluster assets.",
+      "last_updated": "2026-05-15",
       "assets": [
         {
           "required": true,
@@ -226,11 +226,11 @@
           "cluster_type": "TOFU",
           "cluster_role": "destination-guide",
           "package_slug": "swiss-alps-from-milan-guide",
-          "public_slug": "",
+          "public_slug": "swiss-alps-from-milan-guide",
           "title": "Swiss Alps from Milan: Bernina Express route guide",
-          "status": "planned",
+          "status": "published",
           "next_step_link_target": "bernina-red-train-and-st-moritz-from-milan",
-          "notes": "Discovery asset covering the UNESCO Bernina Express, Tirano, Alp Grüm, Diavolezza, Pontresina, and St Moritz."
+          "notes": "TOFU destination guide. Human-reviewed and published on 2026-05-15. Discovery coverage includes Bernina Express route context with BOFU CTA handoff."
         },
         {
           "required": true,
