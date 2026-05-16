@@ -211,6 +211,25 @@ if (!function_exists('wps_render_markdown')) {
                 function ($m) {
                     $label = $m[1];
                     $url = $m[2];
+
+                    // Cross-cluster links by package_slug. Resolve through
+                    // the cluster registry at render time so an `href` is
+                    // only emitted when the sibling asset is actually
+                    // published (SYSQA-20260516-001).
+                    if (stripos($url, 'wps-cluster:') === 0) {
+                        if (!function_exists('wps_resolve_cluster_link')) {
+                            require_once __DIR__ . '/cluster-links.php';
+                        }
+                        $packageSlug = substr($url, strlen('wps-cluster:'));
+                        $decision = wps_resolve_cluster_link($packageSlug);
+                        $decision['label'] = strip_tags($label);
+                        wps_cluster_link_log_decision($decision);
+                        if (!empty($decision['resolved'])) {
+                            return '<a href="' . htmlspecialchars($decision['href'], ENT_QUOTES, 'UTF-8') . '">' . $label . '</a>';
+                        }
+                        return '<span class="cluster-link-deferred" data-package-slug="' . htmlspecialchars($packageSlug, ENT_QUOTES, 'UTF-8') . '">' . $label . '</span>';
+                    }
+
                     $urlLower = strtolower($url);
                     $labelLower = strtolower(trim(strip_tags($label)));
 

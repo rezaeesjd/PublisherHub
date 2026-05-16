@@ -76,7 +76,7 @@ Priority definitions:
 - Priority: P2
 - Owner agent: linking + publish-prep
 - Area: internal-links / publish-gate
-- Status: open
+- Status: resolved
 - Problem:
   When a generated asset wants to cross-link to a sibling cluster whose public slugs are not yet live, the agent has no clean way to encode "link if live, otherwise mention without href". Current workaround is to flag the items as `auto_resolved` and rely on a human to re-check at publish time. For the launch we are explicitly resolving these as `skip-for-now / publish` and moving on, but the system needs a real solution.
 - Why it matters:
@@ -104,6 +104,13 @@ Priority definitions:
   Hand-rolled cross-link maintenance scales linearly with cluster count and silently introduces 404s. For the immediate launch this is acceptable (sibling clusters mentioned as plain text), but the workaround should not become permanent.
 - Implementation note:
   Deferred at user request on 2026-05-16 to unblock the `best-day-trips-from-milan` publish. The cross-cluster links there were resolved as "skip for now / publish" with sibling mentions kept copy-only.
+  2026-05-16 (resolved): added a publish-time resolver so cross-cluster links can be authored by `package_slug` and degrade safely. Specifically:
+  - New `platform/cluster-links.php`: `wps_resolve_cluster_link($packageSlug)` reads the cluster registry and resolves to `/blog/{public_slug}` only when the target asset is `status: published` with a non-empty `public_slug`; `wps_audit_cluster_links_in_package($folderPath)` and `wps_format_cluster_link_report()` produce the per-publish decision report.
+  - `platform/markdown.php`: `[label](wps-cluster:<package_slug>)` is recognised in `blog-post.md`/`faq.md`. Resolved -> live `<a href>`. Unresolved -> plain `<span class="cluster-link-deferred">` so no `href` to an unpublished sibling ever ships.
+  - `platform/cache.php`: rendered-HTML cache key incorporates the cluster registry mtime when the source contains `wps-cluster:`, so a sibling publish automatically invalidates downstream post caches and upgrades the link without source edits.
+  - `scripts_cluster_links_audit.sh`: scans all `content-system/tours/<package>/` for `wps-cluster:` links and prints linked/deferred decisions, suitable to paste into `qa-report.md`.
+  - `templates/internal-links-template.md` documents the syntax + authoring rules.
+  - `structures/workflow-completion-checklist.md` requires `wps-cluster:` usage in prose for cross-cluster links and a decision-block append to `qa-report.md` during publish.
 
 ---
 
