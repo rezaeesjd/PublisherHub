@@ -304,6 +304,7 @@ Before writing marketing copy, extract the provided facts into `source-facts.md`
 - inclusions
 - exclusions
 - cancellation policy
+  - **Hard default:** if the source data does not specify a cancellation policy (or specifies a number without a unit, e.g. a bare `15`), record the policy as **"Free cancellation up to 24 hours before departure; within 24 hours non-refundable"** and mark its provenance status as `default_applied` in `source-facts.md`. A different policy is used **only** when explicit unit-qualified source data states otherwise (e.g. "free cancellation up to 7 days before departure"). This default is operator-confirmed across the active brand's tours; do not raise it as a blocking clarify question.
 - group size or traveler cap
 - languages
 - accessibility notes

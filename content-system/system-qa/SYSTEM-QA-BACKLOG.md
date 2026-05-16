@@ -70,6 +70,43 @@ Priority definitions:
 
 ## Open items
 
+### SYSQA-20260516-001: Conditional cross-cluster internal links need automated resolution
+- Date added: 2026-05-16
+- Added after run/package: `best-day-trips-from-milan` (and any future TOFU/MOFU asset that references a sibling cluster)
+- Priority: P2
+- Owner agent: linking + publish-prep
+- Area: internal-links / publish-gate
+- Status: open
+- Problem:
+  When a generated asset wants to cross-link to a sibling cluster whose public slugs are not yet live, the agent has no clean way to encode "link if live, otherwise mention without href". Current workaround is to flag the items as `auto_resolved` and rely on a human to re-check at publish time. For the launch we are explicitly resolving these as `skip-for-now / publish` and moving on, but the system needs a real solution.
+- Why it matters:
+  Manual re-checks at publish time are fragile and silently introduce broken links or missed cross-link conversion paths. As the cluster count grows this becomes a real maintenance tax and a measurable SEO/conversion leak.
+- Recommended fix:
+  Teach the publish pipeline to resolve sibling cross-link slugs at publish time:
+  1. `internal-links.md` declares cross-links by `package_slug` (not by hard public URL).
+  2. At publish time, look up each referenced `package_slug` in the cluster registry; if its `public_slug` is non-empty and its `status` is `published`, emit the live link; otherwise emit the plain-text mention with no href and log it.
+  3. Add a tiny report appended to `qa-report.md` listing each cross-link decision (linked vs deferred) per publish run.
+- Files likely affected:
+  - `platform/cache.php` (archive index build) or a new resolver helper
+  - `blog/post.php` (link rendering)
+  - `templates/internal-links-template.md`
+  - `structures/workflow-completion-checklist.md`
+- Implementation steps:
+  1. Define an `internal-links.md` link-by-package-slug syntax.
+  2. Add a `wps_resolve_cluster_link($packageSlug): ?string` helper backed by the cluster registry + archive index.
+  3. Render cross-links through the resolver in published HTML.
+  4. Append per-publish cross-link decisions to `qa-report.md`.
+- Acceptance criteria:
+  - No published asset contains an `href` to an unpublished sibling slug.
+  - Sibling-cluster mentions automatically become live links when the sibling publishes, with no manual edit of the source asset.
+  - QA report shows each cross-link decision for the publish run.
+- Risk if ignored:
+  Hand-rolled cross-link maintenance scales linearly with cluster count and silently introduces 404s. For the immediate launch this is acceptable (sibling clusters mentioned as plain text), but the workaround should not become permanent.
+- Implementation note:
+  Deferred at user request on 2026-05-16 to unblock the `best-day-trips-from-milan` publish. The cross-cluster links there were resolved as "skip for now / publish" with sibling mentions kept copy-only.
+
+---
+
 ### SYSQA-20260511-001: Workflow completion enforcement missing
 - Date added: 2026-05-11
 - Added after run/package: `system-wide`
