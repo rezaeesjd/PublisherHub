@@ -127,20 +127,37 @@ function wps_qa_run_for_tour(string $tourDir): array
             }
         }
 
-        // Title length. Google currently shows up to ~60 chars before
-        // truncating; titles > 65 chars almost always get rewritten.
-        if ($pageTitle !== '' && mb_strlen($pageTitle) > 65) {
+        // Title length. SEO target is 50–60 chars; Google truncates ~60 and
+        // almost always rewrites > 65.
+        if ($pageTitle !== '' && mb_strlen($pageTitle) > 60) {
             $findings[] = wps_qa_finding(
                 'warn',
                 'title-too-long',
-                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: ≤ 60). Google will truncate.'
+                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60). Google will truncate.'
             );
         }
-        if ($pageTitle !== '' && mb_strlen($pageTitle) < 25) {
+        if ($pageTitle !== '' && mb_strlen($pageTitle) < 50) {
             $findings[] = wps_qa_finding(
                 'warn',
                 'title-too-short',
-                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters; usually too short to communicate intent.'
+                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60); usually too short to communicate intent.'
+            );
+        }
+
+        // Meta description length. SEO target is 140–160 chars.
+        $metaDescription = trim((string) ($meta['meta_description'] ?? ''));
+        if ($metaDescription !== '' && mb_strlen($metaDescription) > 160) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'meta-description-too-long',
+                'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160). Google will truncate.'
+            );
+        }
+        if ($metaDescription !== '' && mb_strlen($metaDescription) < 140) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'meta-description-too-short',
+                'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160); usually too short to earn the click.'
             );
         }
 
@@ -362,6 +379,57 @@ function wps_qa_apply_cross_package_findings(array &$reports): void
             }
         }
         unset($sibList);
+    }
+
+    // -- S7b: page_title near-duplicate cannibalization across cluster ------
+    // Two siblings in the same cluster_parent with normalized page_titles
+    // ≥ 75% similar will compete on title-tag signal even if their
+    // primary_keyword differs.
+    $byCluster = [];
+    foreach ($reports as $i => $report) {
+        $meta = $report['meta'] ?? [];
+        if (!is_array($meta)) {
+            continue;
+        }
+        $cluster = strtolower(trim((string) ($meta['cluster_parent'] ?? '')));
+        $status  = (string) ($meta['publish_status'] ?? 'draft');
+        $isLive  = in_array($status, ['ready_for_review', 'published'], true);
+        $title   = trim((string) ($meta['page_title'] ?? ''));
+        if ($cluster === '' || $title === '' || !$isLive) {
+            continue;
+        }
+        $byCluster[$cluster][] = ['i' => $i, 'title' => $title];
+    }
+    $normalize = function (string $s): string {
+        $s = mb_strtolower($s);
+        $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
+        return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
+    };
+    foreach ($byCluster as $clusterSlug => $items) {
+        if (count($items) < 2) {
+            continue;
+        }
+        for ($a = 0; $a < count($items); $a++) {
+            for ($b = $a + 1; $b < count($items); $b++) {
+                similar_text($normalize($items[$a]['title']), $normalize($items[$b]['title']), $pct);
+                if ($pct >= 75) {
+                    $ai = $items[$a]['i'];
+                    $bi = $items[$b]['i'];
+                    $aTour = (string) ($reports[$ai]['tour'] ?? '');
+                    $bTour = (string) ($reports[$bi]['tour'] ?? '');
+                    foreach ([$ai => $bTour, $bi => $aTour] as $self => $sib) {
+                        $reports[$self]['findings'][] = wps_qa_finding(
+                            'warn',
+                            'title-cannibalization',
+                            "page_title is " . round($pct) . "% similar to sibling '{$sib}' in cluster '{$clusterSlug}'. Differentiate the title-tag angle to avoid SERP competition."
+                        );
+                        if ($reports[$self]['overall'] === 'pass') {
+                            $reports[$self]['overall'] = 'warning';
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // -- S11: freshness pass for published packages -------------------------

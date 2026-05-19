@@ -28,3 +28,27 @@
 ## Verdict
 Generation readiness: passed.
 Publish readiness: passed (published).
+
+
+## SEO Scorecard
+
+Measured by `platform/qa-rules.php` (machine) + reviewer judgment (manual). Targets and verdicts follow Group-1 SEO rules.
+
+| # | Check | Value | Target | Verdict |
+|---|---|---|---|---|
+| A | `meta.page_title` length | 50 chars | 50–60 | pass |
+| B | `meta.meta_description` length | 155 chars | 140–160 | pass |
+| C | `meta.public_slug` length & kebab-case | 27 chars | ≤ 50, kebab | pass |
+| D | Single H1 in `blog-post.md` | 1 H1 | exactly 1 | pass |
+| E | H1 ↔ `page_title` similarity | 100% | ≥ 60% | pass |
+| F | Primary keyword in `page_title` prefix | yes | yes | pass |
+| G | Primary keyword in H1 | yes | yes | pass |
+| H | Brand in `blog-post.md` | yes | yes | pass |
+| I | Cluster `primary_keyword` cannibalization | no | no | pass |
+| J | Cluster `page_title` ≥75% sibling overlap | no | no | pass |
+| K | Hero image + alt | no images/ | when images/ present | n/a |
+| L | Internal links: hub + sibling | see `internal-links.md` | both | manual |
+| M | Word count (final) | 265 words | 500–900 | warn |
+| N | Retired `-vN` slug | no | no | pass |
+
+> Rows F, G, I, J, M are SEO checks added in Group 1. Rows A, B, D, E are now enforced by `platform/qa-rules.php` (title 50–60, meta description 140–160, H1 count, H1↔title parity, title cannibalization). Row L remains manual until an internal-link runner is added.

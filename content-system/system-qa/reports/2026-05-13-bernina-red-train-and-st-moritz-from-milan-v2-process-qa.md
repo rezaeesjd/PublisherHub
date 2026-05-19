@@ -1,3 +1,5 @@
+> **RETIRED — package no longer exists.** The `-v<N>` variant mechanism was retired on 2026-05-14 (see `SYSTEM-QA-BACKLOG.md` line for that date). The package `content-system/tours/bernina-red-train-and-st-moritz-from-milan-v2/` has been deleted and its public URL now 404s. This report is preserved for historical audit only and must not be cited as current QA state.
+
 ## Tour Identity Confirmation
 - Requested command: `WPS:GENERATE_CONTENT`
 - Actual package folder: `content-system/tours/bernina-red-train-and-st-moritz-from-milan-v2/`

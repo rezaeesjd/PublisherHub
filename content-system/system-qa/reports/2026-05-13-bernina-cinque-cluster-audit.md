@@ -19,8 +19,9 @@
 
 ## Detailed checks
 ### A) Bernina cluster
-- Registry state: primary BOFU + v2/v3/v4 variants are `ready_for_review`; core MOFU/TOFU/FAQ assets still `planned`.
-- Conversion risk: users arriving on variant assets may not get enough objection-removal depth until FAQ post exists.
+- Registry state (as of audit, 2026-05-13): primary BOFU + v2/v3/v4 variants were `ready_for_review`; core MOFU/TOFU/FAQ assets still `planned`.
+- **2026-05-14 update:** the v2/v3/v4 variants were retired (see `SYSTEM-QA-BACKLOG.md`) — the `-v<N>` variant mechanism produced thin near-duplicate clones and was removed. The Bernina cluster now consists of the single BOFU plus the new typed MOFU (`bernina-express-guided-vs-diy-from-milan`), TOFU (`swiss-alps-from-milan-guide`), and FAQ (`bernina-st-moritz-from-milan-faq`) assets.
+- Conversion risk: addressed — typed MOFU/TOFU/FAQ assets now exist.
 - Data integrity gap: registry-level website URL fallback remains placeholder despite package-level confirmed URL.
 
 ### B) Cinque Terre cluster
