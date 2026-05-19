@@ -221,22 +221,27 @@ function wps_qa_run_for_tour(string $tourDir): array
                 }
             }
 
-            // 11. primary-keyword-in-at-least-one-h2
-            if (preg_match_all('/^##\s+(.+?)\s*#*\s*$/m', $blogContent, $h2Matches)) {
-                $h2Hit = false;
-                foreach ($h2Matches[1] as $h2) {
-                    if (mb_strpos($normalizeSeoText($h2), $pkNorm) !== false) {
-                        $h2Hit = true;
-                        break;
-                    }
+            // 11. primary-keyword-in-at-least-one-h2 — also fires when
+            //     the post has no H2 at all, since the target is "≥ 1 H2
+            //     containing the primary keyword" (zero H2s fails that).
+            preg_match_all('/^##\s+(.+?)\s*#*\s*$/m', $blogContent, $h2Matches);
+            $h2Hit = false;
+            foreach ($h2Matches[1] ?? [] as $h2) {
+                if (mb_strpos($normalizeSeoText($h2), $pkNorm) !== false) {
+                    $h2Hit = true;
+                    break;
                 }
-                if (!$h2Hit) {
-                    $findings[] = wps_qa_finding(
-                        'warn',
-                        'primary-keyword-h2-missing',
-                        "No H2 in blog-post.md contains primary_keyword '{$primaryKeyword}'. Including it in at least one subhead reinforces topical relevance."
-                    );
-                }
+            }
+            if (!$h2Hit) {
+                $h2Count = isset($h2Matches[1]) ? count($h2Matches[1]) : 0;
+                $detail = $h2Count === 0
+                    ? 'blog-post.md has no H2 headings at all.'
+                    : "No H2 in blog-post.md contains primary_keyword '{$primaryKeyword}'.";
+                $findings[] = wps_qa_finding(
+                    'warn',
+                    'primary-keyword-h2-missing',
+                    $detail . ' Add an H2 that carries the primary keyword to reinforce topical relevance.'
+                );
             }
 
             // 12. primary-keyword-in-conclusion — look at the last 200
@@ -411,6 +416,219 @@ function wps_qa_run_for_tour(string $tourDir): array
                 'slug-stop-words',
                 "public_slug '{$publicSlug}' includes stop word(s): " . implode(', ', $slugStopHits) . '. Drop them — they add length without ranking value.'
             );
+        }
+    }
+
+    // ── Structural & technical SEO (Group 2b) ──────────────────────────
+    $publicCopyState = (string) ($meta['public_copy_state'] ?? '');
+    $isFinal = ($publicCopyState === 'final');
+
+    // 16. canonical-url — present, well-formed, and matching public_slug.
+    $canonicalUrl = trim((string) ($meta['canonical_url'] ?? ''));
+    if ($canonicalUrl === '') {
+        if ($isFinal) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'canonical-url-missing',
+                "meta.canonical_url is not set. Final posts should declare an absolute canonical URL (https://<host>/{$publicSlug}) for rel=canonical and JSON-LD."
+            );
+        }
+    } elseif (!preg_match('#^https?://[^\s]+$#', $canonicalUrl)) {
+        $findings[] = wps_qa_finding(
+            'fail',
+            'canonical-url-malformed',
+            "meta.canonical_url '{$canonicalUrl}' is not an absolute https URL."
+        );
+    } elseif ($publicSlug !== '') {
+        $canonicalPath = (string) parse_url($canonicalUrl, PHP_URL_PATH);
+        $canonicalLastSegment = trim($canonicalPath, '/');
+        if ($canonicalLastSegment !== '' && strpos($canonicalLastSegment, '/') !== false) {
+            $parts = explode('/', $canonicalLastSegment);
+            $canonicalLastSegment = end($parts);
+        }
+        if ($canonicalLastSegment !== '' && $canonicalLastSegment !== $publicSlug) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'canonical-url-slug-mismatch',
+                "meta.canonical_url ends with '{$canonicalLastSegment}' but public_slug is '{$publicSlug}'. The canonical path must match the published slug."
+            );
+        }
+    }
+
+    // 17. JSON-LD readiness — surface whether the data needed to emit
+    //     FAQPage and TouristTrip/Product schemas is actually present.
+    $faqPath = $tourDir . '/faq.md';
+    if (is_file($faqPath)) {
+        $faqContent = (string) file_get_contents($faqPath);
+        $qaPairs = preg_match_all('/^##\s+.+\?\s*$/m', $faqContent);
+        if ($qaPairs < 3 && $isFinal) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'faq-jsonld-insufficient',
+                "faq.md has only {$qaPairs} question heading(s); FAQPage JSON-LD needs ≥ 3 Q&A pairs to be worth emitting."
+            );
+        }
+    }
+
+    // TouristTrip / Product JSON-LD needs core commercial fields.
+    $productFields = [
+        'canonical_tour_title' => 'name',
+        'meta_description'    => 'description',
+        'hero_image'          => 'image',
+        'price_from'          => 'offers.price',
+    ];
+    $missingProduct = [];
+    foreach ($productFields as $metaKey => $jsonLdKey) {
+        if (trim((string) ($meta[$metaKey] ?? '')) === '') {
+            $missingProduct[] = "{$jsonLdKey} (meta.{$metaKey})";
+        }
+    }
+    if (!empty($missingProduct) && $isFinal) {
+        $findings[] = wps_qa_finding(
+            'warn',
+            'product-jsonld-incomplete',
+            'TouristTrip/Product JSON-LD cannot be fully emitted — missing: ' . implode('; ', $missingProduct) . '.'
+        );
+    }
+
+    // 18. Internal-link SEO checks on internal-links.md.
+    $internalLinksPath = $tourDir . '/internal-links.md';
+    if (is_file($internalLinksPath)) {
+        $ilContent = (string) file_get_contents($internalLinksPath);
+        $ilLower   = mb_strtolower($ilContent);
+
+        // 18a. Hub link — a BOFU page should link from its booking hub
+        //      (best-day-trips-from-milan etc.). Soft signal: the word
+        //      "hub" or a "Best ..." anchor appears.
+        $funnel = (string) ($meta['funnel_stage'] ?? '');
+        if ($funnel === 'BOFU' && $isFinal) {
+            if (strpos($ilLower, 'hub') === false && strpos($ilLower, 'best ') === false) {
+                $findings[] = wps_qa_finding(
+                    'warn',
+                    'internal-links-hub-missing',
+                    'internal-links.md for this BOFU package mentions no hub link (no "hub" or "Best …" anchor). Add the inbound link from the booking hub.'
+                );
+            }
+        }
+
+        // 18b. Cross-funnel coverage — internal-links.md should mention
+        //      at least two funnel stages so the cluster cross-links.
+        $stages = [];
+        foreach (['BOFU', 'MOFU', 'TOFU', 'FAQ'] as $stage) {
+            if (strpos($ilLower, mb_strtolower($stage)) !== false) {
+                $stages[] = $stage;
+            }
+        }
+        if (count($stages) < 2 && $isFinal) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'internal-links-no-cross-funnel',
+                'internal-links.md references fewer than 2 funnel stages (BOFU/MOFU/TOFU/FAQ); cross-funnel cross-linking is missing.'
+            );
+        }
+
+        // 18c. Anchor-text variety — duplicate anchor text dilutes
+        //      relevance signals. Pull "quoted" and **bolded** anchors.
+        $anchors = [];
+        if (preg_match_all('/"([^"\n]{3,})"/', $ilContent, $am)) {
+            foreach ($am[1] as $a) $anchors[] = trim($a);
+        }
+        if (preg_match_all('/\*\*([^*\n]{3,})\*\*/', $ilContent, $am)) {
+            foreach ($am[1] as $a) $anchors[] = trim($a);
+        }
+        $normAnchors = array_map(fn($a) => mb_strtolower(trim($a)), $anchors);
+        $dupes = array_keys(array_filter(array_count_values($normAnchors), fn($n) => $n > 1));
+        if (!empty($dupes)) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'internal-links-anchor-duplicate',
+                'internal-links.md reuses identical anchor text: ' . implode('; ', array_slice($dupes, 0, 3)) . '. Vary anchors so each link carries a distinct topical signal.'
+            );
+        }
+    }
+
+    // 19. H2/H3 hierarchy + subhead duplication.
+    if ($blogContent !== '') {
+        $allHeads = [];
+        if (preg_match_all('/^(#{1,6})\s+(.+?)\s*#*\s*$/m', $blogContent, $hm, PREG_SET_ORDER)) {
+            foreach ($hm as $h) {
+                $allHeads[] = ['level' => strlen($h[1]), 'text' => trim($h[2])];
+            }
+        }
+
+        // H3 before any H2 = broken hierarchy.
+        $seenH2 = false;
+        $brokenH3 = null;
+        foreach ($allHeads as $h) {
+            if ($h['level'] === 2) { $seenH2 = true; }
+            elseif ($h['level'] === 3 && !$seenH2) { $brokenH3 = $h['text']; break; }
+        }
+        if ($brokenH3 !== null) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'subhead-hierarchy-broken',
+                "blog-post.md uses an H3 ('{$brokenH3}') before any H2. Promote it or add an H2 parent."
+            );
+        }
+
+        // Duplicate H2/H3 headings (normalized).
+        $subheadNorm = [];
+        foreach ($allHeads as $h) {
+            if ($h['level'] === 2 || $h['level'] === 3) {
+                $subheadNorm[] = preg_replace('/\s+/u', ' ', mb_strtolower($h['text']));
+            }
+        }
+        $headDupes = array_keys(array_filter(array_count_values($subheadNorm), fn($n) => $n > 1));
+        if (!empty($headDupes)) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'subhead-duplicate',
+                'blog-post.md has duplicate H2/H3 subhead(s): ' . implode('; ', array_slice($headDupes, 0, 3)) . '.'
+            );
+        }
+    }
+
+    // 20. Hero image: required for final, alt text + descriptive filename.
+    if ($isFinal && trim((string) ($meta['hero_image'] ?? '')) === '') {
+        $findings[] = wps_qa_finding(
+            'warn',
+            'hero-image-final-missing',
+            'Final post is missing meta.hero_image. Hero images drive social-share previews and Article/TouristTrip image JSON-LD.'
+        );
+    }
+    if (!empty($meta['hero_image'])) {
+        $hero = (string) $meta['hero_image'];
+        $heroBase = basename(parse_url($hero, PHP_URL_PATH) ?: $hero);
+        $heroSlug = preg_replace('/\.[^.]+$/', '', $heroBase) ?? $heroBase;
+        $heroSlugNorm = preg_replace('/[^a-z0-9]+/i', ' ', mb_strtolower($heroSlug));
+        $heroSlugNorm = trim(preg_replace('/\s+/u', ' ', $heroSlugNorm ?? '') ?? '');
+        $genericHeroNames = ['hero', 'image', 'img', 'photo', 'cover', 'banner', 'default', 'placeholder'];
+        if ($heroSlugNorm !== '' && in_array($heroSlugNorm, $genericHeroNames, true)) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'hero-image-filename-generic',
+                "meta.hero_image filename '{$heroBase}' is generic. Use a keyword-bearing filename (e.g. include the primary keyword)."
+            );
+        }
+        // Hero alt text — only checkable when the hero is rendered inline
+        // in blog-post.md via the same path.
+        if ($blogContent !== '' && !preg_match('#^https?://#i', $hero)) {
+            $heroRef = preg_quote(ltrim($hero, '/'), '#');
+            if (preg_match('#!\[([^\]]*)\]\([^)\s]*' . $heroRef . '#', $blogContent, $am)) {
+                if (trim((string) $am[1]) === '') {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'hero-image-alt-missing',
+                        'Hero image is referenced in blog-post.md without alt text.'
+                    );
+                } elseif ($pkNorm !== '' && mb_strpos(mb_strtolower($am[1]), $pkNorm) === false) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'hero-image-alt-keyword-missing',
+                        "Hero image alt text '{$am[1]}' does not include the primary keyword."
+                    );
+                }
+            }
         }
     }
 
