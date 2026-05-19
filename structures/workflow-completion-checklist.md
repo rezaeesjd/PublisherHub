@@ -22,6 +22,7 @@ When running `WPS:GENERATE_CONTENT`, the agent must complete these checks before
 - [ ] All required package files exist or clarify-mode stubs exist
 - [ ] `meta.json` contains required SEO, CTA, status, and cluster fields
 - [ ] `internal-links.md` follows TOFU/MOFU/BOFU/FAQ linking rules
+- [ ] Cross-cluster references in prose use the `wps-cluster:<package_slug>` link scheme (never a hardcoded sibling public URL)
 - [ ] Package QA saved to `content-system/tours/<package-slug>/qa-report.md`
 - [ ] `content-system/clusters/cluster-registry.json` read before generation
 - [ ] `content-system/clusters/cluster-registry.json` updated after generation
@@ -62,6 +63,7 @@ When running `WPS:PUBLISH_BLOG`, the agent must complete these checks.
 - [ ] Public slug checked
 - [ ] Public content checked for admin labels and unsafe claims
 - [ ] Links and CTA priority checked
+- [ ] Cross-cluster `wps-cluster:` links audited (`scripts_cluster_links_audit.sh` or `wps_audit_cluster_links_in_package()`); decision block appended to `qa-report.md`
 - [ ] Package QA updated
 - [ ] `cluster-registry.json` asset status updated
 - [ ] Publish status is not set to `published` unless live archive and single-post verification succeeded

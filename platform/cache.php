@@ -213,7 +213,16 @@ function wps_cached_render_markdown(string $sourcePath): string
     }
 
     $mtime    = (int) @filemtime($sourcePath);
-    $cacheKey = WPS_RENDER_CACHE_VERSION . '.' . $mtime;
+    $markdown = (string) @file_get_contents($sourcePath);
+    // If the source uses `wps-cluster:` cross-cluster links, the rendered
+    // HTML depends on the cluster registry too — fold the registry mtime
+    // into the cache key so a sibling publish invalidates the cache here
+    // (SYSQA-20260516-001).
+    $registryStamp = '';
+    if (stripos($markdown, 'wps-cluster:') !== false && defined('WPS_CLUSTER_REGISTRY_FILE')) {
+        $registryStamp = '.r' . (int) @filemtime(WPS_CLUSTER_REGISTRY_FILE);
+    }
+    $cacheKey = WPS_RENDER_CACHE_VERSION . '.' . $mtime . $registryStamp;
     $cachePath = $sourcePath . '.cache.html';
     $stampPath = $sourcePath . '.cache.stamp';
 
@@ -223,8 +232,6 @@ function wps_cached_render_markdown(string $sourcePath): string
             return (string) @file_get_contents($cachePath);
         }
     }
-
-    $markdown = (string) @file_get_contents($sourcePath);
     if (!function_exists('wps_render_markdown')) {
         require_once __DIR__ . '/markdown.php';
     }
