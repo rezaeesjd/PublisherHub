@@ -161,6 +161,139 @@ function wps_qa_run_for_tour(string $tourDir): array
             );
         }
 
+        // ── On-page SEO enforcement (Group 2a) ─────────────────────────
+        // Normalize lowercases and collapses punctuation/whitespace so
+        // "Full-Day Tour" and "full day tour" compare equal.
+        $normalizeSeoText = function (string $s): string {
+            $s = mb_strtolower($s);
+            $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
+            return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
+        };
+
+        $primaryKeyword = trim((string) ($meta['primary_keyword'] ?? ''));
+        $pkNorm = $primaryKeyword !== '' ? $normalizeSeoText($primaryKeyword) : '';
+        $blogNorm = $normalizeSeoText($blogContent);
+        $blogWords = $blogNorm === '' ? [] : explode(' ', $blogNorm);
+        $wordCount = count($blogWords);
+
+        if ($pkNorm !== '') {
+            // 8. primary-keyword-in-title-prefix — keyword should sit in
+            //    the front half of the title tag.
+            if ($pageTitle !== '') {
+                $titleNorm = $normalizeSeoText($pageTitle);
+                $titlePos  = $titleNorm === '' ? false : mb_strpos($titleNorm, $pkNorm);
+                if ($titlePos === false) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-title-missing',
+                        "meta.page_title does not contain primary_keyword '{$primaryKeyword}'."
+                    );
+                } elseif ($titlePos > (int) (mb_strlen($titleNorm) / 2)) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-title-prefix',
+                        "primary_keyword '{$primaryKeyword}' appears late in meta.page_title; move it toward the start for a stronger title-tag signal."
+                    );
+                }
+            }
+
+            // 9. primary-keyword-in-h1
+            if ($h1Count >= 1 && isset($h1Matches[1][0])) {
+                $h1Norm = $normalizeSeoText((string) $h1Matches[1][0]);
+                if ($h1Norm === '' || mb_strpos($h1Norm, $pkNorm) === false) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-h1-missing',
+                        "blog-post.md H1 does not contain primary_keyword '{$primaryKeyword}'."
+                    );
+                }
+            }
+
+            // 10. primary-keyword-in-first-100-words
+            if ($wordCount > 0) {
+                $first100 = implode(' ', array_slice($blogWords, 0, 100));
+                if (mb_strpos($first100, $pkNorm) === false) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-first-100-words',
+                        "primary_keyword '{$primaryKeyword}' does not appear in the first 100 words of blog-post.md."
+                    );
+                }
+            }
+
+            // 11. primary-keyword-in-at-least-one-h2
+            if (preg_match_all('/^##\s+(.+?)\s*#*\s*$/m', $blogContent, $h2Matches)) {
+                $h2Hit = false;
+                foreach ($h2Matches[1] as $h2) {
+                    if (mb_strpos($normalizeSeoText($h2), $pkNorm) !== false) {
+                        $h2Hit = true;
+                        break;
+                    }
+                }
+                if (!$h2Hit) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-h2-missing',
+                        "No H2 in blog-post.md contains primary_keyword '{$primaryKeyword}'. Including it in at least one subhead reinforces topical relevance."
+                    );
+                }
+            }
+
+            // 12. primary-keyword-in-conclusion — look at the last 200
+            //     normalized words as a proxy for the conclusion section.
+            if ($wordCount > 0) {
+                $tail = implode(' ', array_slice($blogWords, -min(200, $wordCount)));
+                if (mb_strpos($tail, $pkNorm) === false) {
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'primary-keyword-conclusion-missing',
+                        "primary_keyword '{$primaryKeyword}' is absent from the last 200 words of blog-post.md."
+                    );
+                }
+            }
+        }
+
+        // 13. keywords-coverage — long-tail terms from keywords.md
+        //     should actually appear in the published post.
+        $keywordsPath = $tourDir . '/keywords.md';
+        if (is_file($keywordsPath)) {
+            $longTail = wps_qa_keywords_section_items(
+                (string) file_get_contents($keywordsPath),
+                'long-tail'
+            );
+            if (!empty($longTail) && $blogNorm !== '') {
+                $missing = [];
+                foreach ($longTail as $kw) {
+                    $kwNorm = $normalizeSeoText($kw);
+                    if ($kwNorm === '') {
+                        continue;
+                    }
+                    if (mb_strpos($blogNorm, $kwNorm) === false) {
+                        $missing[] = $kw;
+                    }
+                }
+                $total = count($longTail);
+                $miss  = count($missing);
+                if ($total > 0 && $miss > (int) ($total / 2)) {
+                    $sample = array_slice($missing, 0, 3);
+                    $findings[] = wps_qa_finding(
+                        'warn',
+                        'keywords-coverage-low',
+                        'blog-post.md covers only ' . ($total - $miss) . "/{$total} long-tail keywords from keywords.md (e.g. missing: " . implode('; ', $sample) . ').'
+                    );
+                }
+            }
+        }
+
+        // 14. word-count-500-900 (AGENTS.md §523)
+        if ($wordCount > 0 && ($wordCount < 500 || $wordCount > 900)) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'word-count-out-of-range',
+                "blog-post.md is {$wordCount} words (AGENTS.md §523 target: 500–900)."
+            );
+        }
+
         $brandName = (string) ($meta['brand'] ?? '');
         if ($brandName !== '' && stripos($blogContent, $brandName) === false) {
             $findings[] = wps_qa_finding('warn', 'brand-missing', "blog-post.md does not mention the active brand '{$brandName}'.");
@@ -247,6 +380,30 @@ function wps_qa_run_for_tour(string $tourDir): array
         $sourceContent = (string) file_get_contents($sourcePath);
         if (stripos($sourceContent, 'missing input') === false && stripos($sourceContent, 'human review') === false) {
             $findings[] = wps_qa_finding('warn', 'source-facts-incomplete', 'source-facts.md does not flag any missing inputs or human-review items.');
+        }
+    }
+
+    // 15. slug-length + stop-word check on the public-facing slug.
+    //     Long, stop-word-laden slugs dilute the URL ranking signal and
+    //     show up truncated in SERPs.
+    $publicSlug = trim((string) ($meta['public_slug'] ?? $meta['slug'] ?? ''));
+    if ($publicSlug !== '') {
+        if (mb_strlen($publicSlug) > 50) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'slug-too-long',
+                "public_slug '{$publicSlug}' is " . mb_strlen($publicSlug) . ' characters (target: ≤ 50). Trim filler tokens for cleaner SERP URLs.'
+            );
+        }
+        $slugStopWords = ['a', 'an', 'the', 'and', 'or', 'of', 'for', 'to', 'in', 'on', 'at', 'with', 'by'];
+        $slugTokens = array_values(array_filter(explode('-', mb_strtolower($publicSlug)), fn($t) => $t !== ''));
+        $slugStopHits = array_values(array_unique(array_intersect($slugTokens, $slugStopWords)));
+        if (!empty($slugStopHits)) {
+            $findings[] = wps_qa_finding(
+                'warn',
+                'slug-stop-words',
+                "public_slug '{$publicSlug}' includes stop word(s): " . implode(', ', $slugStopHits) . '. Drop them — they add length without ranking value.'
+            );
         }
     }
 
@@ -584,6 +741,35 @@ function wps_qa_type_matches($value, $type): bool
     }
 
     return false;
+}
+
+/**
+ * Pull bullet items from a named ## section of keywords.md. Matching is
+ * substring-and-case-insensitive on the heading, so a needle of
+ * "long-tail" still resolves "Long-tail booking-intent keywords".
+ */
+function wps_qa_keywords_section_items(string $content, string $sectionNeedle): array
+{
+    if (!preg_match_all('/^##\s+(.+?)\s*$\R(.*?)(?=^##\s|\z)/ms', $content, $matches, PREG_SET_ORDER)) {
+        return [];
+    }
+    $needle = mb_strtolower($sectionNeedle);
+    foreach ($matches as $section) {
+        if (mb_strpos(mb_strtolower($section[1]), $needle) === false) {
+            continue;
+        }
+        $items = [];
+        if (preg_match_all('/^\s*[-*]\s+(.+?)\s*$/m', $section[2], $li)) {
+            foreach ($li[1] as $item) {
+                $item = trim($item);
+                if ($item !== '') {
+                    $items[] = $item;
+                }
+            }
+        }
+        return $items;
+    }
+    return [];
 }
 
 function wps_qa_format_value($value): string
