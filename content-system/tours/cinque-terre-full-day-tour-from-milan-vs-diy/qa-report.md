@@ -59,5 +59,12 @@ Measured by `platform/qa-rules.php` (machine) + reviewer judgment (manual). Targ
 | L | Internal links: hub + sibling | see `internal-links.md` | both | manual |
 | M | Word count (final) | 970 words | 500–900 | warn |
 | N | Retired `-vN` slug | no | no | pass |
+| O | Primary keyword in first 100 words of `blog-post.md` | no | yes | warn |
+| P | Primary keyword in ≥ 1 H2 of `blog-post.md` | no | yes | warn |
+| Q | Primary keyword in last 200 words (conclusion) | no | yes | warn |
+| R | Long-tail keyword coverage from `keywords.md` | 0/5 | > 50% present | warn |
+| S | `public_slug` stop-word hits | by | none | warn |
 
 > Rows F, G, I, J, M are SEO checks added in Group 1. Rows A, B, D, E are now enforced by `platform/qa-rules.php` (title 50–60, meta description 140–160, H1 count, H1↔title parity, title cannibalization). Row L remains manual until an internal-link runner is added.
+>
+> Rows O–S are on-page SEO checks added in Group 2a (primary-keyword distribution: first-100-words / H2 / conclusion; long-tail keywords-coverage from `keywords.md`; `public_slug` stop-word hits). All enforced by `platform/qa-rules.php`.

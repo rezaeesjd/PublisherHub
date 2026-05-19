@@ -142,6 +142,11 @@ Hand-fillable scorecard of on-page SEO signals. Where the `platform/qa-rules.php
 | L | Internal links: hub link + sibling cluster link | yes / no | both | pass / warn / fail (manual) |
 | M | Word count (final mode) | `{{N}} words` | 500–900 | pass / warn / fail (manual) |
 | N | Retired `-vN` variant slug | yes / no | no | pass / fail |
+| O | Primary keyword in first 100 words of `blog-post.md` | yes / no | yes | pass / warn |
+| P | Primary keyword in ≥ 1 H2 of `blog-post.md` | yes / no | yes | pass / warn |
+| Q | Primary keyword in last 200 words (conclusion) | yes / no | yes | pass / warn |
+| R | Long-tail keyword coverage from `keywords.md` | `{{X}}/{{Y}}` | > 50% present | pass / warn |
+| S | `public_slug` stop-word hits | none / list | none | pass / warn |
 
 ## Issues Found
 
