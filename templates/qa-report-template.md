@@ -147,7 +147,7 @@ Hand-fillable scorecard of on-page SEO signals. Where the `platform/qa-rules.php
 | Q | Primary keyword in last 200 words (conclusion) | yes / no | yes | pass / warn |
 | R | Long-tail keyword coverage from `keywords.md` | `{{X}}/{{Y}}` | > 50% present | pass / warn |
 | S | `public_slug` stop-word hits | none / list | none | pass / warn |
-| T | `meta.canonical_url` set + matches `public_slug` | yes / no / mismatch | yes (final) | pass / warn |
+| T | `meta.canonical_url` override (optional) — well-formed + matches `public_slug` | computed / override ok / mismatch / malformed | n/a unless overridden | pass / warn |
 | U | FAQPage JSON-LD ready (`faq.md` ≥ 3 Q&A) | `{{N}} pairs` | ≥ 3 (final) | pass / warn |
 | V | TouristTrip/Product JSON-LD fields present | missing list / none | none missing (final) | pass / warn |
 | W | `internal-links.md` cross-funnel coverage | stages count | ≥ 2 stages (BOFU/MOFU/TOFU/FAQ) | pass / warn |

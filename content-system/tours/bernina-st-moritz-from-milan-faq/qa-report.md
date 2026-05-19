@@ -62,7 +62,7 @@ Measured by `platform/qa-rules.php` (machine) + reviewer judgment (manual). Targ
 | Q | Primary keyword in last 200 words (conclusion) | no | yes | warn |
 | R | Long-tail keyword coverage from `keywords.md` | 0/5 | > 50% present | warn |
 | S | `public_slug` stop-word hits | none | none | pass |
-| T | `meta.canonical_url` set + matches `public_slug` | no | yes (final) | warn |
+| T | `meta.canonical_url` override (optional) — well-formed + matches `public_slug` | computed (from public_slug) | n/a unless overridden | pass |
 | U | FAQPage JSON-LD ready (`faq.md` ≥ 3 Q&A) | 9 pairs | ≥ 3 (final) | pass |
 | V | TouristTrip/Product JSON-LD fields present | missing: image | none missing (final) | warn |
 | W | `internal-links.md` cross-funnel coverage | BOFU/MOFU/TOFU/FAQ | ≥ 2 stages | pass |

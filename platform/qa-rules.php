@@ -423,16 +423,15 @@ function wps_qa_run_for_tour(string $tourDir): array
     $publicCopyState = (string) ($meta['public_copy_state'] ?? '');
     $isFinal = ($publicCopyState === 'final');
 
-    // 16. canonical-url — present, well-formed, and matching public_slug.
+    // 16. canonical-url — validate the optional override field.
+    //     blog/post.php derives the rendered rel=canonical from
+    //     wps_public_post_url($publicSlug), so meta.canonical_url is
+    //     not required. When it *is* set, it must be a well-formed
+    //     absolute URL whose final path segment matches public_slug,
+    //     otherwise it disagrees with what the renderer emits.
     $canonicalUrl = trim((string) ($meta['canonical_url'] ?? ''));
     if ($canonicalUrl === '') {
-        if ($isFinal) {
-            $findings[] = wps_qa_finding(
-                'warn',
-                'canonical-url-missing',
-                "meta.canonical_url is not set. Final posts should declare an absolute canonical URL (https://<host>/{$publicSlug}) for rel=canonical and JSON-LD."
-            );
-        }
+        // Nothing to check; renderer fills this in from public_slug.
     } elseif (!preg_match('#^https?://[^\s]+$#', $canonicalUrl)) {
         $findings[] = wps_qa_finding(
             'fail',
