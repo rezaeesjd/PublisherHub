@@ -285,8 +285,15 @@ function wps_qa_run_for_tour(string $tourDir): array
             }
         }
 
-        // 14. word-count-500-900 (AGENTS.md §523)
-        if ($wordCount > 0 && ($wordCount < 500 || $wordCount > 900)) {
+        // 14. word-count-500-900 — AGENTS.md §523 scopes the target to
+        //     "a final main post", so only enforce on public_copy_state=final.
+        //     Holding-notice (≤150 words) and not_started/provisional stubs
+        //     have their own word-count expectations elsewhere.
+        $publicCopyState = (string) ($meta['public_copy_state'] ?? '');
+        if ($publicCopyState === 'final'
+            && $wordCount > 0
+            && ($wordCount < 500 || $wordCount > 900)
+        ) {
             $findings[] = wps_qa_finding(
                 'warn',
                 'word-count-out-of-range',
