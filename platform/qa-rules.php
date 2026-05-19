@@ -385,13 +385,29 @@ function wps_qa_apply_cross_package_findings(array &$reports): void
     // Two siblings in the same cluster_parent with normalized page_titles
     // ≥ 75% similar will compete on title-tag signal even if their
     // primary_keyword differs.
+    //
+    // Cluster membership is resolved from the registry first (the rest of
+    // the platform treats the cluster registry as source of truth — see
+    // wps_index_tour_clusters() in functions.php). The tour-side
+    // `meta.cluster_parent` hint is used only as a fallback so the BOFU
+    // primary asset (which does not carry its own cluster_parent) is still
+    // compared against its siblings.
+    $clusterIndex = function_exists('wps_index_tour_clusters') ? wps_index_tour_clusters() : ['by_package_slug' => []];
+    $byPackageSlug = $clusterIndex['by_package_slug'] ?? [];
+
     $byCluster = [];
     foreach ($reports as $i => $report) {
         $meta = $report['meta'] ?? [];
         if (!is_array($meta)) {
             continue;
         }
-        $cluster = strtolower(trim((string) ($meta['cluster_parent'] ?? '')));
+        $tour = (string) ($report['tour'] ?? '');
+        $registryCluster = '';
+        if ($tour !== '' && isset($byPackageSlug[$tour]['cluster']['cluster_parent'])) {
+            $registryCluster = strtolower(trim((string) $byPackageSlug[$tour]['cluster']['cluster_parent']));
+        }
+        $hintCluster = strtolower(trim((string) ($meta['cluster_parent'] ?? '')));
+        $cluster = $registryCluster !== '' ? $registryCluster : $hintCluster;
         $status  = (string) ($meta['publish_status'] ?? 'draft');
         $isLive  = in_array($status, ['ready_for_review', 'published'], true);
         $title   = trim((string) ($meta['page_title'] ?? ''));
