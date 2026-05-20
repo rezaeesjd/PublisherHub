@@ -122,6 +122,39 @@
 - [ ] publish phase complete?
 - [ ] live verification complete?
 
+## SEO Scorecard
+
+Hand-fillable scorecard of on-page SEO signals. Where the `platform/qa-rules.php` runner enforces the check, copy the runner's verdict into the **Verdict** column verbatim (`pass` / `warn` / `fail`). Manual rows record reviewer judgment.
+
+| # | Check | Value (measured) | Target | Verdict |
+|---|---|---|---|---|
+| A | `meta.page_title` length | `{{N}} chars` | 50–60 | pass / warn / fail |
+| B | `meta.meta_description` length | `{{N}} chars` | 140–160 | pass / warn / fail |
+| C | `meta.public_slug` length & kebab-case | `{{N}} chars` | ≤ 50, kebab, no stop-word bloat | pass / warn / fail |
+| D | Single H1 in `blog-post.md` | `{{N}} H1` | exactly 1 | pass / warn / fail |
+| E | H1 ↔ `page_title` similarity | `{{%}}` | ≥ 60% | pass / warn / fail |
+| F | Primary keyword in `page_title` prefix | yes / no | yes | pass / warn / fail |
+| G | Primary keyword in H1 | yes / no | yes | pass / warn / fail |
+| H | Brand in `blog-post.md` | yes / no | yes | pass / warn / fail |
+| I | Cluster cannibalization — `primary_keyword` collides with sibling | yes / no | no | pass / warn / fail |
+| J | Cluster cannibalization — `page_title` ≥ 75% similar to sibling | yes / no | no | pass / warn / fail |
+| K | Hero image set + alt text | yes / no / n/a | yes when images/ exists | pass / warn / fail |
+| L | Internal links: hub link + sibling cluster link | yes / no | both | pass / warn / fail (manual) |
+| M | Word count (final mode) | `{{N}} words` | 500–900 | pass / warn / fail (manual) |
+| N | Retired `-vN` variant slug | yes / no | no | pass / fail |
+| O | Primary keyword in first 100 words of `blog-post.md` | yes / no | yes | pass / warn |
+| P | Primary keyword in ≥ 1 H2 of `blog-post.md` | yes / no | yes | pass / warn |
+| Q | Primary keyword in last 200 words (conclusion) | yes / no | yes | pass / warn |
+| R | Long-tail keyword coverage from `keywords.md` | `{{X}}/{{Y}}` | > 50% present | pass / warn |
+| S | `public_slug` stop-word hits | none / list | none | pass / warn |
+| T | `meta.canonical_url` override (optional) — well-formed + matches `public_slug` | computed / override ok / mismatch / malformed | n/a unless overridden | pass / warn |
+| U | FAQPage JSON-LD ready (`faq.md` ≥ 3 Q&A) | `{{N}} pairs` | ≥ 3 (final) | pass / warn |
+| V | TouristTrip/Product JSON-LD fields present | missing list / none | name/description/offers.price (image optional) | pass / warn |
+| W | `internal-links.md` cross-funnel coverage | stages count | ≥ 2 stages (BOFU/MOFU/TOFU/FAQ) | pass / warn |
+| X | `internal-links.md` anchor-text variety | duplicates / none | none (final) | pass / warn |
+| Y | H2/H3 hierarchy + no duplicates | ok / broken / dupes | ok | pass / warn |
+| Z | Hero image (optional) — alt + descriptive filename when set | computed / set / missing / generic | required only when `images/` exists | pass / warn |
+
 ## Issues Found
 
 Use the structured table below. Every row must classify the issue using one of the standard `WPS:PROCESS_QA` issue types so generation QA reports stay lint-comparable to process QA reports.

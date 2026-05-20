@@ -713,9 +713,15 @@ function ghimport_sync_via_zip(array $conn, string $localRoot, array &$results):
     $localPath   = trim($conn['local_path'] ?? '', '/');
     $token       = ghimport_token_for_use((string) ($conn['token'] ?? ''));
 
+    // Encode each segment of the branch name individually so slashes in
+    // branch names (e.g. "claude/review-deliverable-reports-XYZ") survive
+    // — codeload serves zips at /zip/refs/heads/<branch>, and a single
+    // rawurlencode($branch) turns "/" into "%2F" and returns 404.
+    $encodedBranch = implode('/', array_map('rawurlencode', explode('/', $branch)));
+
     $zipUrl = 'https://codeload.github.com/'
         . rawurlencode($owner) . '/' . rawurlencode($repo)
-        . '/zip/refs/heads/' . rawurlencode($branch);
+        . '/zip/refs/heads/' . $encodedBranch;
 
     $dl = ghimport_http_get($zipUrl, $token, true);
 

@@ -124,6 +124,11 @@
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
     },
+    "canonical_url": {
+      "type": "string",
+      "pattern": "^https://[^\\s]+$",
+      "description": "Absolute canonical URL for this post. Should be 'https://<site-host>/<public_slug>' (or '/<public_slug>/' if trailing slash). Emitted as <link rel=\"canonical\"> and used in Article/TouristTrip JSON-LD. Validated by qa-rules canonical-url-* checks."
+    },
     "legacy_slugs": {
       "type": "array",
       "description": "Older public slugs this post was previously served at. Public requests to these slugs are 301-redirected to the current public_slug.",
