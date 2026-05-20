@@ -69,11 +69,11 @@ Measured by `platform/qa-rules.php` (machine) + reviewer judgment (manual). Targ
 | S | `public_slug` stop-word hits | none | none | pass |
 | T | `meta.canonical_url` override (optional) — well-formed + matches `public_slug` | computed (from public_slug) | n/a unless overridden | pass |
 | U | FAQPage JSON-LD ready (`faq.md` ≥ 3 Q&A) | 8 pairs | ≥ 3 (final) | pass |
-| V | TouristTrip/Product JSON-LD fields present | missing: image, offers.price | none missing (final) | warn |
+| V | TouristTrip/Product JSON-LD fields present | missing: offers.price | name/description/offers.price (image optional) | warn |
 | W | `internal-links.md` cross-funnel coverage | BOFU/MOFU/FAQ | ≥ 2 stages | pass |
 | X | `internal-links.md` anchor-text variety | no duplicates (8 anchors) | none duplicate | pass |
 | Y | H2/H3 hierarchy + no duplicates | ok | ok | pass |
-| Z | Hero image: present + descriptive filename + alt with keyword | not set | yes (final) | warn |
+| Z | Hero image (optional) — alt + descriptive filename when set | not set (optional, no images/) | required only when images/ exists | pass |
 
 > Rows F, G, I, J, M are SEO checks added in Group 1. Rows A, B, D, E are now enforced by `platform/qa-rules.php` (title 50–60, meta description 140–160, H1 count, H1↔title parity, title cannibalization). Row L remains manual until an internal-link runner is added.
 >

@@ -470,10 +470,13 @@ function wps_qa_run_for_tour(string $tourDir): array
     }
 
     // TouristTrip / Product JSON-LD needs core commercial fields.
+    // Note: hero_image is intentionally excluded — AGENTS.md §849 makes
+    // image assets optional in this phase, so a missing hero is not a
+    // JSON-LD blocker. The existing `image` slot is filled by the
+    // renderer's fallback when meta.hero_image is unset.
     $productFields = [
         'canonical_tour_title' => 'name',
         'meta_description'    => 'description',
-        'hero_image'          => 'image',
         'price_from'          => 'offers.price',
     ];
     $missingProduct = [];
@@ -587,14 +590,11 @@ function wps_qa_run_for_tour(string $tourDir): array
         }
     }
 
-    // 20. Hero image: required for final, alt text + descriptive filename.
-    if ($isFinal && trim((string) ($meta['hero_image'] ?? '')) === '') {
-        $findings[] = wps_qa_finding(
-            'warn',
-            'hero-image-final-missing',
-            'Final post is missing meta.hero_image. Hero images drive social-share previews and Article/TouristTrip image JSON-LD.'
-        );
-    }
+    // 20. Hero image: alt text + descriptive filename when one is set.
+    //     Per AGENTS.md §839/§849 hero images are optional in this
+    //     phase — a missing meta.hero_image is fine as long as no
+    //     images/ folder exists (the older hero-image-not-set rule
+    //     below already covers the images/-exists-but-unset case).
     if (!empty($meta['hero_image'])) {
         $hero = (string) $meta['hero_image'];
         $heroBase = basename(parse_url($hero, PHP_URL_PATH) ?: $hero);
