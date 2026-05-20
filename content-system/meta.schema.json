@@ -126,7 +126,7 @@
     },
     "canonical_url": {
       "type": "string",
-      "pattern": "^https?://[^\\s]+$",
+      "pattern": "^https://[^\\s]+$",
       "description": "Absolute canonical URL for this post. Should be 'https://<site-host>/<public_slug>' (or '/<public_slug>/' if trailing slash). Emitted as <link rel=\"canonical\"> and used in Article/TouristTrip JSON-LD. Validated by qa-rules canonical-url-* checks."
     },
     "legacy_slugs": {
