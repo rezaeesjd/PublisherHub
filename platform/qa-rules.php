@@ -90,6 +90,47 @@ function wps_qa_run_for_tour(string $tourDir): array
     $blogPath = $tourDir . '/blog-post.md';
     $blogContent = is_file($blogPath) ? (string) file_get_contents($blogPath) : '';
 
+    // Meta-only SEO checks. These run regardless of whether
+    // blog-post.md exists, so source-only / archived packages still
+    // get their title-tag and meta-description signals validated.
+    $pageTitle = trim((string) ($meta['page_title'] ?? ''));
+    $primaryKeyword = trim((string) ($meta['primary_keyword'] ?? ''));
+    $normalizeSeoText = function (string $s): string {
+        $s = mb_strtolower($s);
+        $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
+        return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
+    };
+    $pkNorm = $primaryKeyword !== '' ? $normalizeSeoText($primaryKeyword) : '';
+
+    // Title length. SEO target is 50–60 chars; Google truncates ~60 and
+    // almost always rewrites > 65.
+    if ($pageTitle !== '' && mb_strlen($pageTitle) > 60) {
+        $findings[] = wps_qa_finding('warn', 'title-too-long', 'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60). Google will truncate.');
+    }
+    if ($pageTitle !== '' && mb_strlen($pageTitle) < 50) {
+        $findings[] = wps_qa_finding('warn', 'title-too-short', 'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60); usually too short to communicate intent.');
+    }
+
+    // Meta description length. SEO target is 140–160 chars.
+    $metaDescription = trim((string) ($meta['meta_description'] ?? ''));
+    if ($metaDescription !== '' && mb_strlen($metaDescription) > 160) {
+        $findings[] = wps_qa_finding('warn', 'meta-description-too-long', 'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160). Google will truncate.');
+    }
+    if ($metaDescription !== '' && mb_strlen($metaDescription) < 140) {
+        $findings[] = wps_qa_finding('warn', 'meta-description-too-short', 'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160); usually too short to earn the click.');
+    }
+
+    // Primary keyword in title — meta-only (does not require blog body).
+    if ($pkNorm !== '' && $pageTitle !== '') {
+        $titleNorm = $normalizeSeoText($pageTitle);
+        $titlePos  = $titleNorm === '' ? false : mb_strpos($titleNorm, $pkNorm);
+        if ($titlePos === false) {
+            $findings[] = wps_qa_finding('warn', 'primary-keyword-title-missing', "meta.page_title does not contain primary_keyword '{$primaryKeyword}'.");
+        } elseif ($titlePos > (int) (mb_strlen($titleNorm) / 2)) {
+            $findings[] = wps_qa_finding('warn', 'primary-keyword-title-prefix', "primary_keyword '{$primaryKeyword}' appears late in meta.page_title; move it toward the start for a stronger title-tag signal.");
+        }
+    }
+
     if ($blogContent !== '') {
         foreach (WPS_FORBIDDEN_ADMIN_LABELS as $pattern) {
             if (preg_match($pattern, $blogContent, $m)) {
@@ -107,16 +148,10 @@ function wps_qa_run_for_tour(string $tourDir): array
         // H1 ↔ page_title parity. Google de-duplicates conflicting signals
         // so a major mismatch dilutes the topical signal. Warn when normalized
         // forms diverge more than the 60% similarity threshold.
-        $pageTitle = trim((string) ($meta['page_title'] ?? ''));
         if ($h1Count >= 1 && $pageTitle !== '' && isset($h1Matches[1][0])) {
             $firstH1 = trim($h1Matches[1][0]);
-            $normalize = function (string $s): string {
-                $s = mb_strtolower($s);
-                $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
-                return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
-            };
-            $a = $normalize($firstH1);
-            $b = $normalize($pageTitle);
+            $a = $normalizeSeoText($firstH1);
+            $b = $normalizeSeoText($pageTitle);
             similar_text($a, $b, $percent);
             if ($percent < 60) {
                 $findings[] = wps_qa_finding(
@@ -127,76 +162,16 @@ function wps_qa_run_for_tour(string $tourDir): array
             }
         }
 
-        // Title length. SEO target is 50–60 chars; Google truncates ~60 and
-        // almost always rewrites > 65.
-        if ($pageTitle !== '' && mb_strlen($pageTitle) > 60) {
-            $findings[] = wps_qa_finding(
-                'warn',
-                'title-too-long',
-                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60). Google will truncate.'
-            );
-        }
-        if ($pageTitle !== '' && mb_strlen($pageTitle) < 50) {
-            $findings[] = wps_qa_finding(
-                'warn',
-                'title-too-short',
-                'meta.page_title is ' . mb_strlen($pageTitle) . ' characters (target: 50–60); usually too short to communicate intent.'
-            );
-        }
-
-        // Meta description length. SEO target is 140–160 chars.
-        $metaDescription = trim((string) ($meta['meta_description'] ?? ''));
-        if ($metaDescription !== '' && mb_strlen($metaDescription) > 160) {
-            $findings[] = wps_qa_finding(
-                'warn',
-                'meta-description-too-long',
-                'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160). Google will truncate.'
-            );
-        }
-        if ($metaDescription !== '' && mb_strlen($metaDescription) < 140) {
-            $findings[] = wps_qa_finding(
-                'warn',
-                'meta-description-too-short',
-                'meta.meta_description is ' . mb_strlen($metaDescription) . ' characters (target: 140–160); usually too short to earn the click.'
-            );
-        }
-
         // ── On-page SEO enforcement (Group 2a) ─────────────────────────
-        // Normalize lowercases and collapses punctuation/whitespace so
-        // "Full-Day Tour" and "full day tour" compare equal.
-        $normalizeSeoText = function (string $s): string {
-            $s = mb_strtolower($s);
-            $s = preg_replace('/[^a-z0-9\s]+/u', ' ', $s) ?? $s;
-            return trim(preg_replace('/\s+/u', ' ', $s) ?? $s);
-        };
-
-        $primaryKeyword = trim((string) ($meta['primary_keyword'] ?? ''));
-        $pkNorm = $primaryKeyword !== '' ? $normalizeSeoText($primaryKeyword) : '';
+        // Title-length, meta-description-length and primary-keyword-in-
+        // title are now hoisted above the blog gate so source-only
+        // packages still get them. The blog-body-dependent checks stay
+        // here.
         $blogNorm = $normalizeSeoText($blogContent);
         $blogWords = $blogNorm === '' ? [] : explode(' ', $blogNorm);
         $wordCount = count($blogWords);
 
         if ($pkNorm !== '') {
-            // 8. primary-keyword-in-title-prefix — keyword should sit in
-            //    the front half of the title tag.
-            if ($pageTitle !== '') {
-                $titleNorm = $normalizeSeoText($pageTitle);
-                $titlePos  = $titleNorm === '' ? false : mb_strpos($titleNorm, $pkNorm);
-                if ($titlePos === false) {
-                    $findings[] = wps_qa_finding(
-                        'warn',
-                        'primary-keyword-title-missing',
-                        "meta.page_title does not contain primary_keyword '{$primaryKeyword}'."
-                    );
-                } elseif ($titlePos > (int) (mb_strlen($titleNorm) / 2)) {
-                    $findings[] = wps_qa_finding(
-                        'warn',
-                        'primary-keyword-title-prefix',
-                        "primary_keyword '{$primaryKeyword}' appears late in meta.page_title; move it toward the start for a stronger title-tag signal."
-                    );
-                }
-            }
-
             // 9. primary-keyword-in-h1
             if ($h1Count >= 1 && isset($h1Matches[1][0])) {
                 $h1Norm = $normalizeSeoText((string) $h1Matches[1][0]);
@@ -432,11 +407,13 @@ function wps_qa_run_for_tour(string $tourDir): array
     $canonicalUrl = trim((string) ($meta['canonical_url'] ?? ''));
     if ($canonicalUrl === '') {
         // Nothing to check; renderer fills this in from public_slug.
-    } elseif (!preg_match('#^https?://[^\s]+$#', $canonicalUrl)) {
+    } elseif (!preg_match('#^https://[^\s]+$#', $canonicalUrl)) {
+        // HTTPS-only: an http:// canonical override would create a
+        // canonical/indexing split with the renderer's https output.
         $findings[] = wps_qa_finding(
             'fail',
             'canonical-url-malformed',
-            "meta.canonical_url '{$canonicalUrl}' is not an absolute https URL."
+            "meta.canonical_url '{$canonicalUrl}' is not an absolute https:// URL."
         );
     } elseif ($publicSlug !== '') {
         $canonicalPath = (string) parse_url($canonicalUrl, PHP_URL_PATH);
@@ -620,7 +597,11 @@ function wps_qa_run_for_tour(string $tourDir): array
                         'hero-image-alt-missing',
                         'Hero image is referenced in blog-post.md without alt text.'
                     );
-                } elseif ($pkNorm !== '' && mb_strpos(mb_strtolower($am[1]), $pkNorm) === false) {
+                } elseif ($pkNorm !== '' && mb_strpos($normalizeSeoText($am[1]), $pkNorm) === false) {
+                    // Normalize the alt text so punctuation (e.g.
+                    // "Bernina Red Train, St Moritz Tour from Milan")
+                    // doesn't cause a false miss against the normalized
+                    // primary keyword.
                     $findings[] = wps_qa_finding(
                         'warn',
                         'hero-image-alt-keyword-missing',
